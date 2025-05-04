@@ -1,3 +1,6 @@
 fill_db/.venv
-
 fill_db/.env
+
+.venv
+.env
+__pycache__
