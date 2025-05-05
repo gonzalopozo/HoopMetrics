@@ -67,7 +67,7 @@ export default function Home() {
         <h1 className="mb-6 text-2xl font-bold md:text-3xl">NBA Players</h1>
 
         {filteredData?.length === 0 ? (
-          <p className="text-center text-muted-foreground py-8">Jugadores no encontrados con "{searchBarValue}"</p>
+          <p className="text-center text-muted-foreground py-8">{`Jugadores no encontrados con "${searchBarValue}"`}</p>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {filteredData?.map((player, i) => (
