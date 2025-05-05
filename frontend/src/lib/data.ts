@@ -23,6 +23,7 @@ export interface Player {
   position: string
   number: number
   team: { full_name: string }
+  url_pic: string
   stats: PlayerStats[]
   average_stats: PlayerStats
 }
