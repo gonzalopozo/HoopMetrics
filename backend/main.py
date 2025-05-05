@@ -6,6 +6,9 @@ from datetime import date
 from functools import lru_cache
 from config import Settings
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
 # Database models
 class Team(SQLModel, table=True):
     __tablename__ = "teams"
@@ -154,6 +157,14 @@ database_url = conn_data.DATABASE_URL
 engine = create_engine(database_url, echo=True)  # echo=True para ver las consultas SQL
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],            # Permite todas las fuentes
+    allow_credentials=True,         # Permite envío de cookies y cabeceras de autenticación
+    allow_methods=["*"],            # Permite todos los métodos HTTP
+    allow_headers=["*"],            # Permite todas las cabeceras
+)
 
 
 # Dependency to get DB session
