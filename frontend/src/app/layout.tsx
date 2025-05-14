@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import "./globals.css"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/layout/theme-provider"
+import { DashboardLayout } from "@/components/layout/dashboard-layout"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -19,7 +20,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
+          <DashboardLayout>
+            {children}
+          </DashboardLayout>
         </ThemeProvider>
       </body>
     </html>
