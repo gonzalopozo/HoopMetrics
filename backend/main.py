@@ -3,6 +3,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlmodel import Field, SQLModel, create_engine, Session, select, Relationship, desc
 from datetime import date
 from operator import attrgetter
+from sqlalchemy import func
 
 from functools import lru_cache
 from config import Settings
@@ -278,86 +279,67 @@ def read_players(session: Session = Depends(get_session)):
 @app.get("/players/sortedbyppg/{page}", response_model=List[PlayerRead])
 def read_players(page:int, session: Session = Depends(get_session)):
     try:
-        page_offset = (page - 1) * 20
-        page_limit = 20
+        limit  = 20
+        offset = (page - 1) * limit
 
-        # 1) Traemos todos los jugadores
-        all_players = session.exec(select(Player)).all()
+        # Subconsulta de medias por jugador
+        stats_subq = (
+            select(
+                MatchStatistic.player_id.label("player_id"),
+                func.avg(MatchStatistic.points).label("avg_ppg"),
+                func.avg(MatchStatistic.rebounds).label("avg_rpg"),
+                func.avg(MatchStatistic.assists).label("avg_apg"),
+            )
+            .group_by(MatchStatistic.player_id)
+            .subquery()
+        )
 
-        if not all_players:
-            return []
+        # Consulta principal uniendo jugadores, equipos y subconsulta de stats
+        stmt = (
+            select(
+                Player.id,
+                Player.name,
+                Player.birth_date,
+                Player.height,
+                Player.weight,
+                Player.position,
+                Player.number,
+                Team.full_name.label("team"),
+                Player.url_pic,
+                func.coalesce(stats_subq.c.avg_ppg, 0).label("avg_ppg"),
+                func.coalesce(stats_subq.c.avg_rpg, 0).label("avg_rpg"),
+                func.coalesce(stats_subq.c.avg_apg, 0).label("avg_apg"),
+            )
+            .join(Team, Team.id == Player.current_team_id, isouter=True)
+            .join(stats_subq, stats_subq.c.player_id == Player.id, isouter=True)
+            .order_by(desc("avg_ppg"))
+            .offset(offset)
+            .limit(limit)
+        )
 
-        results = []
-        for player in all_players:
-            # Cargar equipo si existe
-            team = session.get(Team, player.current_team_id) if player.current_team_id else None
+        results = session.exec(stmt).all()
 
-            # Traer todas sus estadísticas
-            stats = session.exec(
-                select(MatchStatistic).where(MatchStatistic.player_id == player.id)
-            ).all()
-
-            # Calcular promedios
-            if stats:
-                avg_points = sum(s.points or 0 for s in stats) / len(stats)
-                # Reutiliza tu StatRead para los demás campos...
-                avg = StatRead(
-                    points=int(avg_points),
-                    rebounds= sum(s.rebounds or 0 for s in stats) // len(stats),
-                    assists=  sum(s.assists or 0 for s in stats) // len(stats),
-                    steals=   sum(s.steals or 0 for s in stats) // len(stats),
-                    blocks=   sum(s.blocks or 0 for s in stats) // len(stats),
-                    minutes_played= round(sum(s.minutes_played or 0 for s in stats) / len(stats), 1),
-                    field_goals_attempted= sum(s.field_goals_attempted or 0 for s in stats) // len(stats),
-                    field_goals_made=     sum(s.field_goals_made or 0 for s in stats) // len(stats),
-                    three_points_made=    sum(s.three_points_made or 0 for s in stats) // len(stats),
-                    three_points_attempted=sum(s.three_points_attempted or 0 for s in stats) // len(stats),
-                    free_throws_made=     sum(s.free_throws_made or 0 for s in stats) // len(stats),
-                    free_throws_attempted=sum(s.free_throws_attempted or 0 for s in stats) // len(stats),
-                    fouls=   sum(s.fouls or 0 for s in stats) // len(stats),
-                    turnovers=sum(s.turnovers or 0 for s in stats) // len(stats),
-                )
-            else:
-                avg = StatRead()  # todo a cero
-
-            # Construir la respuesta para cada jugador
-            results.append(
-                PlayerRead(
-                    name=player.name,
-                    birth_date=player.birth_date,
-                    height=player.height,
-                    weight=player.weight,
-                    position=player.position,
-                    number=player.number,
-                    team=TeamRead(full_name=team.full_name) if team else None,
-                    url_pic=player.url_pic,
-                    stats=[
-                        StatRead(
-                            points=s.points,
-                            rebounds=s.rebounds,
-                            assists=s.assists,
-                            steals=s.steals,
-                            blocks=s.blocks,
-                            minutes_played=s.minutes_played,
-                            field_goals_attempted=s.field_goals_attempted,
-                            field_goals_made=s.field_goals_made,
-                            three_points_made=s.three_points_made,
-                            three_points_attempted=s.three_points_attempted,
-                            free_throws_made=s.free_throws_made,
-                            free_throws_attempted=s.free_throws_attempted,
-                            fouls=s.fouls,
-                            turnovers=s.turnovers
-                        ) for s in stats
-                    ],
-                    average_stats=avg
+        # Mapear a tus Pydantic models PlayerRead / StatRead
+        players = []
+        for row in results:
+            player = PlayerRead(
+                name=row.name,
+                birth_date=row.birth_date,
+                height=row.height,
+                weight=row.weight,
+                position=row.position,
+                number=row.number,
+                team=TeamRead(full_name=row.team) if row.team else None,
+                url_pic=row.url_pic,
+                average_stats=StatRead(
+                    points=int(row.avg_ppg),
+                    rebounds=int(row.avg_rpg),
+                    assists=int(row.avg_apg),
                 )
             )
+            players.append(player)
 
-        # 2) Ordenamos por average_stats.points de mayor a menor
-        sorted_by_ppg = sorted(results, key=attrgetter('average_stats.points'), reverse=True)
-
-        # 3) Devolvemos solo los 20 primeros
-        return sorted_by_ppg[page_offset:page_limit]
+        return players
 
     except Exception as e:
         print(f"Error in read_players: {e}")
