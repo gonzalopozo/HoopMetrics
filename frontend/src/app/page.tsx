@@ -12,7 +12,7 @@ import { SeasonalMilestonesCard } from "@/components/cards/seasonal-milestones-c
 export default function HomePage() {
   return (
     <>
-      <h1 className="mb-6 text-xl font-bold text-foreground md:text-2xl">NBA Insights Dashboard</h1>
+      {/* <h1 className="mb-6 text-xl font-bold text-foreground md:text-2xl">NBA Insights Dashboard</h1> */}
 
       <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
         <TrendingQueriesCard />
