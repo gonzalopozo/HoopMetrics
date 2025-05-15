@@ -30,7 +30,7 @@ export function Sidebar() {
     ]
 
     return (
-        <aside className="hidden w-64 flex-shrink-0 border-r border-border bg-card p-4 md:block">
+        <aside className="fixed top-[73px] left-0 bottom-0 w-64 border-r border-border bg-card p-4 hidden md:block overflow-y-auto">
             <nav className="space-y-6">
                 <div className="space-y-2">
                     <h3 className="text-xs font-semibold uppercase text-muted-foreground">Main</h3>

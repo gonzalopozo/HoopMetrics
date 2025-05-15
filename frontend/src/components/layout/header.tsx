@@ -10,7 +10,7 @@ export function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     return (
-        <header className="sticky top-0 z-10 border-b bg-card px-4 py-3 shadow-sm">
+        <header className="fixed top-0 left-0 right-0 z-10 border-b bg-card px-4 py-3 shadow-sm">
             <div className="mx-auto flex max-w-7xl items-center justify-between">
                 {/* Logo - Only icon on mobile, full logo on larger screens */}
                 <Logo />
