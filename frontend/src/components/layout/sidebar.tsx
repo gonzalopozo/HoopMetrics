@@ -1,14 +1,20 @@
+"use client"
+
 import Link from "next/link"
-import { TrendingUp, Users, Table, Calendar, Award, Star, Bell, LucideProps } from "lucide-react"
-import { ForwardRefExoticComponent, RefAttributes } from "react";
+import { TrendingUp, Users, Table, Calendar, Award, Star, Bell, LucideIcon } from "lucide-react"
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+
 
 type Link = {
     name: string;
     href: string;
-    icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>;
+    icon: LucideIcon;
 }
 
 export function Sidebar() {
+    const pathname = usePathname();
+
     const links: Link[] = [
         { name: "Dashboard", href: '/', icon: TrendingUp },
         { name: "Players", href: '/players', icon: Users },
@@ -19,8 +25,8 @@ export function Sidebar() {
 
     const userLinks: Link[] = [
         // TODO: añadir rutas de perfil
-        { name: "Favorites", href: '/', icon: Star },
-        { name: "Alerts", href: '/', icon: Bell },
+        { name: "Favorites", href: '/null', icon: Star },
+        { name: "Alerts", href: '/null', icon: Bell },
     ]
 
     return (
@@ -31,16 +37,23 @@ export function Sidebar() {
                     <ul className="space-y-1">
                         <>
                             {links.map(link => {
-                                const LinkIcon = link.icon;
+                                const { name, href, icon } = link
+
+                                const LinkIcon = icon;
+                                const isActive = pathname === href
 
                                 return (
                                     <Link
-                                        key={link.name}
-                                        href={link.href}
-                                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-foreground hover:bg-accent hover:text-accent-foreground"
+                                        key={name}
+                                        href={href}
+                                        className={cn(
+                                            "flex items-center gap-2 rounded-lg px-3 py-2 text-foreground transition-colors",
+                                            "hover:bg-accent hover:text-accent-foreground",
+                                            isActive && "bg-primary/10 text-primary font-medium border-l-2 border-primary",
+                                        )}
                                     >
                                         <LinkIcon className="h-4 w-4" />
-                                        <span>{link.name}</span>
+                                        <span>{name}</span>
                                     </Link>
                                 )
                             })}
@@ -52,16 +65,23 @@ export function Sidebar() {
                     <ul className="space-y-1">
                         <>
                             {userLinks.map(link => {
-                                const LinkIcon = link.icon;
+                                const { name, href, icon } = link
+
+                                const LinkIcon = icon;
+                                const isActive = pathname === href
 
                                 return (
                                     <Link
-                                        key={link.name}
-                                        href={link.href}
-                                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-foreground hover:bg-accent hover:text-accent-foreground"
+                                        key={name}
+                                        href={href}
+                                        className={cn(
+                                            "flex items-center gap-2 rounded-lg px-3 py-2 text-foreground transition-colors",
+                                            "hover:bg-accent hover:text-accent-foreground",
+                                            isActive && "bg-primary/10 text-primary font-medium border-l-2 border-primary",
+                                        )}
                                     >
                                         <LinkIcon className="h-4 w-4" />
-                                        <span>{link.name}</span>
+                                        <span>{name}</span>
                                     </Link>
                                 )
                             })}
