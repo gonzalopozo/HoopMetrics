@@ -90,24 +90,24 @@ class MatchStatistic(SQLModel, table=True):
     match_rapidapi_id: int
     player_id: int = Field(foreign_key="players.id")
     player_rapidapi_id: int  # Mantenemos esto ya que parece estar en la tabla de estadísticas
-    points: Optional[int] = None
-    rebounds: Optional[int] = None
-    assists: Optional[int] = None
-    steals: Optional[int] = None
-    blocks: Optional[int] = None
+    points: Optional[float] = None
+    rebounds: Optional[float] = None
+    assists: Optional[float] = None
+    steals: Optional[float] = None
+    blocks: Optional[float] = None
     minutes_played: Optional[float] = None
-    field_goals_attempted: Optional[int] = None
-    field_goals_made: Optional[int] = None
-    three_points_made: Optional[int] = None
-    three_points_attempted: Optional[int] = None
-    free_throws_made: Optional[int] = None
-    free_throws_attempted: Optional[int] = None
-    fouls: Optional[int] = None
-    turnovers: Optional[int] = None
-    off_rebounds: Optional[int] = None
-    def_rebounds: Optional[int] = None
-    minutes: Optional[int] = None
-    plusminus: Optional[int] = None
+    field_goals_attempted: Optional[float] = None
+    field_goals_made: Optional[float] = None
+    three_points_made: Optional[float] = None
+    three_points_attempted: Optional[float] = None
+    free_throws_made: Optional[float] = None
+    free_throws_attempted: Optional[float] = None
+    fouls: Optional[float] = None
+    turnovers: Optional[float] = None
+    off_rebounds: Optional[float] = None
+    def_rebounds: Optional[float] = None
+    minutes: Optional[float] = None
+    plusminus: Optional[float] = None
 
     # Relaciones
     match: Match = Relationship(back_populates="statistics")
@@ -120,23 +120,24 @@ class TeamRead(SQLModel):
 
 
 class StatRead(SQLModel):
-    points: Optional[int] = 0
-    rebounds: Optional[int] = 0
-    assists: Optional[int] = 0
-    steals: Optional[int] = 0
-    blocks: Optional[int] = 0
-    minutes_played: Optional[float] = 0.0
-    field_goals_attempted: Optional[int] = 0
-    field_goals_made: Optional[int] = 0
-    three_points_made: Optional[int] = 0
-    three_points_attempted: Optional[int] = 0
-    free_throws_made: Optional[int] = 0
-    free_throws_attempted: Optional[int] = 0
-    fouls: Optional[int] = 0
-    turnovers: Optional[int] = 0
+    points: Optional[float] = None
+    rebounds: Optional[float] = None
+    assists: Optional[float] = None
+    steals: Optional[float] = None
+    blocks: Optional[float] = None
+    minutes_played: Optional[float] = None
+    field_goals_attempted: Optional[float] = None
+    field_goals_made: Optional[float] = None
+    three_points_made: Optional[float] = None
+    three_points_attempted: Optional[float] = None
+    free_throws_made: Optional[float] = None
+    free_throws_attempted: Optional[float] = None
+    fouls: Optional[float] = None
+    turnovers: Optional[float] = None
 
 
 class PlayerRead(SQLModel):
+    id: int
     name: str
     birth_date: date
     height: Optional[float] = None
@@ -238,6 +239,7 @@ def read_players(session: Session = Depends(get_session)):
             
             # Crear modelo de respuesta para este jugador
             player_read = PlayerRead(
+                id=player.id,
                 name=player.name,
                 birth_date=player.birth_date,
                 height=player.height,
@@ -306,9 +308,9 @@ def read_players(page:int, session: Session = Depends(get_session)):
                 Player.number,
                 Team.full_name.label("team"),
                 Player.url_pic,
-                func.coalesce(stats_subq.c.avg_ppg, 0).label("avg_ppg"),
-                func.coalesce(stats_subq.c.avg_rpg, 0).label("avg_rpg"),
-                func.coalesce(stats_subq.c.avg_apg, 0).label("avg_apg"),
+                func.coalesce(stats_subq.c.avg_ppg, 0.0).label("avg_ppg"),
+                func.coalesce(stats_subq.c.avg_rpg, 0.0).label("avg_rpg"),
+                func.coalesce(stats_subq.c.avg_apg, 0.0).label("avg_apg"),
             )
             .join(Team, Team.id == Player.current_team_id, isouter=True)
             .join(stats_subq, stats_subq.c.player_id == Player.id, isouter=True)
@@ -323,6 +325,7 @@ def read_players(page:int, session: Session = Depends(get_session)):
         players = []
         for row in results:
             player = PlayerRead(
+                id=row.id,
                 name=row.name,
                 birth_date=row.birth_date,
                 height=row.height,
@@ -332,9 +335,9 @@ def read_players(page:int, session: Session = Depends(get_session)):
                 team=TeamRead(full_name=row.team) if row.team else None,
                 url_pic=row.url_pic,
                 average_stats=StatRead(
-                    points=int(row.avg_ppg),
-                    rebounds=int(row.avg_rpg),
-                    assists=int(row.avg_apg),
+                    points=round(row.avg_ppg, 1),
+                    rebounds=round(row.avg_rpg, 1),
+                    assists=round(row.avg_apg, 1),
                 )
             )
             players.append(player)
