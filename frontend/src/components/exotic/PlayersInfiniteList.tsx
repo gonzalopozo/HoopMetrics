@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-query'
 import useInfiniteScroll from 'react-infinite-scroll-hook'
 import { PlayerCard } from '@/components/cards/player-card'
+import { PlayersLoading } from '../loading/players-loading'
 
 interface ApiPlayer {
     id: number
@@ -73,7 +74,7 @@ function InfiniteListCore() {
         rootMargin: '0px 0px 400px 0px',
     })
 
-    if (isLoading) return <p>Cargando jugadores...</p>
+    if (isLoading) return <PlayersLoading />
     if (isError) return <p>Error: {(error as Error).message}</p>
 
     // Aplanamos y tipamos el array de jugadores

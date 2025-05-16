@@ -6,18 +6,18 @@ export function PlayersLoading() {
 
     return (
         <div>
-            <div className="mb-6">
+            {/* <div className="mb-6">
                 <Skeleton className="h-8 w-48" />
-            </div>
+            </div> */}
 
             {/* Filters and Search Skeleton */}
-            <div className="mb-6 flex flex-wrap gap-2">
+            {/* <div className="mb-6 flex flex-wrap gap-2">
                 <div className="flex-1">
                     <Skeleton className="h-10 w-full rounded-lg" />
                 </div>
                 <Skeleton className="h-10 w-32 rounded-lg" />
                 <Skeleton className="h-10 w-32 rounded-lg" />
-            </div>
+            </div> */}
 
             {/* Players Grid - Bento Layout with Skeletons */}
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
