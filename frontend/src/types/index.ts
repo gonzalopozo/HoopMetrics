@@ -1,8 +1,17 @@
 export interface Player {
+    id: string
     name: string
-    team: string
-    stat: string
+    position: string
+    team: {
+        name: string
+        logo?: string
+    }
     image: string
+    stats: {
+        points: number
+        rebounds: number
+        assists: number
+    }
 }
 
 export interface Game {
