@@ -275,7 +275,6 @@ def read_players(session: Session = Depends(get_session)):
         # Re-raise it so FastAPI can handle it appropriately
         raise
     
-    return results
 
 
 @app.get("/players/sortedbyppg/{page}", response_model=List[PlayerRead])
@@ -346,6 +345,95 @@ def read_players(page:int, session: Session = Depends(get_session)):
 
     except Exception as e:
         print(f"Error in read_players: {e}")
+        raise
+
+@app.get("/players/{id}", response_model=PlayerRead)
+def read_players(id: int, session: Session = Depends(get_session)):
+    try:
+        # Primero verificamos si hay jugadores en la base de datos
+        # Obtenemos como máximo 20 jugadores de la base de datos
+        player = session.exec(
+            select(Player)
+            .where(Player.id == id)
+        ).first()  # <-- Notar los paréntesis en all()
+        
+        if not player:
+            return PlayerRead()
+        
+        # Filtrar solo jugadores que tienen equipo asignado
+        # players_with_team = [p for p in all_players if p.current_team_id is not None]
+        
+        # team = None
+        # if player.current_team_id:
+        #     team = session.exec(
+        #         select(Team)
+        #         .where(Team.id == player.current_team_id)
+        #     ).all()
+        
+        team = None
+        if player.current_team_id:
+            team = session.get(Team, player.current_team_id)
+        
+        # Consulta específica para las estadísticas de este jugador
+        stats_query = select(MatchStatistic).where(MatchStatistic.player_id == player.id)
+        stats = session.exec(stats_query).all()
+        
+        # Calcular promedios si hay estadísticas
+        if stats:
+            avg = StatRead(
+                points=round(sum(s.points or 0 for s in stats) / len(stats), 1) if any(s.points for s in stats) else 0,
+                rebounds=round(sum(s.rebounds or 0 for s in stats) / len(stats), 1) if any(s.rebounds for s in stats) else 0,
+                assists=round(sum(s.assists or 0 for s in stats) / len(stats), 1) if any(s.assists for s in stats) else 0,
+                steals=round(sum(s.steals or 0 for s in stats) / len(stats), 1) if any(s.steals for s in stats) else 0,
+                blocks=round(sum(s.blocks or 0 for s in stats) / len(stats), 1) if any(s.blocks for s in stats) else 0,
+                minutes_played=round(sum(s.minutes_played or 0 for s in stats) / len(stats), 1) if any(s.minutes_played for s in stats) else 0.0,
+                field_goals_attempted=round(sum(s.field_goals_attempted or 0 for s in stats) / len(stats), 1) if any(s.field_goals_attempted for s in stats) else 0,
+                field_goals_made=round(sum(s.field_goals_made or 0 for s in stats) / len(stats), 1) if any(s.field_goals_made for s in stats) else 0,
+                three_points_made=round(sum(s.three_points_made or 0 for s in stats) / len(stats), 1) if any(s.three_points_made for s in stats) else 0,
+                three_points_attempted=round(sum(s.three_points_attempted or 0 for s in stats) / len(stats), 1) if any(s.three_points_attempted for s in stats) else 0,
+                free_throws_made=round(sum(s.free_throws_made or 0 for s in stats) / len(stats), 1) if any(s.free_throws_made for s in stats) else 0,
+                free_throws_attempted=round(sum(s.free_throws_attempted or 0 for s in stats) / len(stats), 1) if any(s.free_throws_attempted for s in stats) else 0,
+                fouls=round(sum(s.fouls or 0 for s in stats) / len(stats), 1) if any(s.fouls for s in stats) else 0,
+                turnovers=round(sum(s.turnovers or 0 for s in stats) / len(stats), 1) if any(s.turnovers for s in stats) else 0,
+            )
+        else:
+            avg = StatRead()
+        
+        # Crear modelo de respuesta para este jugador
+        player_read = PlayerRead(
+            id=player.id,
+            name=player.name,
+            birth_date=player.birth_date,
+            height=player.height,
+            weight=player.weight,
+            position=player.position,
+            number=player.number,
+            team=TeamRead(full_name=team.full_name) if team else None,
+            url_pic=player.url_pic,
+            stats=[StatRead(
+                points=s.points,
+                rebounds=s.rebounds,
+                assists=s.assists,
+                steals=s.steals,
+                blocks=s.blocks,
+                minutes_played=s.minutes_played,
+                field_goals_attempted=s.field_goals_attempted,
+                field_goals_made=s.field_goals_made,
+                three_points_made=s.three_points_made,
+                three_points_attempted=s.three_points_attempted,
+                free_throws_made=s.free_throws_made,
+                free_throws_attempted=s.free_throws_attempted,
+                fouls=s.fouls,
+                turnovers=s.turnovers
+            ) for s in stats],
+            average_stats=avg
+        )
+        
+        return player_read
+    except Exception as e:
+        # Log the exception for debugging
+        print(f"Error in read_players: {str(e)}")
+        # Re-raise it so FastAPI can handle it appropriately
         raise
 
 
