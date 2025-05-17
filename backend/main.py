@@ -409,7 +409,7 @@ def read_top_performers(session: Session = Depends(get_session)):
             # 4) Ejecutar y mapear resultados
             rows = session.exec(stmt).all()
 
-            for stat, player_name, side in rows:
+            for stat, total, player_name, side in rows:
                 # Carga lazy de match y team; o puedes hacer join si prefieres
                 match = session.get(Match, stat.match_id)
                 team  = session.get(Team, stat.player.current_team_id) if stat.player.current_team_id else None
