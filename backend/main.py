@@ -1,6 +1,6 @@
 from typing import List, Optional
 from fastapi import FastAPI, Depends, HTTPException
-from sqlmodel import Field, SQLModel, create_engine, Session, select, Relationship, desc
+from sqlmodel import Field, SQLModel, create_engine, Session, select, Relationship, desc, case
 from datetime import date
 from operator import attrgetter
 from sqlalchemy import func
@@ -9,6 +9,7 @@ from functools import lru_cache
 from config import Settings
 
 from fastapi.middleware.cors import CORSMiddleware
+
 
 
 # Database models
@@ -149,6 +150,16 @@ class PlayerRead(SQLModel):
     stats: List[StatRead] = []
     average_stats: Optional[StatRead] = None
 
+class TopPerformer(SQLModel):
+    id: int = None
+    name: str = None
+    team: TeamRead = None
+    url_pic: Optional[str] = None
+    game_stats: StatRead = None
+    isWinner: bool = None
+    points: int = None
+    rebounds: int = None
+    assists: int = None
 
 @lru_cache
 def get_settings():
@@ -350,6 +361,171 @@ def read_players(id: int, session: Session = Depends(get_session)):
         print(f"Error in read_players: {str(e)}")
         # Re-raise it so FastAPI can handle it appropriately
         raise
+
+@app.get("/home/top-performers", response_model=List[TopPerformer])
+def read_players(session: Session = Depends(get_session)):
+    try:
+        matchs = session.exec(
+            select(Match)
+            .where(Match.home_score != None)
+            .where(Match.away_score != None)
+            .order_by(desc(Match.date))
+            .limit(2)
+        )  
+        
+        players = []
+        for match in matchs:
+            # matchss.append(match)
+            # 1) Expresión para 'side'
+            side_expr = case(
+                (Player.current_team_id == match.home_team_id,  'home'),
+                (Player.current_team_id == match.away_team_id, 'away'),
+                else_='other'
+            ).label("side")
+
+            # 2) Expresión para 'total' = points + rebounds + assists
+            total_expr = (
+                func.coalesce(MatchStatistic.points,  0) +
+                func.coalesce(MatchStatistic.rebounds,0) +
+                func.coalesce(MatchStatistic.assists, 0)
+            ).label("total")
+
+            # 3) Statement con DISTINCT ON(side)
+            stmt = (
+                select(
+                    MatchStatistic,
+                    total_expr,
+                    Player.name.label("player_name"),
+                    side_expr,
+                )
+                .join(Player, MatchStatistic.player_id == Player.id)
+                .where(MatchStatistic.match_id == match.id)
+                .distinct(side_expr)
+                .order_by(side_expr, desc(total_expr))
+            )
+
+            # 4) Ejecutar y mapear resultados
+            rows = session.exec(stmt).all()
+            performers = []
+            
+            for row in rows:
+                performers.append(row)
+                
+            return performers
+
+
+            # for stat, total, player_name, side in rows:
+            #     # Carga lazy de match y team; o puedes hacer join si prefieres
+            #     match = session.get(Match, stat.match_id)
+            #     team  = session.get(Team, stat.player.current_team_id) if stat.player.current_team_id else None
+
+            #     performers.append(
+            #         TopPerformer(
+            #             id         = stat.player_id,
+            #             name       = player_name,
+            #             team       = TeamRead(full_name=team.full_name) if team else None,
+            #             url_pic    = stat.player.url_pic,
+            #             game_stats = StatRead(
+            #                 points=stat.points or 0,
+            #                 rebounds=stat.rebounds or 0,
+            #                 assists=stat.assists or 0,
+            #                 steals=stat.steals or 0,
+            #                 blocks=stat.blocks or 0,
+            #                 minutes_played=stat.minutes_played or 0.0,
+            #                 field_goals_attempted=stat.field_goals_attempted or 0,
+            #                 field_goals_made=stat.field_goals_made or 0,
+            #                 three_points_made=stat.three_points_made or 0,
+            #                 three_points_attempted=stat.three_points_attempted or 0,
+            #                 free_throws_made=stat.free_throws_made or 0,
+            #                 free_throws_attempted=stat.free_throws_attempted or 0,
+            #                 fouls=stat.fouls or 0,
+            #                 turnovers=stat.turnovers or 0,
+            #             ),
+            #             isWinner = (
+            #                 (side == 'home' and match.home_score > match.away_score)
+            #                 or
+            #                 (side == 'away' and match.away_score > match.home_score)
+            #             ),
+            #             points   = int(stat.points or 0),
+            #             rebounds = int(stat.rebounds or 0),
+            #             assists  = int(stat.assists or 0),
+            #         )
+            #     )
+            
+            
+        
+        # return players
+        
+        # if not player:
+        #     return PlayerRead()
+        
+        
+        # team = None
+        # if player.current_team_id:
+        #     team = session.get(Team, player.current_team_id)
+        
+        # # Consulta específica para las estadísticas de este jugador
+        # stats_query = select(MatchStatistic).where(MatchStatistic.player_id == player.id)
+        # stats = session.exec(stats_query).all()
+        
+        # # Calcular promedios si hay estadísticas
+        # if stats:
+        #     avg = StatRead(
+        #         points=round(sum(s.points or 0 for s in stats) / len(stats), 1) if any(s.points for s in stats) else 0,
+        #         rebounds=round(sum(s.rebounds or 0 for s in stats) / len(stats), 1) if any(s.rebounds for s in stats) else 0,
+        #         assists=round(sum(s.assists or 0 for s in stats) / len(stats), 1) if any(s.assists for s in stats) else 0,
+        #         steals=round(sum(s.steals or 0 for s in stats) / len(stats), 1) if any(s.steals for s in stats) else 0,
+        #         blocks=round(sum(s.blocks or 0 for s in stats) / len(stats), 1) if any(s.blocks for s in stats) else 0,
+        #         minutes_played=round(sum(s.minutes_played or 0 for s in stats) / len(stats), 1) if any(s.minutes_played for s in stats) else 0.0,
+        #         field_goals_attempted=round(sum(s.field_goals_attempted or 0 for s in stats) / len(stats), 1) if any(s.field_goals_attempted for s in stats) else 0,
+        #         field_goals_made=round(sum(s.field_goals_made or 0 for s in stats) / len(stats), 1) if any(s.field_goals_made for s in stats) else 0,
+        #         three_points_made=round(sum(s.three_points_made or 0 for s in stats) / len(stats), 1) if any(s.three_points_made for s in stats) else 0,
+        #         three_points_attempted=round(sum(s.three_points_attempted or 0 for s in stats) / len(stats), 1) if any(s.three_points_attempted for s in stats) else 0,
+        #         free_throws_made=round(sum(s.free_throws_made or 0 for s in stats) / len(stats), 1) if any(s.free_throws_made for s in stats) else 0,
+        #         free_throws_attempted=round(sum(s.free_throws_attempted or 0 for s in stats) / len(stats), 1) if any(s.free_throws_attempted for s in stats) else 0,
+        #         fouls=round(sum(s.fouls or 0 for s in stats) / len(stats), 1) if any(s.fouls for s in stats) else 0,
+        #         turnovers=round(sum(s.turnovers or 0 for s in stats) / len(stats), 1) if any(s.turnovers for s in stats) else 0,
+        #     )
+        # else:
+        #     avg = StatRead()
+        
+        # # Crear modelo de respuesta para este jugador
+        # player_read = PlayerRead(
+        #     id=player.id,
+        #     name=player.name,
+        #     birth_date=player.birth_date,
+        #     height=player.height,
+        #     weight=player.weight,
+        #     position=player.position,
+        #     number=player.number,
+        #     team=TeamRead(full_name=team.full_name) if team else None,
+        #     url_pic=player.url_pic,
+        #     stats=[StatRead(
+        #         points=s.points,
+        #         rebounds=s.rebounds,
+        #         assists=s.assists,
+        #         steals=s.steals,
+        #         blocks=s.blocks,
+        #         minutes_played=s.minutes_played,
+        #         field_goals_attempted=s.field_goals_attempted,
+        #         field_goals_made=s.field_goals_made,
+        #         three_points_made=s.three_points_made,
+        #         three_points_attempted=s.three_points_attempted,
+        #         free_throws_made=s.free_throws_made,
+        #         free_throws_attempted=s.free_throws_attempted,
+        #         fouls=s.fouls,
+        #         turnovers=s.turnovers
+        #     ) for s in stats],
+        #     average_stats=avg
+        # )
+        
+        return player_read
+    except Exception as e:
+        # Log the exception for debugging
+        print(f"Error in read_players: {str(e)}")
+        # Re-raise it so FastAPI can handle it appropriately
+        raise
+
 
 
 
