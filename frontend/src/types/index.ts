@@ -36,3 +36,14 @@ export interface Stat {
     value: string
     trend: number[]
 }
+
+export interface TopPerformer {
+    id: number
+    name: string
+    team: { full_name: string }
+    url_pic: string
+    isWinner: boolean
+    points: number
+    rebounds: number
+    assists: number
+}
