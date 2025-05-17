@@ -2,9 +2,7 @@ import { Calendar } from "lucide-react"
 import { CardHeader } from "@/components/cards/card-header"
 
 const UPCOMING_GAMES = [
-    { time: "7:00 PM", teams: ["BOS", "NYK"], channel: "ESPN" },
-    { time: "7:30 PM", teams: ["MIA", "PHI"], channel: "TNT" },
-    { time: "10:00 PM", teams: ["LAL", "GSW"], channel: "ESPN" },
+    { time: "00:00 PM", teams: ["---", "---"], channel: "----" },
 ]
 
 export function UpcomingGamesCard() {
