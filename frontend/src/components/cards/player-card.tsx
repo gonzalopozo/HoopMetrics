@@ -4,9 +4,8 @@ import { useState } from "react"
 import Image from "next/image"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Player } from "@/types"
+import type { Player } from "@/types"
 import Link from "next/link"
-
 
 export function PlayerCard({ id, name, position, team, image, stats }: Player) {
     const [isHovered, setIsHovered] = useState(false)
@@ -38,8 +37,8 @@ export function PlayerCard({ id, name, position, team, image, stats }: Player) {
                 {/* Stats Overlay (visible on hover) */}
                 <div
                     className={cn(
-                        "absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-primary/80 to-black/80 p-4 text-white opacity-0 backdrop-blur-sm transition-all duration-300 ease-in-out",
-                        isHovered ? "opacity-100 translate-y-0" : "translate-y-8 opacity-0",
+                        "absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-primary/80 to-black/80 p-4 text-white opacity-0 backdrop-blur-sm transition-all duration-300 ease-in-out pointer-events-auto z-10",
+                        isHovered ? "opacity-100 translate-y-0" : "translate-y-8 opacity-0 pointer-events-none",
                     )}
                 >
                     <div className="mb-4 text-center">
@@ -86,7 +85,7 @@ export function PlayerCard({ id, name, position, team, image, stats }: Player) {
                         className="mt-6 flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-300 hover:bg-primary/90 hover:shadow-primary/30 hover:translate-y-[-2px] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-black/50 active:translate-y-0 active:shadow-primary/10 w-full max-w-[180px]"
                         href={`/players/${id}`}
                         key={id}
-                    >
+>
                         <span>Player Details</span>
                         <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </Link>
@@ -115,7 +114,7 @@ export function PlayerCard({ id, name, position, team, image, stats }: Player) {
             {/* Card Border Glow Effect */}
             <div
                 className={cn(
-                    "absolute inset-0 rounded-xl border border-primary/0 transition-all duration-300",
+                    "absolute inset-0 rounded-xl border border-primary/0 transition-all duration-300 pointer-events-none z-0",
                     isHovered && "border-primary/50 shadow-[0_0_15px_rgba(249,115,22,0.15)]",
                 )}
             />
