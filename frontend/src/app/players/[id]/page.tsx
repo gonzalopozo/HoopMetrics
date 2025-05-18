@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import axios from "axios"
 
 // Types for our player data
 interface PlayerStat {
@@ -59,8 +60,8 @@ export default function PlayerDetailPage({ params }: { params: { id: string } })
                 await new Promise((resolve) => setTimeout(resolve, 1000))
 
                 // Fetch from your API endpoint
-                const response = await fetch(`http://localhost:8000/players/${params.id}`)
-                const data = await response.json()
+                const response = await axios.get(`http://localhost:8000/players/${params.id}`)
+                const data = response.data
                 setPlayer(data)
             } catch (error) {
                 console.error("Error fetching player data:", error)

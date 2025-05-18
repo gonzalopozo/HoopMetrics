@@ -1,9 +1,11 @@
 import PlayersInfiniteList from "@/components/exotic/PlayersInfiniteList"
+import axios from "axios"
+
 
 export default async function PlayersPage() {
     // Petición al endpoint para la página 1
-    const res = await fetch('http://localhost:8000/players/sortedbyppg/1')
-    const initialPlayers = await res.json()
+    const res = await axios.get('http://localhost:8000/players/sortedbyppg/1')
+    const initialPlayers = res.data
 
     return (
         <div>
