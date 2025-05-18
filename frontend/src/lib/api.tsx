@@ -1,0 +1,28 @@
+import Cookies from "js-cookie";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+export async function post<T>(path: string, body: any): Promise<T> {
+    const res = await fetch(`${API_BASE}${path}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.detail || res.statusText);
+    }
+    return res.json();
+}
+
+export function saveToken(token: string) {
+    Cookies.set("token", token, { expires: 1, secure: true, sameSite: "lax" });
+}
+
+export function getToken(): string | undefined {
+    return Cookies.get("token");
+}
+
+export function removeToken() {
+    Cookies.remove("token");
+}

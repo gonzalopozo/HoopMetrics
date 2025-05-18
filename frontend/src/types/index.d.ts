@@ -47,3 +47,12 @@ export interface TopPerformer {
     rebounds: number
     assists: number
 }
+
+export type UserRole = "free" | "premium" | "enterprise" | "admin";
+
+export interface TokenResponse {
+    access_token: string;
+    token_type: "bearer";
+    username: string;
+    role: UserRole;
+}
