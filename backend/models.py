@@ -1,6 +1,11 @@
 from sqlmodel import Field, SQLModel, Relationship
+from sqlalchemy import Column
+from sqlalchemy.types import Enum as PgEnum
 from typing import List, Optional
-from datetime import date
+from datetime import date, datetime
+from enum import Enum  # <-- Añade esto
+
+
 
 # Definición de modelos de datos utilizando SQLModel
 class Team(SQLModel, table=True):
@@ -143,3 +148,26 @@ class TopPerformer(SQLModel):
     points: int = None
     rebounds: int = None
     assists: int = None
+
+class UserRole(str, Enum):
+    free = "free"
+    premium = "premium"
+    enterprise = "enterprise"
+    admin = "admin"
+
+class UserBase(SQLModel):
+    username: str
+    email: str
+
+class User(UserBase, table=True):
+    __tablename__ = "users"  # <-- Añade esta línea
+    
+    id: int = Field(default=None, primary_key=True)
+    password_hash: str
+    registration_date: datetime = Field(default_factory=datetime.utcnow)
+    role: UserRole = Field(
+        default=UserRole.free,
+        sa_column=Column(
+            PgEnum(UserRole, name="user_role", create_type=False)
+        )
+    )

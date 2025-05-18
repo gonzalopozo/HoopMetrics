@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, desc, func, select
 from typing import List
+from sqlmodel.ext.asyncio.session import AsyncSession
 
+from ..deps import get_db
 from ..models import MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead
-from ..database import get_session
 
 router = APIRouter(
     prefix="/players",
@@ -12,7 +13,7 @@ router = APIRouter(
 
     
 @router.get("/sortedbyppg/{page}", response_model=List[PlayerRead])
-def read_players_sorted_by_ppg_paginated(page:int, session: Session = Depends(get_session)):
+async def read_players_sorted_by_ppg_paginated(page:int, session: AsyncSession = Depends(get_db)):
     try:
         limit  = 20
         offset = (page - 1) * limit
@@ -52,7 +53,8 @@ def read_players_sorted_by_ppg_paginated(page:int, session: Session = Depends(ge
             .limit(limit)
         )
 
-        results = session.exec(stmt).all()
+        response = await session.exec(stmt)
+        results = response.all()
 
         # Mapear a tus Pydantic models PlayerRead / StatRead
         players = []
@@ -82,36 +84,30 @@ def read_players_sorted_by_ppg_paginated(page:int, session: Session = Depends(ge
         raise
 
 @router.get("/{id}", response_model=PlayerRead)
-def read_players_by_id(id: int, session: Session = Depends(get_session)):
+async def read_players_by_id(id: int, session: AsyncSession = Depends(get_db)):
     try:
         # Primero verificamos si hay jugadores en la base de datos
         # Obtenemos como máximo 20 jugadores de la base de datos
-        player = session.exec(
+        result = await session.exec(
             select(Player)
             .where(Player.id == id)
-        ).first()  # <-- Notar los paréntesis en all()
-        
+        )
+
+        player = result.first()  # <-- Notar los paréntesis en all()
+
         if not player:
             return PlayerRead()
         
-        # Filtrar solo jugadores que tienen equipo asignado
-        # players_with_team = [p for p in all_players if p.current_team_id is not None]
-        
-        # team = None
-        # if player.current_team_id:
-        #     team = session.exec(
-        #         select(Team)
-        #         .where(Team.id == player.current_team_id)
-        #     ).all()
-        
         team = None
         if player.current_team_id:
-            team = session.get(Team, player.current_team_id)
-        
+            team = await session.get(Team, player.current_team_id)
+            # team = result2.first()  # <-- Notar los paréntesis en all()
+
         # Consulta específica para las estadísticas de este jugador
         stats_query = select(MatchStatistic).where(MatchStatistic.player_id == player.id)
-        stats = session.exec(stats_query).all()
-        
+        result_stats = await session.exec(stats_query)
+        stats = result_stats.all()
+
         # Calcular promedios si hay estadísticas
         if stats:
             avg = StatRead(

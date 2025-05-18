@@ -1,19 +1,22 @@
 from typing import List
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, case, desc, func, select
+from sqlmodel.ext.asyncio.session import AsyncSession
+
 
 from ..models import Match, MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, TopPerformer
-from ..database import get_session
+from ..deps import get_db
 
 router = APIRouter(
     prefix="/home",
     tags=["home"]
 )
 
+
 @router.get("/top-performers", response_model=List[TopPerformer])
-def read_top_performers(session: Session = Depends(get_session)):
+async def read_top_performers(session: AsyncSession = Depends(get_db)):
     try:
-        matchs = session.exec(
+        matchs = await session.exec(
             select(Match)
             .where(Match.home_score != None)
             .where(Match.away_score != None)
@@ -43,7 +46,10 @@ def read_top_performers(session: Session = Depends(get_session)):
                 select(
                     MatchStatistic,
                     total_expr,
+                    Player.id.label("player_id"),
                     Player.name.label("player_name"),
+                    Player.current_team_id.label("player_team_id"),
+                    Player.url_pic.label("player_url_pic"),
                     side_expr,
                 )
                 .join(Player, MatchStatistic.player_id == Player.id)
@@ -53,21 +59,21 @@ def read_top_performers(session: Session = Depends(get_session)):
             )
 
             # 4) Ejecutar y mapear resultados
-            rows = session.exec(stmt).all()
+            result = await session.exec(stmt)
+            rows = result.all()
 
-            for stat, total, player_name, side in rows:
+            for stat, total, player_id, player_name, player_team_id, player_url_pic, side in rows:
                 if (side == 'other'): continue
-                
-                # Carga lazy de match y team; o puedes hacer join si prefieres
-                match = session.get(Match, stat.match_id)
-                team  = session.get(Team, stat.player.current_team_id) if stat.player.current_team_id else None
+
+                match = matc  # Ya lo tienes
+                team = await session.get(Team, player_team_id) if player_team_id else None
 
                 performers.append(
                     TopPerformer(
-                        id         = stat.player_id,
+                        id         = player_id,
                         name       = player_name,
                         team       = TeamRead(full_name=team.full_name) if team else None,
-                        url_pic    = stat.player.url_pic,
+                        url_pic    = player_url_pic,
                         game_stats = StatRead(
                             points=stat.points or 0,
                             rebounds=stat.rebounds or 0,
