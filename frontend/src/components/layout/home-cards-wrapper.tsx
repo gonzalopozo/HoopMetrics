@@ -11,7 +11,7 @@ import { TopPerformer } from "@/types"
 
 
 export default async function CardsWrapper() {
-    const response = await axios.get<TopPerformer[]>('localhost:8000/home/top-performers')
+    const response = await axios.get<TopPerformer[]>('http://localhost:8000/home/top-performers')
     const topPerformers: TopPerformer[] = response.data
 
     return (

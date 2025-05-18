@@ -42,7 +42,7 @@ export function TopPerformersCard({ data } : { data: TopPerformer[] }) {
                                 </span>
                             </div>
                             <div className="text-xs text-muted-foreground">{player.team.full_name}</div>
-                            <div className="mt-1 text-sm font-medium text-primary">{`${player.points}PTS ${player.rebounds}REB ${player.assists}AST`}</div>
+                            <div className="mt-1 text-sm font-medium text-primary">{`${player.points} PTS | ${player.rebounds} REB | ${player.assists} AST`}</div>
                         </div>
                     </div>
                 ))}
