@@ -410,6 +410,8 @@ def read_top_performers(session: Session = Depends(get_session)):
             rows = session.exec(stmt).all()
 
             for stat, total, player_name, side in rows:
+                if (side == 'other'): continue
+                
                 # Carga lazy de match y team; o puedes hacer join si prefieres
                 match = session.get(Match, stat.match_id)
                 team  = session.get(Team, stat.player.current_team_id) if stat.player.current_team_id else None
