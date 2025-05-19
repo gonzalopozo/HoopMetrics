@@ -2,15 +2,15 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select, select
 
-from models import UserRole
+from .models import UserRole
 
-from deps import get_db, require_role
+from .deps import get_db, require_role
 
 
-from config import get_settings
-from database import engine
+from .config import get_settings
+from .database import engine
 
-from routers import home, debug, players, auth
+from .routers import home, debug, players, auth
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 

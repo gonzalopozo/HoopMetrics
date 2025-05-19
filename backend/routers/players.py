@@ -3,8 +3,8 @@ from sqlmodel import Session, desc, func, select
 from typing import List
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from deps import get_db
-from models import MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead
+from ..deps import get_db
+from ..models import MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead
 
 router = APIRouter(
     prefix="/players",
