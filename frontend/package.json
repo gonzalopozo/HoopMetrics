@@ -6,8 +6,7 @@
     "preinstall": "npx only-allow pnpm",
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
