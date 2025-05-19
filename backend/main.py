@@ -25,7 +25,7 @@ app.include_router(auth.router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[env.FRONTEND_URL],            # Permite todas las fuentes
+    allow_origins=['*'],            # Permite todas las fuentes
     allow_credentials=True,                      # Permite envío de cookies y cabeceras de autenticación
     allow_methods=["*"],                         # Permite todos los métodos HTTP
     allow_headers=["*"],                         # Permite todas las cabeceras
