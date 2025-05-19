@@ -15,12 +15,14 @@ const schema = z.object({
     password: z.string().min(6, { message: "La contraseña debe tener al menos 6 caracteres" }),
 });
 
+type LoginForm = z.infer<typeof schema>;
+
 export default function LoginPage() {
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-    } = useForm({
+    } = useForm<LoginForm>({
         resolver: zodResolver(schema),
     });
 
