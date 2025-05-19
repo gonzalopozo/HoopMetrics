@@ -21,14 +21,20 @@ export function middleware(req: NextRequest) {
         try {
             const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
             if (payload.role !== "admin") {
-                return new NextResponse("Forbidden", { status: 403 });
+                // Redirect non-admin users to a more friendly page
+                const url = req.nextUrl.clone();
+                url.pathname = "/"; // or a specific "access denied" page
+                return NextResponse.redirect(url);
             }
         } catch {
-            return new NextResponse("Invalid token", { status: 401 });
+            // Token parsing failed - redirect to signup
+            const url = req.nextUrl.clone();
+            url.pathname = "/login";
+            return NextResponse.redirect(url);
         }
     }
 
     return NextResponse.next();
 }
 
-export const config = { matcher: ["/protected/:path*"] };
+export const config = { matcher: ["/admin", "/admin/:path*"] };
