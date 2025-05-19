@@ -11,7 +11,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 interface DateRangePickerProps {
   dateRange: DateRange
-  onDateRangeChange: (range: DateRange) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onDateRangeChange: (range: any) => void
   className?: string
 }
 
