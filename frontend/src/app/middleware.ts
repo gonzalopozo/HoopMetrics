@@ -17,7 +17,7 @@ export function middleware(req: NextRequest) {
     }
 
     // Opcional: verificar rol desde JWT
-    if (pathname.startsWith("/protected/admin")) {
+    if (pathname.startsWith("/admin")) {
         try {
             const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
             if (payload.role !== "admin") {

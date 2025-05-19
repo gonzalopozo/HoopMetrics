@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react"
 import { MobileMenu } from "@/components/layout/mobile-menu"
 import { Logo } from "@/components/ui/logo"
 import { SearchBar } from "@/components/ui/search-bar"
+import Link from "next/link"
 
 export function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -20,12 +21,18 @@ export function Header() {
 
                 {/* Desktop Auth Buttons */}
                 <div className="hidden items-center gap-3 md:flex">
-                    <button className="rounded-lg border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent">
+                    <Link 
+                        className="rounded-lg border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent"
+                        href="/login"
+                    >
                         Log in
-                    </button>
-                    <button className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90">
+                    </Link>
+                    <Link 
+                        className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+                        href="/signup"
+                    >
                         Try HoopMetrics for free
-                    </button>
+                    </Link>
                 </div>
 
                 {/* Mobile Menu Button */}
