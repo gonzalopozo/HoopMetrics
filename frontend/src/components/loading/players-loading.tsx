@@ -28,6 +28,3 @@ export function PlayersLoading() {
         </div>
     )
 }
-
-// Import Skeleton component
-import { Skeleton } from "@/components/ui/skeleton"

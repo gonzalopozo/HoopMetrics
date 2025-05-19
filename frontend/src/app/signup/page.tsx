@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { BarChart2, Eye, EyeOff, Lock, Mail, User, ChevronDown, ArrowRight } from "lucide-react"
+import { BarChart2, Eye, EyeOff, Lock, Mail, User, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const schema = z.object({
@@ -58,16 +58,10 @@ export default function SignupPage() {
             setAuthError(null)
             await auth.signup(data)
             router.push("/protected/admin") // or '/'
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             setAuthError(err.message)
         }
-    }
-
-    const planDescriptions = {
-        free: "Basic stats and limited features",
-        premium: "Advanced stats and full features",
-        enterprise: "Custom solutions for teams",
-        admin: "System administration",
     }
 
     return (

@@ -8,7 +8,8 @@ import type { DateRange } from "react-day-picker"
 
 // Import a chart library like Chart.js or Recharts
 // For this example, we'll create a mock chart component
-function LineChart({ data, labels, colors }: any) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function LineChart({ labels, colors }: any) {
   return (
     <div className="h-[200px] w-full">
       {/* This would be replaced with an actual chart component */}
