@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
+// import { useState } from "react"
 import { AdminHeader } from "@/components/admin/admin-header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Search, Filter, Download, MoreHorizontal } from "lucide-react"
 
 export default function AdminSubscriptionsPage() {
-  const [isLoading, setIsLoading] = useState(false)
+  // const [isLoading, setIsLoading] = useState(false)
 
   // Sample subscription data
   const subscriptions = [

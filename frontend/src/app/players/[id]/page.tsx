@@ -48,6 +48,7 @@ interface Player {
 export default function PlayerDetailPage({ params }: { params: { id: string } }) {
     const [player, setPlayer] = useState<Player | null>(null)
     const [loading, setLoading] = useState(true)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [activeTab, setActiveTab] = useState("overview")
     const [selectedGameIndex, setSelectedGameIndex] = useState<number | null>(null)
 
@@ -124,6 +125,7 @@ export default function PlayerDetailPage({ params }: { params: { id: string } })
     const formatBirthDate = (dateString: string) => {
         try {
             return format(new Date(dateString), "MMMM d, yyyy")
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (e) {
             return dateString
         }
@@ -588,7 +590,8 @@ export default function PlayerDetailPage({ params }: { params: { id: string } })
 }
 
 // Stat Card Component
-function StatCard({ title, value, icon, isHighlight = false }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function StatCard({ title, value, icon, isHighlight = false }: any) {
     return (
         <div
             className={cn(

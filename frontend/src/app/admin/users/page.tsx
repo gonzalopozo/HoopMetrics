@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
+// import { useState } from "react"
 import { AdminHeader } from "@/components/admin/admin-header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Search, UserPlus, Filter, MoreHorizontal } from "lucide-react"
 
 export default function AdminUsersPage() {
-  const [isLoading, setIsLoading] = useState(false)
+  // const [isLoading, setIsLoading] = useState(false)
 
   // Sample user data
   const users = [
