@@ -10,6 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import axios from "axios"
+import { useParams } from "next/navigation"
+
 
 // Types for our player data
 interface PlayerStat {
@@ -45,7 +47,8 @@ interface Player {
     average_stats: PlayerStat
 }
 
-export default function PlayerDetailPage({ params }: { params: { id: string } }) {
+export default function PlayerDetailPage() {
+    const params = useParams<{ id: string }>()
     const [player, setPlayer] = useState<Player | null>(null)
     const [loading, setLoading] = useState(true)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
