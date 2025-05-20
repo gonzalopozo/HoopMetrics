@@ -222,7 +222,6 @@ class TeamDetailStats(BaseModel):  # Renombrado de TeamStats a TeamDetailStats
 
 class TeamDetail(BaseModel):
     id: int
-    rapidapi_id: Optional[int] = None
     full_name: str
     abbreviation: str
     conference: Optional[str] = None
