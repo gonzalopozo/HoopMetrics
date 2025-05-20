@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import func, select
 from typing import List
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy import literal
+from datetime import datetime
 
 from ..deps import get_db
-from ..models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats
+from ..models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats, TeamDetail
 
 router = APIRouter(
     prefix="/teams",
@@ -176,4 +177,184 @@ async def read_teams(session: AsyncSession = Depends(get_db)):
         
     except Exception as e:
         print(f"Error in read_teams: {str(e)}")
+        raise
+    
+@router.get("/{id}", response_model=TeamDetail)
+async def read_team(id: int, session: AsyncSession = Depends(get_db)):
+    try:
+        # 1. Get basic team information
+        team_query = select(Team).where(Team.id == id)
+        team_result = await session.exec(team_query)
+        team = team_result.first()
+        
+        if not team:
+            raise HTTPException(status_code=404, detail="Team not found")
+        
+        # 2. Get team stats (wins, losses, etc.)
+        home_games_query = select(
+            func.count(Match.id).filter(Match.home_score > Match.away_score).label("home_wins"),
+            func.count(Match.id).filter(Match.home_score < Match.away_score).label("home_losses")
+        ).where(Match.home_team_id == id, Match.home_score.is_not(None))
+        
+        away_games_query = select(
+            func.count(Match.id).filter(Match.away_score > Match.home_score).label("away_wins"),
+            func.count(Match.id).filter(Match.away_score < Match.home_score).label("away_losses")
+        ).where(Match.away_team_id == id, Match.away_score.is_not(None))
+        
+        home_result = await session.exec(home_games_query)
+        away_result = await session.exec(away_games_query)
+        
+        home_wins, home_losses = home_result.one()
+        away_wins, away_losses = away_result.one()
+        
+        total_wins = home_wins + away_wins
+        total_losses = home_losses + away_losses
+        
+        # 3. Get team players
+        players_query = select(Player).where(Player.current_team_id == id)
+        players_result = await session.exec(players_query)
+        team_players = players_result.all()
+        
+        # Get player IDs for querying stats
+        player_ids = [player.id for player in team_players]
+        
+        # Get all stats for these players in a single query
+        stats_query = select(MatchStatistic).where(MatchStatistic.player_id.in_(player_ids))
+        stats_result = await session.exec(stats_query)
+        all_stats = stats_result.all()
+        
+        # Group stats by player ID
+        stats_by_player = {}
+        for stat in all_stats:
+            if stat.player_id not in stats_by_player:
+                stats_by_player[stat.player_id] = []
+            stats_by_player[stat.player_id].append(stat)
+        
+        # Process players with their stats
+        processed_players = []
+        for player in team_players:
+            player_stats = stats_by_player.get(player.id, [])
+            
+            # Calculate averages if there are stats
+            if player_stats:
+                stats_dict = {
+                    "ppg": round(sum(s.points or 0 for s in player_stats) / len(player_stats), 1) 
+                         if any(s.points for s in player_stats) else 0.0,
+                    "rpg": round(sum(s.rebounds or 0 for s in player_stats) / len(player_stats), 1) 
+                         if any(s.rebounds for s in player_stats) else 0.0,
+                    "apg": round(sum(s.assists or 0 for s in player_stats) / len(player_stats), 1) 
+                         if any(s.assists for s in player_stats) else 0.0,
+                    "spg": round(sum(s.steals or 0 for s in player_stats) / len(player_stats), 1) 
+                         if any(s.steals for s in player_stats) else 0.0,
+                    "bpg": round(sum(s.blocks or 0 for s in player_stats) / len(player_stats), 1) 
+                         if any(s.blocks for s in player_stats) else 0.0,
+                    "mpg": round(sum(s.minutes_played or 0 for s in player_stats) / len(player_stats), 1) 
+                         if any(s.minutes_played for s in player_stats) else 0.0
+                }
+            else:
+                stats_dict = {
+                    "ppg": 0.0,
+                    "rpg": 0.0,
+                    "apg": 0.0,
+                    "spg": 0.0,
+                    "bpg": 0.0,
+                    "mpg": 0.0
+                }
+            
+            # Create TeamPlayerInfo object
+            processed_player = {
+                "id": player.id,
+                "name": player.name,
+                "position": player.position,
+                "number": player.number,
+                "url_pic": player.url_pic,
+                "stats": stats_dict
+            }
+            
+            processed_players.append(processed_player)
+        
+        # 4. Get recent and upcoming games
+        today = datetime.now().date()
+        
+        # Get all teams info for names
+        teams_query = select(Team.id, Team.full_name)
+        teams_result = await session.exec(teams_query)
+        team_names = {team.id: team.full_name for team in teams_result}
+        
+        # Recent games (past)
+        recent_games_query = (
+            select(Match)
+            .where((Match.home_team_id == id) | (Match.away_team_id == id))
+            .where(Match.date < today)
+            .where(Match.home_score.is_not(None))
+            .order_by(Match.date.desc())
+            .limit(10)
+        )
+        
+        # Upcoming games (future)
+        upcoming_games_query = (
+            select(Match)
+            .where((Match.home_team_id == id) | (Match.away_team_id == id))
+            .where(Match.date >= today)
+            .order_by(Match.date)
+            .limit(5)
+        )
+        
+        recent_games_result = await session.exec(recent_games_query)
+        upcoming_games_result = await session.exec(upcoming_games_query)
+        
+        recent_games = recent_games_result.all()
+        upcoming_games = upcoming_games_result.all()
+        
+        # Transform match objects to include required fields
+        processed_recent_games = []
+        for game in recent_games:
+            processed_recent_games.append({
+                "id": game.id,
+                "date": game.date,
+                "home_team_id": game.home_team_id,
+                "away_team_id": game.away_team_id,
+                "home_team_name": team_names.get(game.home_team_id, "Unknown Team"),
+                "away_team_name": team_names.get(game.away_team_id, "Unknown Team"),
+                "home_score": game.home_score,
+                "away_score": game.away_score,
+                "status": "completed"  # Since these are past games with scores
+            })
+        
+        processed_upcoming_games = []
+        for game in upcoming_games:
+            processed_upcoming_games.append({
+                "id": game.id,
+                "date": game.date,
+                "home_team_id": game.home_team_id,
+                "away_team_id": game.away_team_id,
+                "home_team_name": team_names.get(game.home_team_id, "Unknown Team"),
+                "away_team_name": team_names.get(game.away_team_id, "Unknown Team"),
+                "home_score": game.home_score,
+                "away_score": game.away_score,
+                "status": "scheduled"  # Since these are future games
+            })
+        
+        # 5. Compile and return the data
+        return {
+            "id": team.id,
+            "rapidapi_id": team.rapidapi_id,
+            "full_name": team.full_name,
+            "abbreviation": team.abbreviation,
+            "conference": team.conference,
+            "division": team.division,
+            "stadium": team.stadium,
+            "city": team.city,
+            "stats": {
+                "wins": total_wins,
+                "losses": total_losses,
+                # Add more stats here if needed
+            },
+            "players": processed_players,
+            "recent_games": processed_recent_games,
+            "upcoming_games": processed_upcoming_games
+        }
+        
+    except Exception as e:
+        print(f"Error in read_team: {str(e)}")
         raise

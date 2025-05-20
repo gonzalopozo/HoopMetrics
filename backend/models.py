@@ -5,6 +5,7 @@ from typing import List, Optional
 from datetime import date, datetime
 from enum import Enum  # <-- Añade esto
 from typing import TypedDict
+from pydantic import BaseModel
 
 
 
@@ -194,3 +195,53 @@ class TeamInfo(SQLModel):
     win_percentage: float
     standing: int
     stats: TeamStats
+
+class TeamPlayerInfo(BaseModel):
+    id: int
+    name: str
+    position: str | None
+    number: int | None
+    url_pic: str | None
+    stats: Optional[dict] = None
+
+class GameInfo(BaseModel):
+    id: int
+    date: date
+    home_team_id: int
+    away_team_id: int
+    home_team_name: str
+    away_team_name: str
+    home_score: Optional[int] = None
+    away_score: Optional[int] = None
+    status: str
+
+class TeamStats(BaseModel):
+    wins: int
+    losses: int
+    # Añade más campos según necesites
+
+class TeamDetail(BaseModel):
+    id: int
+    rapidapi_id: Optional[int] = None
+    full_name: str
+    abbreviation: str
+    conference: Optional[str] = None
+    division: Optional[str] = None
+    stadium: Optional[str] = None
+    city: Optional[str] = None
+    stats: TeamStats
+    players: List[TeamPlayerInfo]
+    recent_games: List[GameInfo]
+    upcoming_games: List[GameInfo]
+    
+class PlayerReadTeams(SQLModel):
+    id: int
+    name: str
+    birth_date: date
+    height: Optional[float] = None
+    weight: Optional[float] = None
+    position: Optional[str] = None
+    number: Optional[int] = None
+    team: Optional[TeamRead] = None
+    url_pic: Optional[str] = None
+    average_stats: Optional[StatRead] = None
