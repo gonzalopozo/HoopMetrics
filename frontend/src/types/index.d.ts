@@ -62,7 +62,7 @@ export interface TokenResponse {
 export interface Team {
     id: string
     name: string
-    logo: LucideIcon
+    logo?: LucideIcon
     // conference: string
     // division: string
     record: {
