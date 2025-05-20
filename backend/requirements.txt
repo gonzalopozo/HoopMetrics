@@ -5,6 +5,7 @@ bcrypt==4.3.0
 certifi==2025.4.26
 cffi==1.17.1
 click==8.1.8
+colorama==0.4.6
 cryptography==45.0.2
 dnspython==2.7.0
 ecdsa==0.19.1
@@ -46,6 +47,5 @@ typer==0.15.3
 typing-inspection==0.4.0
 typing_extensions==4.13.2
 uvicorn==0.34.2
-uvloop==0.21.0
 watchfiles==1.0.5
 websockets==15.0.1
