@@ -11,7 +11,7 @@ router = APIRouter(
     tags=["teams"]
 )
 
-@router.get("/teams", response_model=List[TeamInfo])
+@router.get("/", response_model=List[TeamInfo])
 async def read_teams(session: AsyncSession = Depends(get_db)):
     try:
         # Get all teams with a single query
