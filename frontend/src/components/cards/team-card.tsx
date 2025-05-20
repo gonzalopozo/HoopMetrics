@@ -10,8 +10,6 @@ import { Team } from "@/types"
 export function TeamCard({ id, name, logo, record, win_percentage, stats }: Team) {
     const [isHovered, setIsHovered] = useState(false)
 
-    const Logo = logo
-
     return (
         <div
             className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
@@ -20,13 +18,7 @@ export function TeamCard({ id, name, logo, record, win_percentage, stats }: Team
         >
             {/* Team Logo Section */}
             <div className="relative flex h-40 w-full items-center justify-center bg-accent/30 p-4">
-                <Logo
-                    // src={logo || "/placeholder.svg"}
-                    // alt={name}
-                    width={120}
-                    height={120}
-                    className="h-auto max-h-full w-auto max-w-full object-contain transition-transform duration-500 ease-out group-hover:scale-110"
-                />
+                {logo}
             </div>
 
             {/* Team Info Section */}
@@ -54,7 +46,7 @@ export function TeamCard({ id, name, logo, record, win_percentage, stats }: Team
                     </div>
                     <div className="text-center">
                         <div className="text-xs text-muted-foreground">Win %</div>
-                        <div className="text-base font-bold">{win_percentage}%</div>
+                        <div className="text-base font-bold">{win_percentage * 100}%</div>
                     </div>
                 </div>
 

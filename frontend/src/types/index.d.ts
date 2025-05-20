@@ -1,3 +1,5 @@
+import React from "react"
+
 export interface Player {
     id: string
     name: string
@@ -60,7 +62,7 @@ export interface TokenResponse {
 export interface Team {
     id: string
     name: string
-    logo?: JSX.Element
+    logo?: React.ReactNode
     // conference: string
     // division: string
     record: {
