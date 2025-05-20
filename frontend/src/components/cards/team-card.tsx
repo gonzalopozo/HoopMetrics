@@ -7,9 +7,8 @@ import { ArrowRight, BarChart2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Team } from "@/types"
 
-export function TeamCard({ id, name, logo, record, stats }: Team) {
+export function TeamCard({ id, name, logo, record, win_percentage, stats }: Team) {
     const [isHovered, setIsHovered] = useState(false)
-    const winPercentage = record.wins / (record.wins + record.losses)
 
     const Logo = logo
 
@@ -55,7 +54,7 @@ export function TeamCard({ id, name, logo, record, stats }: Team) {
                     </div>
                     <div className="text-center">
                         <div className="text-xs text-muted-foreground">Win %</div>
-                        <div className="text-base font-bold">{(winPercentage * 100).toFixed(1)}%</div>
+                        <div className="text-base font-bold">{win_percentage}%</div>
                     </div>
                 </div>
 

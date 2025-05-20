@@ -67,6 +67,7 @@ export interface Team {
         wins: number
         losses: number
     }
+    win_percentage: number
     standing: number
     stats: {
         ppg: number
