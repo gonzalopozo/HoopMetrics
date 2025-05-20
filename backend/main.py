@@ -10,7 +10,7 @@ from .deps import get_db, require_role
 from .config import get_settings
 from .database import engine
 
-from .routers import home, debug, players, auth
+from .routers import home, debug, players, auth, teams
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 
@@ -22,6 +22,7 @@ app.include_router(home.router)
 app.include_router(debug.router)
 app.include_router(players.router)
 app.include_router(auth.router)
+app.include_router(teams.router)
 
 app.add_middleware(
     CORSMiddleware,

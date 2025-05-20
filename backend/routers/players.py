@@ -11,7 +11,7 @@ router = APIRouter(
     tags=["players"]
 )
 
-    
+
 @router.get("/sortedbyppg/{page}", response_model=List[PlayerRead])
 async def read_players_sorted_by_ppg_paginated(page:int, session: AsyncSession = Depends(get_db)):
     try:

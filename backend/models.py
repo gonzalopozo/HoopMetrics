@@ -4,6 +4,7 @@ from sqlalchemy.types import Enum as PgEnum
 from typing import List, Optional
 from datetime import date, datetime
 from enum import Enum  # <-- Añade esto
+from typing import TypedDict
 
 
 
@@ -171,3 +172,25 @@ class User(UserBase, table=True):
             PgEnum(UserRole, name="user_role", create_type=False)
         )
     )
+
+class TeamRecord(TypedDict):
+    wins: int
+    losses: int
+
+class TeamStats(TypedDict):
+    ppg: float
+    rpg: float
+    apg: float
+    spg: float
+    bpg: float
+
+class TeamInfo(SQLModel):
+    id: int
+    name: str
+    # logo: LucideIcon
+    # conference: str
+    # division: str
+    record: TeamRecord
+    win_percentage: float
+    standing: int
+    stats: TeamStats
