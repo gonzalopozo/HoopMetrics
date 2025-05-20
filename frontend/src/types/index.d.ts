@@ -1,3 +1,5 @@
+import { LucideIcon } from "lucide-react"
+
 export interface Player {
     id: string
     name: string
@@ -55,4 +57,24 @@ export interface TokenResponse {
     token_type: "bearer";
     username: string;
     role: UserRole;
+}
+
+export interface Team {
+    id: string
+    name: string
+    logo: LucideIcon
+    // conference: string
+    // division: string
+    record: {
+        wins: number
+        losses: number
+    }
+    standing: number
+    stats: {
+        ppg: number
+        rpg: number
+        apg: number
+        spg: number
+        bpg: number
+    }
 }
