@@ -6,7 +6,7 @@ from sqlalchemy import literal
 from datetime import datetime
 
 from ..deps import get_db
-from ..models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats, TeamDetail
+from ..models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats, TeamDetail, TeamDetailStats
 
 router = APIRouter(
     prefix="/teams",
@@ -345,11 +345,11 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
             "division": team.division,
             "stadium": team.stadium,
             "city": team.city,
-            "stats": {
-                "wins": total_wins,
-                "losses": total_losses,
-                # Add more stats here if needed
-            },
+            "stats": TeamDetailStats(
+                wins=total_wins,
+                losses=total_losses,
+                # Añade más campos si necesitas
+            ),
             "players": processed_players,
             "recent_games": processed_recent_games,
             "upcoming_games": processed_upcoming_games

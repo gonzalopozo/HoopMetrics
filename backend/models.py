@@ -215,7 +215,7 @@ class GameInfo(BaseModel):
     away_score: Optional[int] = None
     status: str
 
-class TeamStats(BaseModel):
+class TeamDetailStats(BaseModel):  # Renombrado de TeamStats a TeamDetailStats
     wins: int
     losses: int
     # Añade más campos según necesites
@@ -229,7 +229,7 @@ class TeamDetail(BaseModel):
     division: Optional[str] = None
     stadium: Optional[str] = None
     city: Optional[str] = None
-    stats: TeamStats
+    stats: TeamDetailStats  # Cambiado de TeamStats a TeamDetailStats
     players: List[TeamPlayerInfo]
     recent_games: List[GameInfo]
     upcoming_games: List[GameInfo]
