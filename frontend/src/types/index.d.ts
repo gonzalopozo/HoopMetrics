@@ -56,3 +56,24 @@ export interface TokenResponse {
     username: string;
     role: UserRole;
 }
+
+export interface Team {
+    id: string
+    name: string
+    logo?: JSX.Element
+    // conference: string
+    // division: string
+    record: {
+        wins: number
+        losses: number
+    }
+    win_percentage: number
+    standing: number
+    stats: {
+        ppg: number
+        rpg: number
+        apg: number
+        spg: number
+        bpg: number
+    }
+}
