@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlmodel import func, select
 from typing import List
 from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlalchemy import literal
 
 from ..deps import get_db
 from ..models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats
@@ -55,20 +56,81 @@ async def read_teams(session: AsyncSession = Depends(get_db)):
             team_data[team_id]["wins"] += wins
             team_data[team_id]["losses"] += losses
         
-        # Get team stats with a single query for all teams
-        stats_query = select(
-            Player.current_team_id,
-            func.avg(MatchStatistic.points).label("ppg"),
-            func.avg(MatchStatistic.rebounds).label("rpg"),
-            func.avg(MatchStatistic.assists).label("apg"),
-            func.avg(MatchStatistic.steals).label("spg"),
-            func.avg(MatchStatistic.blocks).label("bpg")
-        ).join(
-            MatchStatistic, MatchStatistic.player_id == Player.id
-        ).where(
-            Player.current_team_id.in_(team_ids)
-        ).group_by(
-            Player.current_team_id
+        # Replace the existing stats_query with this implementation
+        # First, create subqueries that sum player stats by team and match
+        home_stats_query = (
+            select(
+                Match.home_team_id.label("team_id"),
+                Match.id.label("match_id"),
+                func.sum(MatchStatistic.points).label("points"),
+                func.sum(MatchStatistic.rebounds).label("rebounds"),
+                func.sum(MatchStatistic.assists).label("assists"),
+                func.sum(MatchStatistic.steals).label("steals"),
+                func.sum(MatchStatistic.blocks).label("blocks")
+            )
+            .join(MatchStatistic, MatchStatistic.match_id == Match.id)
+            .join(Player, MatchStatistic.player_id == Player.id)
+            .where(Player.current_team_id == Match.home_team_id)
+            .where(Match.home_team_id.in_(team_ids))
+            .where(Match.home_score.is_not(None))
+            .group_by(Match.home_team_id, Match.id)
+            .subquery()
+        )
+
+        away_stats_query = (
+            select(
+                Match.away_team_id.label("team_id"),
+                Match.id.label("match_id"),
+                func.sum(MatchStatistic.points).label("points"),
+                func.sum(MatchStatistic.rebounds).label("rebounds"),
+                func.sum(MatchStatistic.assists).label("assists"),
+                func.sum(MatchStatistic.steals).label("steals"),
+                func.sum(MatchStatistic.blocks).label("blocks")
+            )
+            .join(MatchStatistic, MatchStatistic.match_id == Match.id)
+            .join(Player, MatchStatistic.player_id == Player.id)
+            .where(Player.current_team_id == Match.away_team_id)
+            .where(Match.away_team_id.in_(team_ids))
+            .where(Match.away_score.is_not(None))
+            .group_by(Match.away_team_id, Match.id)
+            .subquery()
+        )
+
+        # Combine both subqueries and calculate averages
+        combined_stats = (
+            select(
+                func.coalesce(home_stats_query.c.team_id, away_stats_query.c.team_id).label("team_id"),
+                home_stats_query.c.points,
+                home_stats_query.c.rebounds,
+                home_stats_query.c.assists,
+                home_stats_query.c.steals,
+                home_stats_query.c.blocks
+            )
+            .select_from(home_stats_query.outerjoin(away_stats_query, literal(False)))
+            .union_all(
+                select(
+                    func.coalesce(away_stats_query.c.team_id, home_stats_query.c.team_id).label("team_id"),
+                    away_stats_query.c.points,
+                    away_stats_query.c.rebounds,
+                    away_stats_query.c.assists,
+                    away_stats_query.c.steals,
+                    away_stats_query.c.blocks
+                )
+                .select_from(away_stats_query.outerjoin(home_stats_query, literal(False)))
+            )
+        ).subquery()
+
+        # Final query to get team averages
+        stats_query = (
+            select(
+                combined_stats.c.team_id,
+                func.avg(combined_stats.c.points).label("ppg"),
+                func.avg(combined_stats.c.rebounds).label("rpg"),
+                func.avg(combined_stats.c.assists).label("apg"),
+                func.avg(combined_stats.c.steals).label("spg"),
+                func.avg(combined_stats.c.blocks).label("bpg")
+            )
+            .group_by(combined_stats.c.team_id)
         )
         
         stats_results = await session.exec(stats_query)
@@ -98,7 +160,7 @@ async def read_teams(session: AsyncSession = Depends(get_db)):
                 id=team.id,
                 name=team.full_name,
                 record=TeamRecord(wins=wins, losses=losses),
-                win_percentage=round(win_percentage, 1),
+                win_percentage=round(win_percentage, 3),
                 standing=0,  # We'll update this later
                 stats=TeamStats(**stats)
             )

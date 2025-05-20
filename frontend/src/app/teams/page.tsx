@@ -4,6 +4,8 @@ import type React from "react"
 import { TeamCard } from "@/components/cards/team-card"
 import axios from "axios"
 import { Team } from "@/types"
+import { get } from "http"
+import { getNBALogo } from "@/lib/utils"
 // import { TeamsLoading } from "@/components/loading/teams-loading"
 // import { Search, Filter } from "lucide-react"
 
@@ -60,6 +62,10 @@ export default async function TeamsPage() {
         `http://localhost:8000/teams`
     )
     const teams = teamsRequest.data
+
+    teams.forEach((team) => {
+        team.logo = getNBALogo(team.name, { width: 120, height: 120, className: "h-auto max-h-full w-auto max-w-full object-contain transition-transform duration-500 ease-out group-hover:scale-110" })
+    })
 
     return (
         <div>
