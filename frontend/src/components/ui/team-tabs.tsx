@@ -41,67 +41,93 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {team.recent_games.slice(0, 5).map((game) => (
-                                    <div
-                                        key={game.id}
-                                        className="flex items-center justify-between rounded-lg border border-border p-3"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className="text-sm font-medium">{new Date(game.date).toLocaleDateString()}</div>
-                                            <div className="flex items-center gap-2">
+                                {team.recent_games.slice(0, 5).map((game) => {
+                                    const isHomeTeam = game.home_team_id === team.id;
+                                    const currentTeamName = team.full_name;
+                                    const opponentTeamName = isHomeTeam ? game.away_team_name : game.home_team_name;
 
-                                                <span className={cn("font-semibold", game.home_team_id === team.id && "text-primary")}>
-                                                    {team.abbreviation}
-                                                </span>
-                                                <div className="flex items-center justify-center h-10 w-10">
-                                                    {getNBALogo(game.home_team_name, { size: 40, style: { width: '100%', height: '100%' } }) || (
-                                                        <Image
-                                                            src="/placeholder.svg"
-                                                            alt={game.home_team_name}
-                                                            width={40}
-                                                            height={40}
-                                                            className="object-contain"
-                                                        />
-                                                    )}
+                                    return (
+                                        <div
+                                            key={game.id}
+                                            className="flex items-center justify-between rounded-lg border border-border p-3"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="text-sm font-medium">{new Date(game.date).toLocaleDateString()}</div>
+                                                <div className="flex items-center gap-2">
+                                                    {/* Home team */}
+                                                    <div className="flex items-center">
+                                                        <span className={`font-semibold ${isHomeTeam ? "text-primary" : ""} min-w-[40px] text-right`}>
+                                                            {isHomeTeam ? team.abbreviation : game.rival_team_abbreviation}
+                                                        </span>
+                                                        
+                                                        <div className="flex items-center justify-center h-10 w-10 mx-1">
+                                                            {isHomeTeam ? (
+                                                                // Current team is home
+                                                                getNBALogo(currentTeamName, { size: 40, style: { width: '100%', height: '100%' } }) || (
+                                                                    <Image
+                                                                        src="/placeholder.svg"
+                                                                        alt={currentTeamName}
+                                                                        width={40}
+                                                                        height={40}
+                                                                        className="object-contain"
+                                                                    />
+                                                                )
+                                                            ) : (
+                                                                // Opponent is home
+                                                                getNBALogo(opponentTeamName, { size: 40, style: { width: '100%', height: '100%' } }) || (
+                                                                    <Image
+                                                                        src="/placeholder.svg"
+                                                                        alt={opponentTeamName}
+                                                                        width={40}
+                                                                        height={40}
+                                                                        className="object-contain"
+                                                                    />
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <span className="text-muted-foreground mx-1 flex items-center">vs</span>
+
+                                                    {/* Away team */}
+                                                    <div className="flex items-center">
+                                                        <div className="flex items-center justify-center h-10 w-10 mx-1">
+                                                            {isHomeTeam ? (
+                                                                // Opponent is away
+                                                                getNBALogo(opponentTeamName, { size: 40, style: { width: '100%', height: '100%' } }) || (
+                                                                    <Image
+                                                                        src="/placeholder.svg"
+                                                                        alt={opponentTeamName}
+                                                                        width={40}
+                                                                        height={40}
+                                                                        className="object-contain"
+                                                                    />
+                                                                )
+                                                            ) : (
+                                                                // Current team is away
+                                                                getNBALogo(currentTeamName, { size: 40, style: { width: '100%', height: '100%' } }) || (
+                                                                    <Image
+                                                                        src="/placeholder.svg"
+                                                                        alt={currentTeamName}
+                                                                        width={40}
+                                                                        height={40}
+                                                                        className="object-contain"
+                                                                    />
+                                                                )
+                                                            )}
+                                                        </div>
+                                                        <span className={`font-semibold ${!isHomeTeam ? "text-primary" : ""} min-w-[40px] text-left`}>
+                                                            {isHomeTeam ? game.rival_team_abbreviation : team.abbreviation}
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                                {/* {game.home_team_logo ? (game.home_team_logo) : (<Image
-                                                    src="/placeholder.svg"
-                                                    alt={game.home_team_name}
-                                                    width={24}
-                                                    height={24}
-                                                    className="h-6 w-6 object-contain"
-                                                />)} */}
-
-                                                <span className="text-muted-foreground">vs</span>
-                                                {/* {game.away_team_logo ? (game.away_team_logo) : (<Image
-                                                    src="/placeholder.svg"
-                                                    alt={game.away_team_name}
-                                                    width={24}
-                                                    height={24}
-                                                    className="h-6 w-6 object-contain"
-                                                />)} */}
-                                                <div className="flex items-center justify-center h-10 w-10">
-                                                    {getNBALogo(game.away_team_name, { size: 40, style: { width: '100%', height: '100%' } }) || (
-                                                        <Image
-                                                            src="/placeholder.svg"
-                                                            alt={game.away_team_name}
-                                                            width={40}
-                                                            height={40}
-                                                            className="object-contain"
-                                                        />
-                                                    )}
-                                                </div>
-
-                                                <span className={cn("font-semibold", game.away_team_id === team.id && "text-primary")}>
-                                                    {game.rival_team_abbreviation}
-                                                </span>
+                                            </div>
+                                            <div className="font-bold">
+                                                {game.home_score} - {game.away_score}
                                             </div>
                                         </div>
-                                        <div className="font-bold">
-                                            {game.home_score} - {game.away_score}
-                                        </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </CardContent>
                     </Card>
