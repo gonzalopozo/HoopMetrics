@@ -1,3 +1,4 @@
+from operator import itemgetter
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import func, select
 from typing import List, Dict, Any, Optional as OptionalType
@@ -332,14 +333,15 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
             }
             
             processed_players.append(processed_player)
-        
+
+        processed_players = sorted(processed_players, key=lambda d: d['stats']['ppg'], reverse=True)  # Sort players by PPG
         # 4. Get recent and upcoming games
         today = datetime.now().date()
         
         # Get all teams info for names
-        teams_query = select(Team.id, Team.full_name)
+        teams_query = select(Team.id, Team.full_name, Team.abbreviation)
         teams_result = await session.exec(teams_query)
-        team_names = {team.id: team.full_name for team in teams_result}
+        team_info = {team.id: {"name": team.full_name, "abbreviation": team.abbreviation} for team in teams_result}
         
         # Recent games (past)
         recent_games_query = (
@@ -369,14 +371,19 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
         # Transform match objects to include required fields
         processed_recent_games = []
         for game in recent_games:
+            # Determine if the queried team is home or away
+            is_home = game.home_team_id == id
+            rival_team_id = game.away_team_id if is_home else game.home_team_id
+            
             processed_recent_games.append({
                 "id": game.id,
                 "date": str(game.date),  # Convert to string for frontend
                 "season": game.season,
                 "home_team_id": game.home_team_id,
                 "away_team_id": game.away_team_id,
-                "home_team_name": team_names.get(game.home_team_id, "Unknown Team"),
-                "away_team_name": team_names.get(game.away_team_id, "Unknown Team"),
+                "home_team_name": team_info.get(game.home_team_id, {"name": "Unknown Team"})["name"],
+                "away_team_name": team_info.get(game.away_team_id, {"name": "Unknown Team"})["name"],
+                "rival_team_abbreviation": team_info.get(rival_team_id, {"abbreviation": "UNK"})["abbreviation"],
                 "home_score": game.home_score or 0,
                 "away_score": game.away_score or 0,
                 "status": "completed"  # Since these are past games with scores
@@ -384,14 +391,19 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
         
         processed_upcoming_games = []
         for game in upcoming_games:
+            # Determine if the queried team is home or away
+            is_home = game.home_team_id == id
+            rival_team_id = game.away_team_id if is_home else game.home_team_id
+            
             processed_upcoming_games.append({
                 "id": game.id,
                 "date": str(game.date),  # Convert to string for frontend
                 "season": game.season,
                 "home_team_id": game.home_team_id,
                 "away_team_id": game.away_team_id,
-                "home_team_name": team_names.get(game.home_team_id, "Unknown Team"),
-                "away_team_name": team_names.get(game.away_team_id, "Unknown Team"),
+                "home_team_name": team_info.get(game.home_team_id, {"name": "Unknown Team"})["name"],
+                "away_team_name": team_info.get(game.away_team_id, {"name": "Unknown Team"})["name"],
+                "rival_team_abbreviation": team_info.get(rival_team_id, {"abbreviation": "UNK"})["abbreviation"],
                 "home_score": game.home_score or 0,
                 "away_score": game.away_score or 0,
                 "status": "scheduled"  # Since these are future games
