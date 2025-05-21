@@ -211,6 +211,7 @@ class GameInfo(BaseModel):
     away_team_id: int
     home_team_name: str
     away_team_name: str
+    rival_team_abbreviation: str
     home_score: Optional[int] = None
     away_score: Optional[int] = None
     status: str
