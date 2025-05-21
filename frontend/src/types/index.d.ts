@@ -137,6 +137,7 @@ interface TeamGame {
     home_team_logo?: React.ReactNode
     away_team_id: number
     away_team_logo?: React.ReactNode
+    rival_team_abbreviation: string
     home_team_name: string
     away_team_name: string
     home_score: number

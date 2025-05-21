@@ -12,7 +12,7 @@ import {
 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+import { cn, getNBALogo } from "@/lib/utils"
 import { TeamDetails } from "@/types"
 
 export default function TeamTabs({ team }: { team: TeamDetails }) {
@@ -50,28 +50,50 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                             <div className="text-sm font-medium">{new Date(game.date).toLocaleDateString()}</div>
                                             <div className="flex items-center gap-2">
 
-                                                {game.home_team_logo ? (game.home_team_logo) : (<Image
+                                                <span className={cn("font-semibold", game.home_team_id === team.id && "text-primary")}>
+                                                    {team.abbreviation}
+                                                </span>
+                                                <div className="flex items-center justify-center h-10 w-10">
+                                                    {getNBALogo(game.home_team_name, { size: 40, style: { width: '100%', height: '100%' } }) || (
+                                                        <Image
+                                                            src="/placeholder.svg"
+                                                            alt={game.home_team_name}
+                                                            width={40}
+                                                            height={40}
+                                                            className="object-contain"
+                                                        />
+                                                    )}
+                                                </div>
+                                                {/* {game.home_team_logo ? (game.home_team_logo) : (<Image
                                                     src="/placeholder.svg"
                                                     alt={game.home_team_name}
                                                     width={24}
                                                     height={24}
                                                     className="h-6 w-6 object-contain"
-                                                />)}
+                                                />)} */}
 
-                                                <span className={cn("font-semibold", game.home_team_id === team.id && "text-primary")}>
-                                                    {game.home_team_name}
-                                                </span>
                                                 <span className="text-muted-foreground">vs</span>
-                                                {game.away_team_logo ? (game.away_team_logo) : (
-                                                    <Image
-                                                        src="/placeholder.svg"
-                                                        alt={game.away_team_name}
-                                                        width={24}
-                                                        height={24}
-                                                        className="h-6 w-6 object-contain"
-                                                    />)}
+                                                {/* {game.away_team_logo ? (game.away_team_logo) : (<Image
+                                                    src="/placeholder.svg"
+                                                    alt={game.away_team_name}
+                                                    width={24}
+                                                    height={24}
+                                                    className="h-6 w-6 object-contain"
+                                                />)} */}
+                                                <div className="flex items-center justify-center h-10 w-10">
+                                                    {getNBALogo(game.away_team_name, { size: 40, style: { width: '100%', height: '100%' } }) || (
+                                                        <Image
+                                                            src="/placeholder.svg"
+                                                            alt={game.away_team_name}
+                                                            width={40}
+                                                            height={40}
+                                                            className="object-contain"
+                                                        />
+                                                    )}
+                                                </div>
+
                                                 <span className={cn("font-semibold", game.away_team_id === team.id && "text-primary")}>
-                                                    {game.away_team_name}
+                                                    {game.rival_team_abbreviation}
                                                 </span>
                                             </div>
                                         </div>
@@ -249,7 +271,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                                 <div className="font-medium">{game.home_team_name}</div>
                                                 <div className="text-xs text-muted-foreground">Home</div>
                                             </div>
-                                            {game.home_team_logo ? (game.home_team_logo) : (
+                                            {/* {game.home_team_logo ? (game.home_team_logo) : (
                                                 <Image
                                                     src="/placeholder.svg"
                                                     alt={game.home_team_name}
@@ -257,9 +279,9 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                                     height={40}
                                                     className="h-10 w-10 object-contain"
                                                 />
-                                            )}
+                                            )} */}
                                             <div className="text-center text-lg font-bold text-muted-foreground">VS</div>
-                                            {game.away_team_logo ? (game.away_team_logo) : (
+                                            {/* {game.away_team_logo ? (game.away_team_logo) : (
                                                 <Image
                                                     src="/placeholder.svg"
                                                     alt={game.away_team_name}
@@ -267,7 +289,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                                     height={40}
                                                     className="h-10 w-10 object-contain"
                                                 />
-                                            )}
+                                            )} */}
                                             <div className="text-left">
                                                 <div className="font-medium">{game.away_team_name}</div>
                                                 <div className="text-xs text-muted-foreground">Away</div>
@@ -367,7 +389,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                         <div className="h-2 w-full overflow-hidden rounded-full bg-accent">
                                             <div
                                                 className="h-full rounded-full bg-primary"
-                                                style={{ width: `${(team.stats.ppg / 130) * 100}%` }}
+                                                style={{ width: `${(team.stats.ppg / 125) * 100}%` }}
                                             />
                                         </div>
                                     </div>
@@ -430,7 +452,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                         <div className="h-2 w-full overflow-hidden rounded-full bg-accent">
                                             <div
                                                 className="h-full rounded-full bg-red-500"
-                                                style={{ width: `${(team.stats.oppg / 130) * 100}%` }}
+                                                style={{ width: `${(team.stats.oppg / 125) * 100}%` }}
                                             />
                                         </div>
                                     </div>
@@ -456,7 +478,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                         <div className="h-2 w-full overflow-hidden rounded-full bg-accent">
                                             <div
                                                 className="h-full rounded-full bg-green-500"
-                                                style={{ width: `${(team.stats.spg / 10) * 100}%` }}
+                                                style={{ width: `${(team.stats.spg / 12) * 100}%` }}
                                             />
                                         </div>
                                     </div>
