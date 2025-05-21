@@ -10,7 +10,7 @@ import {
     TrendingDown,
     Activity,
 } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn, getNBALogo } from "@/lib/utils"
 import { TeamDetails } from "@/types"
 import TeamTabs from "@/components/ui/team-tabs"
 import axios from "axios"
@@ -72,14 +72,7 @@ export default async function TeamDetailPage({ params }: { params: { id: string 
                 <div className="flex flex-col md:flex-row items-center p-6 md:p-8">
                     {/* Team Logo */}
                     <div className="relative h-48 w-48 md:h-56 md:w-56 mb-6 md:mb-0 md:mr-8 flex-shrink-0">
-                        <Image
-                            src={team.logo || "/placeholder.svg"}
-                            alt={team.full_name}
-                            width={224}
-                            height={224}
-                            className="object-contain"
-                            priority
-                        />
+                        {getNBALogo(team.full_name, { className: "absolute inset-0 h-full w-full" })}
                     </div>
 
                     {/* Team Info */}

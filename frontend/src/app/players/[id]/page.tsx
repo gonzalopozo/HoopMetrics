@@ -5,6 +5,10 @@ import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import PlayerTabs from "@/components/ui/player-tabs"  // We'll create this client component
 import axios from "axios"
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
 // Types for our player data
 interface PlayerStat {
