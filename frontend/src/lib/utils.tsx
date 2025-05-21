@@ -65,8 +65,7 @@ export function getNBALogo(teamName: string, props: Record<string, any> = {}) {
   const componentName = teamAbbr
 
   // Access the component from the NBALogos object
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const LogoComponent = (NBALogos as any)[componentName]
+  const LogoComponent: React.ComponentType<any> = (NBALogos as any)[componentName]
 
   if (LogoComponent) {
     return <LogoComponent { ...props } />

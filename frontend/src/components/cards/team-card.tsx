@@ -46,7 +46,7 @@ export function TeamCard({ id, name, logo, record, win_percentage, stats }: Team
                     </div>
                     <div className="text-center">
                         <div className="text-xs text-muted-foreground">Win %</div>
-                        <div className="text-base font-bold">{win_percentage * 100}%</div>
+                        <div className="text-base font-bold">{(win_percentage * 100).toFixed(1)}%</div>
                     </div>
                 </div>
 

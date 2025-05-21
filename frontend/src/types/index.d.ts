@@ -79,3 +79,67 @@ export interface Team {
         bpg: number
     }
 }
+
+interface TeamDetails {
+    id: number
+    full_name: string
+    abbreviation: string
+    conference: string
+    division: string
+    stadium: string
+    city: string
+    logo: string
+    stats: {
+        wins: number
+        losses: number
+        conference_rank: number | null
+        ppg: number
+        oppg: number
+        rpg: number
+        apg: number
+        spg: number
+        bpg: number
+        topg: number
+        fgp: number
+        tpp: number
+        ftp: number
+    }
+    players: TeamPlayer[]
+    recent_games: TeamGame[]
+    upcoming_games: TeamGame[]
+    championships: number[] | null
+    founded: number | null
+}
+
+interface TeamPlayer {
+    id: number
+    name: string
+    height: number
+    weight: number
+    position: string
+    number: number
+    url_pic: string
+    stats: {
+        ppg: number
+        rpg: number
+        apg: number
+        spg: number
+        bpg: number
+        mpg: number
+    }
+}
+
+interface TeamGame {
+    id: number
+    date: string
+    season: string | null
+    home_team_id: number
+    home_team_logo?: React.ReactNode
+    away_team_id: number
+    away_team_logo?: React.ReactNode
+    home_team_name: string
+    away_team_name: string
+    home_score: number
+    away_score: number
+    status: "completed" | "scheduled"
+}
