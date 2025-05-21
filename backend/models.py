@@ -154,7 +154,7 @@ class TopPerformer(SQLModel):
 class UserRole(str, Enum):
     free = "free"
     premium = "premium"
-    enterprise = "enterprise"
+    ultimate = "ultimate"
     admin = "admin"
 
 class UserBase(SQLModel):

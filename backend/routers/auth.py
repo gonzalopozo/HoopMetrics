@@ -38,7 +38,8 @@ async def signup(data: SignUpRequest, db: AsyncSession = Depends(get_db)):
     return TokenResponse(
         access_token=token,
         username=user.username,
-        role=user.role
+        role=user.role,
+        email=user.email
     )
 
 @router.post("/login", response_model=TokenResponse)
@@ -50,5 +51,6 @@ async def login(form_data: LoginRequest, db: AsyncSession = Depends(get_db)):
     return TokenResponse(
         access_token=token,
         username=user.username,
-        role=user.role
+        role=user.role,
+        email=user.email
     )
