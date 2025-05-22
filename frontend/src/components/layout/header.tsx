@@ -9,10 +9,39 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
+export class AppUser {
+    _name: string
+    _email: string
+    _role: string
+
+    constructor(name: string, email: string, role: string) {
+        this._name = name
+        this._email = email
+        this._role = role
+    }
+
+    get name() {
+        return this._name
+    }
+
+    get email() {
+        return this._email
+    }
+
+    get role() {
+        return this._role
+    }
+
+
+    public getInitials(): string {
+        return this._name[0]?.toUpperCase();
+    }
+}
+
 export function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [isLoggedIn, setIsLoggedIn] = useState(false)
-    const [user, setUser] = useState({ name: "", email: "", role: "", initials: "U" })
+    const [user, setUser] = useState(new AppUser("", "", ""))
     const [isLoading, setIsLoading] = useState(true) // Add loading state
     const router = useRouter()
 
@@ -29,21 +58,21 @@ export function Header() {
             // Decode JWT token to get user info
             try {
                 const payload = JSON.parse(atob(token.split('.')[1]))
-                const name = payload.name || 'User'
-                setUser({
-                    name: name,
-                    email: payload.email || '',
-                    role: payload.role || 'free',
-                    initials: name.split(' ').map(n => n[0]).join('').toUpperCase()
-                })
+                console.log('Decoded payload:', payload)
+                const name = payload.username 
+                setUser(new AppUser(
+                    name,
+                    payload.email,
+                    payload.role
+                ))
             } catch (error) {
                 console.error('Error parsing token:', error)
             }
         } else {
             setIsLoggedIn(false)
         }
-        
-        setIsLoading(false) // Set loading to false after auth check
+
+        setIsLoading(false) // Set loading to false after checking token
     }, [])
 
     const handleLogout = () => {
@@ -72,7 +101,7 @@ export function Header() {
                     ) : isLoggedIn ? (
                         // When logged in
                         <div className="flex items-center gap-3">
-                            {(user.role !== 'ultimate' && user.role !== 'admin') && (
+                            {(user.role !== 'premium' && user.role !== 'ultimate' && user.role !== 'admin') && (
                                 <Link
                                     href="/upgrade"
                                     className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
@@ -83,12 +112,12 @@ export function Header() {
                             <div className="flex items-center gap-3">
                                 <Avatar>
                                     {/* <AvatarImage src="/placeholder.svg?height=32&width=32" alt={user.name} /> */}
-                                    <AvatarFallback>{user.initials}</AvatarFallback>
+                                    <AvatarFallback>{user.getInitials()}</AvatarFallback>
                                 </Avatar>
                             </div>
                             <button
                                 onClick={handleLogout}
-                                className="flex items-center gap-2 rounded-lg border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent"
+                                className="flex items-center gap-2 rounded-lg border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent cursor-pointer"
                             >
                                 <LogOut className="h-4 w-4" />
                                 Log out

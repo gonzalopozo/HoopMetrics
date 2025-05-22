@@ -1,17 +1,13 @@
 import Link from "next/link"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { TrendingUp, Users, Table, Calendar, Award, Star, Bell, LogOut } from "lucide-react"
+import { AppUser } from "@/components/layout/header";
 
 // Add isLoading to the interface props
 interface MobileMenuProps {
     isLoading: boolean; // Add this line
     isLoggedIn: boolean;
-    user?: {
-        name: string;
-        email: string;
-        role: string;
-        initials: string;
-    };
+    user?: AppUser;
     onLogout: () => void;
 }
 
@@ -82,7 +78,7 @@ export function MobileMenu({ isLoading, isLoggedIn, user, onLogout }: MobileMenu
                                 <div className="flex items-center gap-3">
                                     <Avatar>
                                         <AvatarImage src="/placeholder.svg?height=32&width=32" alt={user?.name || "User"} />
-                                        <AvatarFallback>{user?.initials || "U"}</AvatarFallback>
+                                        <AvatarFallback>{user?.getInitials()}</AvatarFallback>
                                     </Avatar>
                                     <div className="text-sm font-medium">{user?.name || "User"}</div>
                                 </div>
