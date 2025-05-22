@@ -2,7 +2,9 @@ import Link from "next/link"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { TrendingUp, Users, Table, Calendar, Award, Star, Bell, LogOut } from "lucide-react"
 
+// Add isLoading to the interface props
 interface MobileMenuProps {
+    isLoading: boolean; // Add this line
     isLoggedIn: boolean;
     user?: {
         name: string;
@@ -13,7 +15,7 @@ interface MobileMenuProps {
     onLogout: () => void;
 }
 
-export function MobileMenu({ isLoggedIn, user, onLogout }: MobileMenuProps) {
+export function MobileMenu({ isLoading, isLoggedIn, user, onLogout }: MobileMenuProps) {
     return (
         <div className="fixed inset-0 top-[57px] z-20 bg-background md:hidden">
             <nav className="flex flex-col p-4">
@@ -56,7 +58,10 @@ export function MobileMenu({ isLoggedIn, user, onLogout }: MobileMenuProps) {
 
                 {/* Auth section */}
                 <div className="mt-4 space-y-3">
-                    {!isLoggedIn ? (
+                    {isLoading ? (
+                        // Show skeleton during loading
+                        <div className="h-10 w-full animate-pulse rounded-lg bg-accent"></div>
+                    ) : !isLoggedIn ? (
                         <>
                             <Link 
                                 className="block rounded-lg border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent"
@@ -82,7 +87,7 @@ export function MobileMenu({ isLoggedIn, user, onLogout }: MobileMenuProps) {
                                     <div className="text-sm font-medium">{user?.name || "User"}</div>
                                 </div>
                             </div>
-                            {user?.role !== 'premium' && (
+                            {(user?.role !== 'ultimate' && user?.role !== 'admin') && (
                                 <Link 
                                     href="/upgrade" 
                                     className="block w-full rounded-lg bg-primary px-4 py-2 text-center text-sm font-medium text-primary-foreground transition hover:bg-primary/90"

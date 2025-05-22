@@ -5,7 +5,7 @@ import { Menu, X, User, LogOut } from "lucide-react"
 import { MobileMenu } from "@/components/layout/mobile-menu"
 import { Logo } from "@/components/ui/logo"
 import { SearchBar } from "@/components/ui/search-bar"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar" // Add these imports
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -13,6 +13,7 @@ export function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [user, setUser] = useState({ name: "", email: "", role: "", initials: "U" })
+    const [isLoading, setIsLoading] = useState(true) // Add loading state
     const router = useRouter()
 
     useEffect(() => {
@@ -41,6 +42,8 @@ export function Header() {
         } else {
             setIsLoggedIn(false)
         }
+        
+        setIsLoading(false) // Set loading to false after auth check
     }, [])
 
     const handleLogout = () => {
@@ -59,28 +62,17 @@ export function Header() {
                 {/* Search Bar - Expanded on mobile */}
                 <SearchBar />
 
-                {/* Desktop Auth Buttons */}
+                {/* Desktop Auth Buttons - Only show when not loading */}
                 <div className="hidden items-center gap-3 md:flex">
-                    {!isLoggedIn ? (
-                        // When not logged in
-                        <>
-                            <Link
-                                className="rounded-lg border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent"
-                                href="/login"
-                            >
-                                Log in
-                            </Link>
-                            <Link
-                                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
-                                href="/signup"
-                            >
-                                Try HoopMetrics for free
-                            </Link>
-                        </>
-                    ) : (
+                    {isLoading ? (
+                        // Show placeholder skeleton during loading
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-24 animate-pulse rounded-lg bg-accent"></div>
+                        </div>
+                    ) : isLoggedIn ? (
                         // When logged in
-                        <div className="hidden items-center gap-3 md:flex">
-                            {(user.role !== 'premium' && user.role !== 'ultimate' && user.role !== 'admin') && (
+                        <div className="flex items-center gap-3">
+                            {(user.role !== 'ultimate' && user.role !== 'admin') && (
                                 <Link
                                     href="/upgrade"
                                     className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
@@ -102,6 +94,22 @@ export function Header() {
                                 Log out
                             </button>
                         </div>
+                    ) : (
+                        // When not logged in
+                        <>
+                            <Link
+                                className="rounded-lg border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent"
+                                href="/login"
+                            >
+                                Log in
+                            </Link>
+                            <Link
+                                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+                                href="/signup"
+                            >
+                                Try HoopMetrics for free
+                            </Link>
+                        </>
                     )}
                 </div>
 
@@ -117,7 +125,7 @@ export function Header() {
             </div>
 
             {/* Mobile Menu - Pass authentication state and user data */}
-            {mobileMenuOpen && <MobileMenu isLoggedIn={isLoggedIn} user={user} onLogout={handleLogout} />}
+            {mobileMenuOpen && <MobileMenu isLoading={isLoading} isLoggedIn={isLoggedIn} user={user} onLogout={handleLogout} />}
         </header>
     )
 }
