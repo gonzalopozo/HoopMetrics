@@ -6,10 +6,8 @@ export default async function HomePage() {
   return (
     <>
       <Suspense fallback={<DashboardSkeleton />}>
-
         <CardsWrapper />
       </Suspense>
-
     </>
   )
 }

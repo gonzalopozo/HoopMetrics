@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { BarChart2, Eye, EyeOff, Lock, Mail, User, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { AuthContext } from "@/context/AuthContext"
 
 const schema = z.object({
     username: z.string().min(3, { message: "Username must be at least 3 characters" }),
@@ -37,27 +38,23 @@ export default function SignupPage() {
 
     // In a real implementation, you would use your actual auth context
     // For now, we'll mock it for the example
-    const auth = {
-        signup: async (data: FormData) => {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+    // const auth = {
+    //     signup: async (data: FormData) => {
+    //         // Simulate API call
+    //         await new Promise((resolve) => setTimeout(resolve, 1000))
 
-            // Mock validation - in a real app this would be handled by your backend
-            if (data.email === "taken@example.com") {
-                throw new Error("Email is already registered")
-            }
+    //         return true
+    //     },
+    // }
 
-            return true
-        },
-    }
-
+    const auth = useContext(AuthContext)!;
     const router = useRouter()
 
     const onSubmit = async (data: FormData) => {
         try {
             setAuthError(null)
             await auth.signup(data)
-            router.push("/protected/admin") // or '/'
+            router.push("/admin") // or '/'
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             setAuthError(err.message)

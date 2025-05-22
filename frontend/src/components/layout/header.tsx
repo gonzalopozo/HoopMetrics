@@ -1,14 +1,54 @@
 "use client"
 
-import { useState } from "react"
-import { Menu, X } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Menu, X, User, LogOut } from "lucide-react"
 import { MobileMenu } from "@/components/layout/mobile-menu"
 import { Logo } from "@/components/ui/logo"
 import { SearchBar } from "@/components/ui/search-bar"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar" // Add these imports
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const [user, setUser] = useState({ name: "", email: "", role: "", initials: "U" })
+    const router = useRouter()
+
+    useEffect(() => {
+        // Check if token exists in cookies
+        const token = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('token='))
+            ?.split('=')[1]
+
+        if (token) {
+            setIsLoggedIn(true)
+
+            // Decode JWT token to get user info
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]))
+                const name = payload.name || 'User'
+                setUser({
+                    name: name,
+                    email: payload.email || '',
+                    role: payload.role || 'free',
+                    initials: name.split(' ').map(n => n[0]).join('').toUpperCase()
+                })
+            } catch (error) {
+                console.error('Error parsing token:', error)
+            }
+        } else {
+            setIsLoggedIn(false)
+        }
+    }, [])
+
+    const handleLogout = () => {
+        // Clear the token cookie
+        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+        setIsLoggedIn(false)
+        router.push('/login')
+    }
 
     return (
         <header className="fixed top-0 left-0 right-0 z-10 border-b bg-card px-4 py-3 shadow-sm">
@@ -21,18 +61,48 @@ export function Header() {
 
                 {/* Desktop Auth Buttons */}
                 <div className="hidden items-center gap-3 md:flex">
-                    <Link 
-                        className="rounded-lg border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent"
-                        href="/login"
-                    >
-                        Log in
-                    </Link>
-                    <Link 
-                        className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
-                        href="/signup"
-                    >
-                        Try HoopMetrics for free
-                    </Link>
+                    {!isLoggedIn ? (
+                        // When not logged in
+                        <>
+                            <Link
+                                className="rounded-lg border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent"
+                                href="/login"
+                            >
+                                Log in
+                            </Link>
+                            <Link
+                                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+                                href="/signup"
+                            >
+                                Try HoopMetrics for free
+                            </Link>
+                        </>
+                    ) : (
+                        // When logged in
+                        <div className="hidden items-center gap-3 md:flex">
+                            {(user.role !== 'premium' && user.role !== 'ultimate' && user.role !== 'admin') && (
+                                <Link
+                                    href="/upgrade"
+                                    className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+                                >
+                                    Upgrade
+                                </Link>
+                            )}
+                            <div className="flex items-center gap-3">
+                                <Avatar>
+                                    {/* <AvatarImage src="/placeholder.svg?height=32&width=32" alt={user.name} /> */}
+                                    <AvatarFallback>{user.initials}</AvatarFallback>
+                                </Avatar>
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center gap-2 rounded-lg border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent"
+                            >
+                                <LogOut className="h-4 w-4" />
+                                Log out
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -46,8 +116,8 @@ export function Header() {
                 </button>
             </div>
 
-            {/* Mobile Menu */}
-            {mobileMenuOpen && <MobileMenu />}
+            {/* Mobile Menu - Pass authentication state and user data */}
+            {mobileMenuOpen && <MobileMenu isLoggedIn={isLoggedIn} user={user} onLogout={handleLogout} />}
         </header>
     )
 }
