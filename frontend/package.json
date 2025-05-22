@@ -41,13 +41,13 @@
     "root": "git+https://github.com/tanstack/react-query.git",
     "swr": "^2.3.3",
     "tailwind-merge": "^3.3.0",
-    "zod": "^3.25.13"
+    "zod": "^3.25.20"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.1.7",
     "@types/node": "^20.17.50",
-    "@types/react": "^19.1.4",
+    "@types/react": "^19.1.5",
     "@types/react-dom": "^19.1.5",
     "eslint": "^9.27.0",
     "eslint-config-next": "15.3.1",
