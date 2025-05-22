@@ -5,14 +5,44 @@ import { Menu, X, User, LogOut } from "lucide-react"
 import { MobileMenu } from "@/components/layout/mobile-menu"
 import { Logo } from "@/components/ui/logo"
 import { SearchBar } from "@/components/ui/search-bar"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar" // Add these imports
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+
+export class AppUser {
+    _name: string
+    _email: string
+    _role: string
+
+    constructor(name: string, email: string, role: string) {
+        this._name = name
+        this._email = email
+        this._role = role
+    }
+
+    get name() {
+        return this._name
+    }
+
+    get email() {
+        return this._email
+    }
+
+    get role() {
+        return this._role
+    }
+
+
+    public getInitials(): string {
+        return this._name[0]?.toUpperCase();
+    }
+}
 
 export function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [isLoggedIn, setIsLoggedIn] = useState(false)
-    const [user, setUser] = useState({ name: "", email: "", role: "", initials: "U" })
+    const [user, setUser] = useState(new AppUser("", "", ""))
+    const [isLoading, setIsLoading] = useState(true) // Add loading state
     const router = useRouter()
 
     useEffect(() => {
@@ -28,19 +58,21 @@ export function Header() {
             // Decode JWT token to get user info
             try {
                 const payload = JSON.parse(atob(token.split('.')[1]))
-                const name = payload.name || 'User'
-                setUser({
-                    name: name,
-                    email: payload.email || '',
-                    role: payload.role || 'free',
-                    initials: name.split(' ').map(n => n[0]).join('').toUpperCase()
-                })
+                console.log('Decoded payload:', payload)
+                const name = payload.username 
+                setUser(new AppUser(
+                    name,
+                    payload.email,
+                    payload.role
+                ))
             } catch (error) {
                 console.error('Error parsing token:', error)
             }
         } else {
             setIsLoggedIn(false)
         }
+
+        setIsLoading(false) // Set loading to false after checking token
     }, [])
 
     const handleLogout = () => {
@@ -59,9 +91,39 @@ export function Header() {
                 {/* Search Bar - Expanded on mobile */}
                 <SearchBar />
 
-                {/* Desktop Auth Buttons */}
+                {/* Desktop Auth Buttons - Only show when not loading */}
                 <div className="hidden items-center gap-3 md:flex">
-                    {!isLoggedIn ? (
+                    {isLoading ? (
+                        // Show placeholder skeleton during loading
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-24 animate-pulse rounded-lg bg-accent"></div>
+                        </div>
+                    ) : isLoggedIn ? (
+                        // When logged in
+                        <div className="flex items-center gap-3">
+                            {(user.role !== 'premium' && user.role !== 'ultimate' && user.role !== 'admin') && (
+                                <Link
+                                    href="/upgrade"
+                                    className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+                                >
+                                    Upgrade
+                                </Link>
+                            )}
+                            <div className="flex items-center gap-3">
+                                <Avatar>
+                                    {/* <AvatarImage src="/placeholder.svg?height=32&width=32" alt={user.name} /> */}
+                                    <AvatarFallback>{user.getInitials()}</AvatarFallback>
+                                </Avatar>
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center gap-2 rounded-lg border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent cursor-pointer"
+                            >
+                                <LogOut className="h-4 w-4" />
+                                Log out
+                            </button>
+                        </div>
+                    ) : (
                         // When not logged in
                         <>
                             <Link
@@ -77,31 +139,6 @@ export function Header() {
                                 Try HoopMetrics for free
                             </Link>
                         </>
-                    ) : (
-                        // When logged in
-                        <div className="hidden items-center gap-3 md:flex">
-                            {(user.role !== 'premium' && user.role !== 'ultimate' && user.role !== 'admin') && (
-                                <Link
-                                    href="/upgrade"
-                                    className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
-                                >
-                                    Upgrade
-                                </Link>
-                            )}
-                            <div className="flex items-center gap-3">
-                                <Avatar>
-                                    {/* <AvatarImage src="/placeholder.svg?height=32&width=32" alt={user.name} /> */}
-                                    <AvatarFallback>{user.initials}</AvatarFallback>
-                                </Avatar>
-                            </div>
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-2 rounded-lg border border-input bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent"
-                            >
-                                <LogOut className="h-4 w-4" />
-                                Log out
-                            </button>
-                        </div>
                     )}
                 </div>
 
@@ -117,7 +154,7 @@ export function Header() {
             </div>
 
             {/* Mobile Menu - Pass authentication state and user data */}
-            {mobileMenuOpen && <MobileMenu isLoggedIn={isLoggedIn} user={user} onLogout={handleLogout} />}
+            {mobileMenuOpen && <MobileMenu isLoading={isLoading} isLoggedIn={isLoggedIn} user={user} onLogout={handleLogout} />}
         </header>
     )
 }
