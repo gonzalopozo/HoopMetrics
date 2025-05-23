@@ -255,17 +255,19 @@ export default function UpgradePage() {
                             </motion.div>
                         </CardContent>
                         <CardFooter className="mt-auto pt-4">
-                            <motion.button
-                                className="w-full py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
+                            <Link
+                                href={billingCycle === "monthly" ? "/pay?price=price_1RRA6e2cPejVT0hsZA0U1wJQ" : "/pay?price=price_1RRpgV2cPejVT0hskHLy9sIk"}
+                                className="w-full cursor-pointer"
                             >
-                                <Link 
-                                    href={billingCycle === "monthly" ? "/pay?price=price_1RRA6e2cPejVT0hsZA0U1wJQ" : "/pay?price=price_1RRpgV2cPejVT0hskHLy9sIk"}
+                                <motion.button
+                                    className="w-full cursor-pointer py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
                                 >
+
                                     Upgrade Now
-                                </Link>
-                            </motion.button>
+                                </motion.button>
+                            </Link>
                         </CardFooter>
                     </Card>
                 </motion.div>
@@ -325,26 +327,24 @@ export default function UpgradePage() {
                                 <motion.div variants={featureVariants}>
                                     <FeatureItem included>Early access to new features</FeatureItem>
                                 </motion.div>
-                                <motion.div variants={featureVariants}>
-                                    <FeatureItem included>Ad-free experience</FeatureItem>
-                                </motion.div>
                             </motion.div>
                         </CardContent>
                         <CardFooter className="mt-auto pt-4">
-                            <motion.button
-                                className="w-full py-2 rounded-lg bg-gradient-to-r from-nba-blue-600 to-nba-blue-800 dark:from-nba-red-600 dark:to-nba-red-800 text-white hover:opacity-90 transition-opacity"
-                                whileHover={{
-                                    scale: 1.05,
-                                    boxShadow: "0 0 15px rgba(66, 115, 255, 0.5)",
-                                }}
-                                whileTap={{ scale: 0.95 }}
+                            <Link
+                                href={billingCycle === "monthly" ? "/pay?price=price_1RRphR2cPejVT0hsN5BFQdXO" : "/pay?price=price_1RRphR2cPejVT0hspMaAwRAc"}
+                                className="w-full cursor-pointer"
                             >
-                                <Link 
-                                    href={billingCycle === "monthly" ? "/pay?price=price_1RRphR2cPejVT0hsN5BFQdXO" : "/pay?price=price_1RRphR2cPejVT0hspMaAwRAc"}
+                                <motion.button
+                                    className="w-full py-2 rounded-lg bg-gradient-to-r from-nba-blue-600 to-nba-blue-800 dark:from-nba-red-600 dark:to-nba-red-800 text-white hover:opacity-90 transition-opacity cursor-pointer"
+                                    whileHover={{
+                                        scale: 1.05,
+                                        boxShadow: "0 0 15px rgba(66, 115, 255, 0.5)",
+                                    }}
+                                    whileTap={{ scale: 0.95 }}
                                 >
                                     Get Ultimate
-                                </Link>
-                            </motion.button>
+                                </motion.button>
+                            </Link>
                         </CardFooter>
                     </Card>
                 </motion.div>
