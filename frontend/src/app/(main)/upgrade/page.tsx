@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
-import ThemeToggle from "@/components/ui/theme-switcher"
 
 export default function UpgradePage() {
     const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly")
@@ -351,7 +350,6 @@ export default function UpgradePage() {
             >
                 <h2 className="text-2xl font-bold mb-6 text-center">Frequently Asked Questions</h2>
                 <div className="space-y-4">
-                    <ThemeToggle />
                     <FaqItem
                         question="Can I change my plan later?"
                         answer="Yes, you can upgrade, downgrade, or cancel your plan at any time. Changes to your subscription will take effect immediately."
