@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 
 export default function UpgradePage() {
     const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly")
@@ -259,7 +260,11 @@ export default function UpgradePage() {
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                             >
-                                Upgrade Now
+                                <Link 
+                                    href={billingCycle === "monthly" ? "/pay?price=price_1RRA6e2cPejVT0hsZA0U1wJQ" : "/pay?price=price_1RRpgV2cPejVT0hskHLy9sIk"}
+                                >
+                                    Upgrade Now
+                                </Link>
                             </motion.button>
                         </CardFooter>
                     </Card>
@@ -334,7 +339,11 @@ export default function UpgradePage() {
                                 }}
                                 whileTap={{ scale: 0.95 }}
                             >
-                                Get Ultimate
+                                <Link 
+                                    href={billingCycle === "monthly" ? "/pay?price=price_1RRphR2cPejVT0hsN5BFQdXO" : "/pay?price=price_1RRphR2cPejVT0hspMaAwRAc"}
+                                >
+                                    Get Ultimate
+                                </Link>
                             </motion.button>
                         </CardFooter>
                     </Card>
