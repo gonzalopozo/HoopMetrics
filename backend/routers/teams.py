@@ -20,7 +20,7 @@ async def read_teams(session: AsyncSession = Depends(get_db)):
         # Get all teams with a single query
         teams_query = select(Team)
         teams_result = await session.execute(teams_query)
-        teams = teams_result.all()
+        teams = teams_result.scalars().all()  # Changed from teams_result.all()
         
         # Create a dictionary to store each team's data
         team_ids = [team.id for team in teams]
@@ -186,7 +186,7 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
         # 1. Get basic team information
         team_query = select(Team).where(Team.id == id)
         team_result = await session.execute(team_query)
-        team = team_result.first()
+        team = team_result.scalars().first()
         
         if not team:
             raise HTTPException(status_code=404, detail="Team not found")
@@ -343,7 +343,8 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
         # Get all teams info for names
         teams_query = select(Team.id, Team.full_name, Team.abbreviation)
         teams_result = await session.execute(teams_query)
-        team_info = {team.id: {"name": team.full_name, "abbreviation": team.abbreviation} for team in teams_result}
+        team_info = {team.id: {"name": team.full_name, "abbreviation": team.abbreviation} 
+                     for team in teams_result.scalars()}  # Add .scalars()
         
         # Recent games (past)
         recent_games_query = (
