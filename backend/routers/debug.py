@@ -11,7 +11,7 @@ router = APIRouter(
     tags=["debug"]
 )
 
-@router.get("/debug/players/count")
+@router.get("/players/count")
 async def get_player_count(session: AsyncSession = Depends(get_db)):
     try:
         result = await session.execute(select(Player))
@@ -21,7 +21,7 @@ async def get_player_count(session: AsyncSession = Depends(get_db)):
         return {"error": str(e)}
 
 
-@router.get("/debug/teams/count")
+@router.get("/teams/count")
 async def get_team_count(session: AsyncSession = Depends(get_db)):
     try:
         result = await session.execute(select(Team))

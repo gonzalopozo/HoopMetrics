@@ -86,14 +86,14 @@ async def read_players_sorted_by_ppg_paginated(page:int, session: AsyncSession =
 @router.get("/{id}", response_model=PlayerRead)
 async def read_players_by_id(id: int, session: AsyncSession = Depends(get_db)):
     try:
-        # Primero verificamos si hay jugadores en la base de datos
-        # Obtenemos como máximo 20 jugadores de la base de datos
+        # Query the player and use scalars() to get the actual model instance
         result = await session.execute(
             select(Player)
             .where(Player.id == id)
         )
-
-        player = result.first()  # <-- Notar los paréntesis en all()
+        
+        # Extract the Player object with scalars()
+        player = result.scalars().first()  # Changed from result.first()
 
         if not player:
             return PlayerRead()
@@ -101,12 +101,11 @@ async def read_players_by_id(id: int, session: AsyncSession = Depends(get_db)):
         team = None
         if player.current_team_id:
             team = await session.get(Team, player.current_team_id)
-            # team = result2.first()  # <-- Notar los paréntesis en all()
 
-        # Consulta específica para las estadísticas de este jugador
+        # Get player statistics and use scalars() here too
         stats_query = select(MatchStatistic).where(MatchStatistic.player_id == player.id)
         result_stats = await session.execute(stats_query)
-        stats = result_stats.all()
+        stats = result_stats.scalars().all()  # Changed from result_stats.all()
 
         # Calcular promedios si hay estadísticas
         if stats:
