@@ -19,17 +19,19 @@ engine = create_async_engine(
     connect_args={"timeout": 5.0}
 )
 
-# Create a session factory using the shared engine
-SessionFactory = sessionmaker(
-    engine, 
-    class_=AsyncSession, 
-    expire_on_commit=False
-)
+def get_session_factory():
+    """Create a new session factory tied to the current event loop."""
+    return sessionmaker(
+        engine, 
+        class_=AsyncSession, 
+        expire_on_commit=False
+    )
 
 # Dependency to provide a fresh session for each request
 async def get_db():
     """Provide a fresh database session for each request."""
-    async with SessionFactory() as session:
+    session_factory = get_session_factory()
+    async with session_factory() as session:
         try:
             yield session
         finally:

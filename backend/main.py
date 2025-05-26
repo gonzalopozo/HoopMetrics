@@ -79,10 +79,11 @@ async def health_check():
 
 @app.get("/health/db")
 async def db_health_check():
-    """Test database connection using the shared engine and session factory."""
+    """Test database connection using a fresh session factory."""
     try:
-        from database import SessionFactory
-        async with SessionFactory() as session:
+        from database import get_session_factory
+        session_factory = get_session_factory()
+        async with session_factory() as session:
             result = await session.execute(select(1))
             value = result.scalar_one()
             return JSONResponse(content={"status": "ok", "database": "connected", "test_value": value})
