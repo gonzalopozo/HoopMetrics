@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 
-from ..deps import get_db
-from ..models import Player, Team
+from backend.deps import get_db
+from backend.models import Player, Team
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 

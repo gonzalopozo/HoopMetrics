@@ -20,6 +20,7 @@ type PlayerPageProps = {
 
 // Add generateMetadata if needed (optional)
 export async function generateMetadata({ params, searchParams }: PlayerPageProps): Promise<Metadata> {
+    console.log(searchParams)
     return {
         title: `Player ${params.id} | HoopMetrics`,
     }
@@ -64,6 +65,7 @@ export default async function PlayerDetailPage({
     searchParams
 }: PlayerPageProps) {
     // Server-side data fetching
+    console.log(searchParams)
     const playerId = params.id;
     const player = await fetchPlayer(playerId)
 

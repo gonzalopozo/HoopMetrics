@@ -6,8 +6,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy import literal
 from datetime import datetime, date
 
-from ..deps import get_db
-from ..models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats
+from backend.deps import get_db
+from backend.models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats
 
 router = APIRouter(
     prefix="/teams",
