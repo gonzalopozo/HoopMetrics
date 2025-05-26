@@ -8,6 +8,8 @@ from config import get_settings
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
+# Global engine for serverless compatibility
+
 # Don't create a global engine - create it on demand
 def get_engine():
     """Get a database engine for the current event loop"""
@@ -22,20 +24,18 @@ def get_engine():
         }
     )
 
+engine = get_engine()  # Add this to fix import errors
+
 # This factory creates sessions tied to the current event loop
 def get_session_factory():
     engine = get_engine()
     return sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
-# Create a session factory when needed (not at import time)
-async_session_factory = None
+# Initialize the session factory (don't leave it as None)
+async_session_factory = get_session_factory()
 
 # For dependency injection
 async def get_db():
-    global async_session_factory
-    if async_session_factory is None:
-        async_session_factory = get_session_factory()
-    
     session = async_session_factory()
     try:
         yield session
