@@ -55,7 +55,6 @@ export default function SignupPage() {
             setAuthError(null)
             await auth.signup(data)
             router.push("/admin") // or '/'
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             setAuthError(err.message)
         }

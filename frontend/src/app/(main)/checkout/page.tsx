@@ -16,7 +16,6 @@ type CheckoutStep = "loading" | "payment" | "success" | "error"
 
 function CheckoutContent() {
     const searchParams = useSearchParams()
-    const router = useRouter()
     const [step, setStep] = useState<CheckoutStep>("loading")
     const [clientSecret, setClientSecret] = useState<string>("")
     const [subscriptionDetails, setSubscriptionDetails] = useState<{
@@ -60,6 +59,7 @@ function CheckoutContent() {
 
     const handlePaymentSuccess = (id: string) => {
         setSubscriptionId(id)
+        console.log(subscriptionId);
         setStep("success")
     }
 

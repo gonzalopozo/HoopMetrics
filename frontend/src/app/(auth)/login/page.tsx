@@ -37,7 +37,6 @@ export default function LoginPage() {
             setAuthError(null);
             await auth.login(data.email, data.password);
             router.push("/admin"); // o '/'
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             setAuthError(err.message);
         }

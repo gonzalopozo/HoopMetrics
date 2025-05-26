@@ -106,7 +106,6 @@ export default async function PlayerDetailPage({ params }: { params: { id: strin
     const formatBirthDate = (dateString: string) => {
         try {
             return format(new Date(dateString), "MMMM d, yyyy")
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (e) {
             return dateString
         }

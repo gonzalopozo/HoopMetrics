@@ -9,7 +9,17 @@ import { Badge } from "@/components/ui/badge"
 import { getSubscriptionStatus, cancelSubscription } from "@/app/actions/stripe"
 
 export default function BillingPage() {
-    const [subscription, setSubscription] = useState<any>(null)
+    interface Subscription {
+        id: string;
+        cancelAtPeriodEnd: boolean;
+        currentPeriodEnd?: number;
+        status: string;
+        priceId: string;
+        amount: number;
+        interval: string;
+    }
+
+    const [subscription, setSubscription] = useState<Subscription | null>(null)
     const [loading, setLoading] = useState(true)
     const [canceling, setCanceling] = useState(false)
 
@@ -19,8 +29,16 @@ export default function BillingPage() {
             try {
                 // This is a placeholder - replace with actual customer ID
                 const result = await getSubscriptionStatus("cus_placeholder")
-                if (result.hasActiveSubscription) {
-                    setSubscription(result.subscription)
+                if (result.hasActiveSubscription && result.subscription) {
+                    setSubscription({
+                        id: result.subscription.id,
+                        cancelAtPeriodEnd: false,
+                        // currentPeriodEnd: result.subscription.currentPeriodEnd || Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
+                        status: result.subscription.status,
+                        priceId: result.subscription.priceId,
+                        amount: result.subscription.amount,
+                        interval: result.subscription.interval || 'month'
+                    })
                 }
             } catch (error) {
                 console.error("Error loading subscription:", error)
@@ -109,7 +127,7 @@ export default function BillingPage() {
                                     </div>
                                 </div>
 
-                                <div className="border-t pt-4">
+                                {/* <div className="border-t pt-4">
                                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                         <Calendar className="h-4 w-4" />
                                         <span>
@@ -118,7 +136,7 @@ export default function BillingPage() {
                                                 : `Next billing date: ${new Date(subscription.currentPeriodEnd * 1000).toLocaleDateString()}`}
                                         </span>
                                     </div>
-                                </div>
+                                </div> */}
 
                                 <div className="flex gap-3 pt-4">
                                     {!subscription.cancelAtPeriodEnd && (
