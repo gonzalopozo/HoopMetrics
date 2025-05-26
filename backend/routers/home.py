@@ -16,21 +16,24 @@ router = APIRouter(
 @router.get("/top-performers", response_model=List[TopPerformer])
 async def read_top_performers(session: AsyncSession = Depends(get_db)):
     try:
-        matchs = await session.execute(
+        # Execute the query
+        matches_result = await session.execute(
             select(Match)
-            .where(Match.home_score != None)
-            .where(Match.away_score != None)
+            .where(Match.home_score.is_not(None))
+            .where(Match.away_score.is_not(None))
             .order_by(desc(Match.date))
             .limit(2)
         )
-
+        
+        # Extract the actual Match objects
+        matches = matches_result.scalars().all()
+        
         performers: List[TopPerformer] = []
-        for matc in matchs:
-            # matchss.append(match)
-            # 1) Expresión para 'side'
+        for match in matches:
+            # Now match is a proper Match object
             side_expr = case(
-                (Player.current_team_id == matc.home_team_id,  'home'),
-                (Player.current_team_id == matc.away_team_id, 'away'),
+                (Player.current_team_id == match.home_team_id, 'home'),
+                (Player.current_team_id == match.away_team_id, 'away'),
                 else_='other'
             ).label("side")
 
@@ -53,7 +56,7 @@ async def read_top_performers(session: AsyncSession = Depends(get_db)):
                     side_expr,
                 )
                 .join(Player, MatchStatistic.player_id == Player.id)
-                .where(MatchStatistic.match_id == matc.id)
+                .where(MatchStatistic.match_id == match.id)
                 .distinct(side_expr)
                 .order_by(side_expr, desc(total_expr))
             )
@@ -65,7 +68,7 @@ async def read_top_performers(session: AsyncSession = Depends(get_db)):
             for stat, total, player_id, player_name, player_team_id, player_url_pic, side in rows:
                 if (side == 'other'): continue
 
-                match = matc  # Ya lo tienes
+                match = match  # Ya lo tienes
                 team = await session.get(Team, player_team_id) if player_team_id else None
 
                 performers.append(
