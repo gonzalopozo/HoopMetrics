@@ -16,7 +16,7 @@ import { cn, getNBALogo } from "@/lib/utils"
 import { TeamDetails } from "@/types"
 
 export default function TeamTabs({ team }: { team: TeamDetails }) {
-    const [activeTab, setActiveTab] = useState("overview")
+    const [_, setActiveTab] = useState("overview")
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -186,7 +186,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                             <Users className="h-5 w-5 text-primary" />
                             Top Performers
                         </CardTitle>
-                        <CardDescription>Team's leading players</CardDescription>
+                        <CardDescription>{`Team's leading players`}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

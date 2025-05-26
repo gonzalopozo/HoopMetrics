@@ -2,7 +2,7 @@ import Cookies from "js-cookie";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-export async function post<T>(path: string, body: any): Promise<T> {
+export async function post<T, B>(path: string, body: B): Promise<T> {
     const res = await fetch(`${API_BASE}${path}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

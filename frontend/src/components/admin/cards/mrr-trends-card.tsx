@@ -8,7 +8,13 @@ import type { DateRange } from "react-day-picker"
 
 // Import a chart library like Chart.js or Recharts
 // For this example, we'll create a mock chart component
-function LineChart({ labels, colors }: any) {
+interface LineChartProps {
+  labels: string[];
+  colors: string[];
+  data?: number[][];
+}
+
+function LineChart({ labels, colors }: LineChartProps) {
   return (
     <div className="h-[200px] w-full">
       {/* This would be replaced with an actual chart component */}

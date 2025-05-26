@@ -119,7 +119,7 @@ function SuccessContent() {
                                 </div>
 
                                 <div className="border-t pt-4">
-                                    <h4 className="font-medium mb-2">What's next?</h4>
+                                    <h4 className="font-medium mb-2">{`What's next?`}</h4>
                                     <ul className="space-y-2 text-sm text-muted-foreground">
                                         <li className="flex items-center gap-2">
                                             <CheckCircle className="h-4 w-4 text-green-500" />

@@ -49,7 +49,7 @@ const teamNameMapping: Record<string, string> = {
  * @param props - Additional props to pass to the logo component
  * @returns The corresponding NBA logo component or null if not found
  */
-export function getNBALogo(teamName: string, props: Record<string, any> = {}) {
+export function getNBALogo(teamName: string, props: Record<string, unknown> = {}) {
   if (!teamName) return null
 
   // Normalize the team name to get the abbreviation
@@ -64,7 +64,7 @@ export function getNBALogo(teamName: string, props: Record<string, any> = {}) {
   const componentName = teamAbbr
 
   // Access the component from the NBALogos object
-  const LogoComponent: React.ComponentType<any> = (NBALogos as any)[componentName]
+  const LogoComponent: React.ComponentType<Record<string, unknown>> = (NBALogos as Record<string, React.ComponentType<Record<string, unknown>>>)[componentName]
 
   if (LogoComponent) {
     return <LogoComponent { ...props } />

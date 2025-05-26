@@ -55,8 +55,8 @@ export default function SignupPage() {
             setAuthError(null)
             await auth.signup(data)
             router.push("/admin") // or '/'
-        } catch (err: any) {
-            setAuthError(err.message)
+        } catch (err: unknown) {
+            setAuthError(err instanceof Error ? err.message : "Ocurrió un error desconocido");
         }
     }
 

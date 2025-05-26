@@ -1,11 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Menu, X, User, LogOut } from "lucide-react"
+import { Menu, X, LogOut } from "lucide-react"
 import { MobileMenu } from "@/components/layout/mobile-menu"
 import { Logo } from "@/components/ui/logo"
 import { SearchBar } from "@/components/ui/search-bar"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 

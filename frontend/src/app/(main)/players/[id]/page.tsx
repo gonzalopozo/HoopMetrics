@@ -107,6 +107,7 @@ export default async function PlayerDetailPage({ params }: { params: { id: strin
         try {
             return format(new Date(dateString), "MMMM d, yyyy")
         } catch (e) {
+            console.error("Error formatting date:", e)
             return dateString
         }
     }
@@ -235,7 +236,17 @@ export default async function PlayerDetailPage({ params }: { params: { id: strin
 }
 
 // Stat Card Component - Keep this as a server component since it doesn't need interactivity
-function StatCard({ title, value, icon, isHighlight = false }) {
+function StatCard({
+    title,
+    value,
+    icon,
+    isHighlight = false
+}: {
+    title: string;
+    value: string;
+    icon: React.ReactNode;
+    isHighlight?: boolean
+}) {
     return (
         <div
             className={cn(

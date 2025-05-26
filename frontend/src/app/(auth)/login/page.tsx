@@ -37,8 +37,8 @@ export default function LoginPage() {
             setAuthError(null);
             await auth.login(data.email, data.password);
             router.push("/admin"); // o '/'
-        } catch (err: any) {
-            setAuthError(err.message);
+        } catch (err: unknown) {
+            setAuthError(err instanceof Error ? err.message : "Ocurrió un error desconocido");
         }
     };
 

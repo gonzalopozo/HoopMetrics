@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { CreditCard, Calendar, AlertCircle, CheckCircle, Download } from "lucide-react"
+import { CreditCard, AlertCircle, CheckCircle, Download } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -185,7 +185,7 @@ export default function BillingPage() {
                                 <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                                 <h3 className="text-lg font-semibold mb-2">No Active Subscription</h3>
                                 <p className="text-muted-foreground mb-6">
-                                    You don't have an active subscription. Upgrade to access premium features.
+                                    {`You don't have an active subscription. Upgrade to access premium features.`}
                                 </p>
                                 <Button asChild>
                                     <a href="/pricing">View Plans</a>

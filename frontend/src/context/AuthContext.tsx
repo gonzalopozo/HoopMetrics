@@ -40,13 +40,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     async function login(email: string, password: string) {
-        const res = await post<TokenResponse>("/auth/login", { email, password });
+        const res = await post<TokenResponse, { email: string; password: string }>("/auth/login", { email, password });
         saveToken(res.access_token);
         setToken(res.access_token);
     }
 
     async function signup(data: { username: string; email: string; password: string; role: UserRole }) {
-        const res = await post<TokenResponse>("/auth/signup", data);
+        const res = await post<TokenResponse, typeof data>("/auth/signup", data);
         saveToken(res.access_token);
         setToken(res.access_token);
     }

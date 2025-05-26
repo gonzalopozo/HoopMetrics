@@ -4,11 +4,51 @@ import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { Trophy, BarChart3, Activity } from "lucide-react"
+import { Trophy, BarChart3 } from "lucide-react"
 
-export default function PlayerTabs({ player, careerHighs, shootingPercentages }) {
-    const [activeTab, setActiveTab] = useState("overview")
-    const [selectedGameIndex, setSelectedGameIndex] = useState(null)
+interface PlayerStats {
+    minutes_played: number;
+    field_goals_made: number;
+    field_goals_attempted: number;
+    three_points_made: number;
+    three_points_attempted: number;
+    free_throws_made: number;
+    free_throws_attempted: number;
+    points: number;
+    rebounds: number;
+    assists: number;
+    steals: number;
+    blocks: number;
+}
+
+interface Player {
+    average_stats: PlayerStats;
+    stats: PlayerStats[];
+}
+
+interface CareerHighs {
+    points: number;
+    rebounds: number;
+    assists: number;
+    steals: number;
+    blocks: number;
+}
+
+interface ShootingPercentages {
+    fg: string | number;
+    threePoint: string | number;
+    ft: string | number;
+}
+
+interface PlayerTabsProps {
+    player: Player;
+    careerHighs: CareerHighs;
+    shootingPercentages: ShootingPercentages;
+}
+
+export default function PlayerTabs({ player, careerHighs, shootingPercentages }: PlayerTabsProps) {
+    const [_, setActiveTab] = useState("overview")
+    const [selectedGameIndex, setSelectedGameIndex] = useState<number | null>(null)
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>

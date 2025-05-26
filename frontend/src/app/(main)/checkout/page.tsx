@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, Suspense } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { Elements } from "@stripe/react-stripe-js"
 import { motion, AnimatePresence } from "framer-motion"
 import { CheckCircle, ArrowLeft, Loader2 } from "lucide-react"
@@ -51,6 +51,7 @@ function CheckoutContent() {
             } catch (err) {
                 setError("Failed to initialize payment")
                 setStep("error")
+                console.error("Payment initialization error:", err)
             }
         }
 
@@ -125,7 +126,7 @@ function CheckoutContent() {
                                         </div>
 
                                         <div className="border-t pt-4">
-                                            <h4 className="font-medium mb-2">What's included:</h4>
+                                            <h4 className="font-medium mb-2">{`What's included:`}</h4>
                                             <ul className="space-y-1 text-sm text-muted-foreground">
                                                 {subscriptionDetails.plan === "premium" ? (
                                                     <>
