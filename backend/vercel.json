@@ -11,6 +11,12 @@
         "src": "/(.*)",
         "dest": "/main.py"
         }
-    ]
+    ],
+    "env": {
+        "DATABASE_URL": "@database_url",
+        "AUTH_SECRET_KEY": "@auth_secret_key",
+        "AUTH_ALGORITHM": "@auth_algorithm",
+        "AUTH_ACCESS_TOKEN_EXPIRE_MINUTES": "@auth_access_token_expire_minutes",
+        "FRONTEND_URL": "@frontend_url"
+    }
 }
-

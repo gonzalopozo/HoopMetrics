@@ -7,10 +7,10 @@ from config import get_settings
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
-# Configure engine with parameters suited for serverless
+# Fix case sensitivity - use uppercase to match Settings class
 engine = create_async_engine(
-    settings.database_url,
-    echo=settings.db_echo,
+    settings.DATABASE_URL,  # Changed from database_url to DATABASE_URL
+    echo=False,            # Removed settings.db_echo which doesn't exist
     future=True,
     pool_pre_ping=True,
     # Critical for serverless - no pool!
