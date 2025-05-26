@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlmodel import select
 import logging
 import traceback
@@ -42,12 +43,15 @@ async def log_requests(request: Request, call_next):
         logger.error(f"Request failed: {request.url.path}")
         logger.error(f"Error: {str(e)}")
         logger.error(traceback.format_exc())
-        # Return a more graceful error
-        return {"status": "error", "message": "Internal server error", "details": str(e)}
+        # Return a proper JSONResponse instead of a dict
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "message": "Internal server error", "details": str(e)}
+        )
 
 @app.get("/")
 async def health_check():
-    return {"status": "ok", "message": "API is running"}
+    return JSONResponse(content={"status": "ok", "message": "API is running"})
 
 @app.get("/health/db")
 async def db_health_check():
@@ -57,12 +61,15 @@ async def db_health_check():
         from database import async_session_factory
         async with async_session_factory() as session:
             result = await session.execute(select(1))
-            value = result.one()
-            return {"status": "ok", "database": "connected", "test_value": value}
+            value = result.scalar_one()
+            return JSONResponse(content={"status": "ok", "database": "connected", "test_value": value})
     except Exception as e:
         error_details = str(e)
         logger.error(f"Database connection error: {error_details}")
-        return {"status": "error", "message": "Database connection failed", "details": error_details}
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "message": "Database connection failed", "details": error_details}
+        )
 
 # Ejemplo de endpoint protegido por rol
 @app.get("/admin/dashboard")
