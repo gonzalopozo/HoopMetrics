@@ -58,7 +58,7 @@ export default async function TeamsPage() {
     // }
 
     const teamsRequest = await axios.get<Team[]>(
-        `http://localhost:8000/teams`
+        `${process.env.API_URL}/teams`
     )
     const teams = teamsRequest.data
 

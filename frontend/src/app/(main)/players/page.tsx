@@ -4,7 +4,7 @@ import axios from "axios"
 
 export default async function PlayersPage() {
     // Petición al endpoint para la página 1
-    const res = await axios.get('http://localhost:8000/players/sortedbyppg/1')
+    const res = await axios.get(`${process.env.API_URL}/players/sortedbyppg/1`)
     const initialPlayers = res.data
 
     return (

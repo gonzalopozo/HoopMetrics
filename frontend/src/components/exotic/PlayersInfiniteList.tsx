@@ -15,7 +15,7 @@ interface ApiPlayer {
     id: number
     name: string
     position: string
-    team: { full_name: string }
+    team: { full_name: string, logo_url?: string }
     url_pic: string | null
     average_stats: {
         points: number
@@ -54,7 +54,7 @@ function InfiniteListCore() {
         queryKey: ['players'],
         queryFn: async ({ pageParam = 1 }) => {
             const res = await axios.get<ApiPlayer[]>(
-                `http://localhost:8000/players/sortedbyppg/${pageParam}`
+                `${process.env.API_URL}/players/sortedbyppg/${pageParam}`
             )
             return res.data
         },

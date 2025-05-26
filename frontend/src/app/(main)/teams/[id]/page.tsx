@@ -18,7 +18,7 @@ import axios from "axios"
 // Server-side data fetching function
 async function fetchTeam(id: string): Promise<TeamDetails | null> {
     try {
-        const response = await axios.get<TeamDetails>(`http://localhost:8000/teams/${id}`);
+        const response = await axios.get<TeamDetails>(`${process.env.API_URL}/teams/${id}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching team data:", error);
@@ -178,7 +178,14 @@ export default async function TeamDetailPage({ params }: { params: { id: string 
 }
 
 // Stat Card Component
-function StatCard({ title, value, icon, isHighlight = false }) {
+interface StatCardProps {
+    title: string;
+    value: string;
+    icon: React.ReactNode;
+    isHighlight?: boolean;
+}
+
+function StatCard({ title, value, icon, isHighlight = false }: StatCardProps) {
     return (
         <div
             className={cn(

@@ -1,3 +1,4 @@
+import { Metadata } from 'next'
 import Image from "next/image"
 import Link from "next/link"
 import { Calendar, Ruler, Weight, Trophy, TrendingUp, Activity, BarChart3, ArrowLeft } from "lucide-react"
@@ -5,6 +6,18 @@ import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import PlayerTabs from "@/components/ui/player-tabs"  // We'll create this client component
 import axios from "axios"
+
+// Define the params type explicitly
+type PlayerParams = {
+    id: string;
+}
+
+// Add generateMetadata if needed (optional)
+export async function generateMetadata({ params }: { params: PlayerParams }): Promise<Metadata> {
+    return {
+        title: `Player ${params.id} | HoopMetrics`,
+    }
+}
 
 // Types for our player data
 interface PlayerStat {
@@ -40,10 +53,13 @@ interface Player {
     average_stats: PlayerStat
 }
 
-export default async function PlayerDetailPage({ params }: { params: { id: string } }) {
+export default async function PlayerDetailPage({
+    params
+}: {
+    params: PlayerParams
+}) {
     // Server-side data fetching
-    const props = await params;
-    const playerId = props.id;
+    const playerId = params.id;
     const player = await fetchPlayer(playerId)
 
     if (!player) {
@@ -264,7 +280,7 @@ function StatCard({
 // Server-side data fetching function
 async function fetchPlayer(id: string): Promise<Player | null> {
     try {
-        const response = await axios.get<Player>(`http://localhost:8000/players/${id}`);
+        const response = await axios.get<Player>(`${process.env.API_URL}/players/${id}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching player data:", error);
