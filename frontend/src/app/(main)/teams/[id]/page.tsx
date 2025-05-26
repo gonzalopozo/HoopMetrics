@@ -15,6 +15,16 @@ import { TeamDetails } from "@/types"
 import TeamTabs from "@/components/ui/team-tabs"
 import axios from "axios"
 
+type TeamParams = {
+    id: string;
+}
+
+type TeamPageProps = {
+    params: Promise<TeamParams>
+    searchParams: Promise<Record<string, string | string[]>>
+}
+
+
 // Server-side data fetching function
 async function fetchTeam(id: string): Promise<TeamDetails | null> {
     try {
@@ -27,7 +37,9 @@ async function fetchTeam(id: string): Promise<TeamDetails | null> {
 }
 
 
-export default async function TeamDetailPage({ params }: { params: { id: string } }) {
+export default async function TeamDetailPage({ params, searchParams }: TeamPageProps) {
+    console.log(searchParams);
+
     const props = await params;
     const teamId = props.id;
     const team: TeamDetails | null = await fetchTeam(teamId)

@@ -10,7 +10,7 @@ from deps import get_db, require_role
 from config import get_settings
 from database import engine
 
-from backend.routers import home, debug, players, auth, teams
+from routers import home, debug, players, auth, teams
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 
