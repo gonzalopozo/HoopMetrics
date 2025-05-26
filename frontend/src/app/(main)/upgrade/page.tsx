@@ -256,7 +256,8 @@ export default function UpgradePage() {
                         </CardContent>
                         <CardFooter className="mt-auto pt-4">
                             <Link
-                                href={billingCycle === "monthly" ? "/pay?price=price_1RRA6e2cPejVT0hsZA0U1wJQ" : "/pay?price=price_1RRpgV2cPejVT0hskHLy9sIk"}
+                                // href={billingCycle === "monthly" ? "/pay?price=price_1RRA6e2cPejVT0hsZA0U1wJQ" : "/pay?price=price_1RRpgV2cPejVT0hskHLy9sIk"}
+                                href={`/checkout?plan=premium&billing=${billingCycle}`}
                                 className="w-full cursor-pointer"
                             >
                                 <motion.button
@@ -331,7 +332,8 @@ export default function UpgradePage() {
                         </CardContent>
                         <CardFooter className="mt-auto pt-4">
                             <Link
-                                href={billingCycle === "monthly" ? "/pay?price=price_1RRphR2cPejVT0hsN5BFQdXO" : "/pay?price=price_1RRphR2cPejVT0hspMaAwRAc"}
+                                // href={billingCycle === "monthly" ? "/pay?price=price_1RRphR2cPejVT0hsN5BFQdXO" : "/pay?price=price_1RRphR2cPejVT0hspMaAwRAc"}
+                                href={`/checkout?plan=ultimate&billing=${billingCycle}`}
                                 className="w-full cursor-pointer"
                             >
                                 <motion.button
