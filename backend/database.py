@@ -1,4 +1,4 @@
-from backend.config import get_settings
+from config import get_settings
 from sqlmodel import create_engine, Session
 from sqlmodel import SQLModel, create_engine
 from sqlmodel.ext.asyncio.session import AsyncSession

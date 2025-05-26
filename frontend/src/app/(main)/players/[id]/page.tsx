@@ -12,14 +12,14 @@ type PlayerParams = {
     id: string;
 }
 
-type PlayerPageProps = {
-    params: PlayerParams
-    searchParams: Record<string, string | string[]>
-}
-
-
 // Add generateMetadata if needed (optional)
-export async function generateMetadata({ params, searchParams }: PlayerPageProps): Promise<Metadata> {
+export async function generateMetadata({ 
+    params, 
+    searchParams 
+}: { 
+    params: PlayerParams; 
+    searchParams: Record<string, string | string[] | undefined>; 
+}): Promise<Metadata> {
     console.log(searchParams)
     return {
         title: `Player ${params.id} | HoopMetrics`,
@@ -63,7 +63,10 @@ interface Player {
 export default async function PlayerDetailPage({
     params,
     searchParams
-}: PlayerPageProps) {
+}: {
+    params: PlayerParams;
+    searchParams: Record<string, string | string[] | undefined>;
+}) {
     // Server-side data fetching
     console.log(searchParams)
     const playerId = params.id;
