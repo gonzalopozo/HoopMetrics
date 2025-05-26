@@ -4,3 +4,4 @@ fill_db/.env
 .venv
 .env
 __pycache__
+.vercel
