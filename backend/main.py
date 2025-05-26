@@ -49,6 +49,31 @@ async def log_requests(request: Request, call_next):
             content={"status": "error", "message": "Internal server error", "details": str(e)}
         )
 
+@app.middleware("http")
+async def convert_responses_to_json(request: Request, call_next):
+    """Ensure all responses are proper JSONResponse objects"""
+    try:
+        # Call the next middleware or endpoint
+        response = await call_next(request)
+        
+        # If already a response object, return it
+        if isinstance(response, JSONResponse):
+            return response
+            
+        # If it's a dict, convert to JSONResponse
+        if isinstance(response, dict):
+            return JSONResponse(content=response)
+            
+        # Otherwise, return the original response
+        return response
+    except Exception as e:
+        # Log the error and return a JSON error response
+        logger.error(f"Error processing request: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "message": "Internal server error", "details": str(e)}
+        )
+
 @app.get("/")
 async def health_check():
     return JSONResponse(content={"status": "ok", "message": "API is running"})

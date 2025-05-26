@@ -229,14 +229,16 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
             Match.home_score.is_not(None)
         )
         team_match_result = await session.execute(team_match_query)
-        team_match_ids = team_match_result.all()
+        # Extract the actual integers from the Row objects
+        team_match_ids = [match[0] for match in team_match_result.all()]
         
         # Get all players on the team
         players_query = select(Player.id).where(Player.current_team_id == id)
         players_result = await session.execute(players_query)
-        player_ids = players_result.all()
+        # Extract the actual integers from the Row objects
+        player_ids = [player[0] for player in players_result.all()]
         
-        # Get stats for the team's players in team matches
+        # Now your team_stats_query will work correctly
         team_stats_query = select(
             func.sum(MatchStatistic.rebounds).label("rebounds"),
             func.sum(MatchStatistic.assists).label("assists"),
