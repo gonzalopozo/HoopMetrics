@@ -7,18 +7,20 @@ from config import get_settings
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
-# Fix case sensitivity - use uppercase to match Settings class
+# Fix connection parameters for asyncpg
 engine = create_async_engine(
-    settings.DATABASE_URL,  # Changed from database_url to DATABASE_URL
-    echo=False,            # Removed settings.db_echo which doesn't exist
+    settings.DATABASE_URL,
+    echo=False,
     future=True,
     pool_pre_ping=True,
-    # Critical for serverless - no pool!
-    poolclass=None,  
-    # Fast failure for connections
+    # For serverless environments
+    poolclass=None,
+    # Use correct asyncpg parameters
     connect_args={
-        "connect_timeout": 5,
-        "command_timeout": 5
+        "timeout": 5.0,  # Connection timeout in seconds
+        "server_settings": {
+            "statement_timeout": "5000"  # Query timeout in milliseconds
+        }
     }
 )
 
