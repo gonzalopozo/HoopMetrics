@@ -4,7 +4,7 @@ from sqlalchemy.types import Enum as PgEnum
 from typing import List, Optional
 from datetime import date, datetime
 from enum import Enum  # <-- Añade esto
-from typing import TypedDict
+from typing_extensions import TypedDict
 from pydantic import BaseModel
 
 
