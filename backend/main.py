@@ -81,8 +81,12 @@ async def health_check():
 async def db_health_check():
     """Test database connection using a fresh session factory."""
     try:
+        # Import the function to create a fresh session factory
         from database import get_session_factory
+        
+        # Create a fresh session factory for this request
         session_factory = get_session_factory()
+        
         async with session_factory() as session:
             result = await session.execute(select(1))
             value = result.scalar_one()
