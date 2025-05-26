@@ -8,7 +8,7 @@ import traceback
 from models import UserRole
 from deps import get_db, require_role
 from config import get_settings
-from database import engine
+from database import get_engine  # Changed from engine to get_engine
 from routers import home, debug, players, auth, teams
 from sqlmodel.ext.asyncio.session import AsyncSession
 
