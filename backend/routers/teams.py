@@ -233,11 +233,10 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
         team_match_ids = [match[0] for match in team_match_result.all()]
         
         # Get all players on the team
-        players_query = select(Player.id).where(Player.current_team_id == id)
+        players_query = select(Player).where(Player.current_team_id == id)
         players_result = await session.execute(players_query)
-        # Extract the actual integers from the Row objects
-        player_ids = [player[0] for player in players_result.all()]
-        
+        team_players = players_result.scalars().all()  # Changed from players_result.all()
+
         # Now your team_stats_query will work correctly
         team_stats_query = select(
             func.sum(MatchStatistic.rebounds).label("rebounds"),
@@ -274,7 +273,7 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
         # 3. Get team players with stats matching frontend interface
         players_query = select(Player).where(Player.current_team_id == id)
         players_result = await session.execute(players_query)
-        team_players = players_result.all()
+        team_players = players_result.scalars().all()  # Changed from players_result.all()
         
         # Get player IDs for querying stats
         player_ids = [player.id for player in team_players]
@@ -282,7 +281,7 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
         # Get all stats for these players in a single query
         stats_query = select(MatchStatistic).where(MatchStatistic.player_id.in_(player_ids))
         stats_result = await session.execute(stats_query)
-        all_stats = stats_result.all()
+        all_stats = stats_result.scalars().all()  # Changed from stats_result.all()
         
         # Group stats by player ID
         stats_by_player = {}
@@ -368,8 +367,8 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
         recent_games_result = await session.execute(recent_games_query)
         upcoming_games_result = await session.execute(upcoming_games_query)
         
-        recent_games = recent_games_result.all()
-        upcoming_games = upcoming_games_result.all()
+        recent_games = recent_games_result.scalars().all()  # Changed from recent_games_result.all()
+        upcoming_games = upcoming_games_result.scalars().all()  # Changed from upcoming_games_result.all()
         
         # Transform match objects to include required fields
         processed_recent_games = []
