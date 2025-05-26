@@ -16,7 +16,7 @@ import { cn, getNBALogo } from "@/lib/utils"
 import { TeamDetails } from "@/types"
 
 export default function TeamTabs({ team }: { team: TeamDetails }) {
-    const [_, setActiveTab] = useState("overview")
+    const [, setActiveTab] = useState("overview")
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>

@@ -47,7 +47,7 @@ interface PlayerTabsProps {
 }
 
 export default function PlayerTabs({ player, careerHighs, shootingPercentages }: PlayerTabsProps) {
-    const [_, setActiveTab] = useState("overview")
+    const [, setActiveTab] = useState("overview")
     const [selectedGameIndex, setSelectedGameIndex] = useState<number | null>(null)
 
     return (
