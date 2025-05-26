@@ -1,19 +1,19 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import select, select
+from sqlmodel import select
+import logging
+import traceback
 
 from models import UserRole
-
 from deps import get_db, require_role
-
-
 from config import get_settings
 from database import engine
-
 from routers import home, debug, players, auth, teams
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 env = get_settings()
 
@@ -26,30 +26,43 @@ app.include_router(teams.router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],            # Permite todas las fuentes
-    allow_credentials=True,                      # Permite envío de cookies y cabeceras de autenticación
-    allow_methods=["*"],                         # Permite todos los métodos HTTP
-    allow_headers=["*"],                         # Permite todas las cabeceras
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """Log all requests and catch exceptions to prevent 500 errors"""
+    try:
+        response = await call_next(request)
+        return response
+    except Exception as e:
+        logger.error(f"Request failed: {request.url.path}")
+        logger.error(f"Error: {str(e)}")
+        logger.error(traceback.format_exc())
+        # Return a more graceful error
+        return {"status": "error", "message": "Internal server error", "details": str(e)}
 
 @app.get("/")
 async def health_check():
-    try:
-        # Simple health check without DB connection first
-        return {"status": "ok", "message": "API is running"}
-    except Exception as e:
-        print(f"Error in health check: {e}")
-        return {"status": "error", "message": str(e)}
+    return {"status": "ok", "message": "API is running"}
 
 @app.get("/health/db")
-async def db_health_check(session: AsyncSession = Depends(get_db)):
+async def db_health_check():
+    """Separate function to test database without depending on session"""
     try:
-        result = await session.exec(select(1))
-        abc = result.one()
-        return {"status": "ok", "database": "connected"}
+        # Create a one-time session instead of using Depends
+        from database import async_session_factory
+        async with async_session_factory() as session:
+            result = await session.exec(select(1))
+            value = result.one()
+            return {"status": "ok", "database": "connected", "test_value": value}
     except Exception as e:
-        print(f"Error connecting to database: {e}")
-        return {"status": "error", "message": str(e)}
+        error_details = str(e)
+        logger.error(f"Database connection error: {error_details}")
+        return {"status": "error", "message": "Database connection failed", "details": error_details}
 
 # Ejemplo de endpoint protegido por rol
 @app.get("/admin/dashboard")
