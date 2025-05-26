@@ -229,14 +229,16 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
             Match.home_score.is_not(None)
         )
         team_match_result = await session.execute(team_match_query)
-        # Extract the actual integers from the Row objects
         team_match_ids = [match[0] for match in team_match_result.all()]
         
         # Get all players on the team
         players_query = select(Player).where(Player.current_team_id == id)
         players_result = await session.execute(players_query)
-        team_players = players_result.scalars().all()  # Changed from players_result.all()
+        team_players = players_result.scalars().all()
 
+        # Get player IDs for querying stats
+        player_ids = [player.id for player in team_players]
+        
         # Now your team_stats_query will work correctly
         team_stats_query = select(
             func.sum(MatchStatistic.rebounds).label("rebounds"),
@@ -271,12 +273,12 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
         ftp = round((team_stats.ftm or 0) / (team_stats.fta or 1) * 100, 1)
         
         # 3. Get team players with stats matching frontend interface
-        players_query = select(Player).where(Player.current_team_id == id)
-        players_result = await session.execute(players_query)
-        team_players = players_result.scalars().all()  # Changed from players_result.all()
+        # players_query = select(Player).where(Player.current_team_id == id)
+        # players_result = await session.execute(players_query)
+        # team_players = players_result.scalars().all()  # Changed from players_result.all()
         
-        # Get player IDs for querying stats
-        player_ids = [player.id for player in team_players]
+        # # Get player IDs for querying stats
+        # player_ids = [player.id for player in team_players]
         
         # Get all stats for these players in a single query
         stats_query = select(MatchStatistic).where(MatchStatistic.player_id.in_(player_ids))
