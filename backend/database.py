@@ -8,48 +8,48 @@ from config import get_settings
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
-# Don't create engine at module level
-_engine = None
-_session_factory = None
-
+# For backwards compatibility
 def get_engine():
-    """Get a database engine tied to the current event loop"""
-    global _engine
-    if _engine is None:
-        _engine = create_async_engine(
-            settings.DATABASE_URL,
-            echo=False,
-            future=True,
-            pool_pre_ping=True,
-            pool_size=10,
-            max_overflow=20,
-            pool_recycle=300,  # 5 minutes
-            connect_args={"timeout": 5.0}
-        )
-    return _engine
+    """Create a fresh database engine for the current event loop"""
+    return create_async_engine(
+        settings.DATABASE_URL,
+        echo=False,
+        future=True,
+        pool_pre_ping=True,
+        # Critical for serverless - use minimal pooling
+        pool_size=5,
+        max_overflow=10,
+        pool_recycle=60,  # Recycle connections frequently
+        # Important: connect_args are passed directly to the underlying driver
+        connect_args={"timeout": 5.0}
+    )
 
+# Create a fresh session factory for each request
 def get_session_factory():
-    """Get session factory tied to the current event loop"""
-    global _session_factory
-    if _session_factory is None:
-        _session_factory = sessionmaker(
-            get_engine(), 
-            class_=AsyncSession, 
-            expire_on_commit=False,
-            autoflush=False
-        )
-    return _session_factory
+    """Create a session factory tied to the current event loop"""
+    # Create a new engine for each session factory to avoid event loop issues
+    engine = get_engine()
+    return sessionmaker(
+        engine, 
+        class_=AsyncSession, 
+        expire_on_commit=False
+    )
 
-# Backwards compatibility
-engine = get_engine()
-async_session_factory = get_session_factory()
-
-# For dependency injection
+# For dependency injection - critical for FastAPI endpoints
 async def get_db():
-    # Create a new session factory each time to ensure fresh connection
+    """Get a database session for the current request using the current event loop"""
+    # Create a fresh session factory using the current event loop
     factory = get_session_factory()
     session = factory()
     try:
         yield session
+    except Exception as e:
+        logger.error(f"Database session error: {e}")
+        await session.rollback()
+        raise
     finally:
         await session.close()
+
+# Compatibility variables for existing code
+engine = get_engine()
+async_session_factory = get_session_factory()
