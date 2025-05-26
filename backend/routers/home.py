@@ -16,7 +16,7 @@ router = APIRouter(
 @router.get("/top-performers", response_model=List[TopPerformer])
 async def read_top_performers(session: AsyncSession = Depends(get_db)):
     try:
-        matchs = await session.exec(
+        matchs = await session.execute(
             select(Match)
             .where(Match.home_score != None)
             .where(Match.away_score != None)
@@ -59,7 +59,7 @@ async def read_top_performers(session: AsyncSession = Depends(get_db)):
             )
 
             # 4) Ejecutar y mapear resultados
-            result = await session.exec(stmt)
+            result = await session.execute(stmt)
             rows = result.all()
 
             for stat, total, player_id, player_name, player_team_id, player_url_pic, side in rows:

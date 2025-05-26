@@ -19,7 +19,7 @@ async def read_teams(session: AsyncSession = Depends(get_db)):
     try:
         # Get all teams with a single query
         teams_query = select(Team)
-        teams_result = await session.exec(teams_query)
+        teams_result = await session.execute(teams_query)
         teams = teams_result.all()
         
         # Create a dictionary to store each team's data
@@ -37,7 +37,7 @@ async def read_teams(session: AsyncSession = Depends(get_db)):
             Match.away_score.is_not(None)
         ).group_by(Match.home_team_id)
         
-        home_results = await session.exec(home_games_query)
+        home_results = await session.execute(home_games_query)
         for team_id, wins, losses in home_results:
             team_data[team_id]["wins"] += wins
             team_data[team_id]["losses"] += losses
@@ -53,7 +53,7 @@ async def read_teams(session: AsyncSession = Depends(get_db)):
             Match.away_score.is_not(None)
         ).group_by(Match.away_team_id)
         
-        away_results = await session.exec(away_games_query)
+        away_results = await session.execute(away_games_query)
         for team_id, wins, losses in away_results:
             team_data[team_id]["wins"] += wins
             team_data[team_id]["losses"] += losses
@@ -135,7 +135,7 @@ async def read_teams(session: AsyncSession = Depends(get_db)):
             .group_by(combined_stats.c.team_id)
         )
         
-        stats_results = await session.exec(stats_query)
+        stats_results = await session.execute(stats_query)
         
         # Create a dictionary to store stats for each team
         team_stats = {}
@@ -185,7 +185,7 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
     try:
         # 1. Get basic team information
         team_query = select(Team).where(Team.id == id)
-        team_result = await session.exec(team_query)
+        team_result = await session.execute(team_query)
         team = team_result.first()
         
         if not team:
@@ -206,8 +206,8 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
             func.sum(Match.home_score).label("away_points_allowed")
         ).where(Match.away_team_id == id, Match.away_score.is_not(None))
         
-        home_result = await session.exec(home_games_query)
-        away_result = await session.exec(away_games_query)
+        home_result = await session.execute(home_games_query)
+        away_result = await session.execute(away_games_query)
         
         home_wins, home_losses, home_points_scored, home_points_allowed = home_result.one()
         away_wins, away_losses, away_points_scored, away_points_allowed = away_result.one()
@@ -228,12 +228,12 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
             (Match.home_team_id == id) | (Match.away_team_id == id),
             Match.home_score.is_not(None)
         )
-        team_match_result = await session.exec(team_match_query)
+        team_match_result = await session.execute(team_match_query)
         team_match_ids = team_match_result.all()
         
         # Get all players on the team
         players_query = select(Player.id).where(Player.current_team_id == id)
-        players_result = await session.exec(players_query)
+        players_result = await session.execute(players_query)
         player_ids = players_result.all()
         
         # Get stats for the team's players in team matches
@@ -254,7 +254,7 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
             MatchStatistic.player_id.in_(player_ids)
         )
         
-        team_stats_result = await session.exec(team_stats_query)
+        team_stats_result = await session.execute(team_stats_query)
         team_stats = team_stats_result.one()
         
         # Calculate per game averages and percentages
@@ -271,7 +271,7 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
         
         # 3. Get team players with stats matching frontend interface
         players_query = select(Player).where(Player.current_team_id == id)
-        players_result = await session.exec(players_query)
+        players_result = await session.execute(players_query)
         team_players = players_result.all()
         
         # Get player IDs for querying stats
@@ -279,7 +279,7 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
         
         # Get all stats for these players in a single query
         stats_query = select(MatchStatistic).where(MatchStatistic.player_id.in_(player_ids))
-        stats_result = await session.exec(stats_query)
+        stats_result = await session.execute(stats_query)
         all_stats = stats_result.all()
         
         # Group stats by player ID
@@ -340,7 +340,7 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
         
         # Get all teams info for names
         teams_query = select(Team.id, Team.full_name, Team.abbreviation)
-        teams_result = await session.exec(teams_query)
+        teams_result = await session.execute(teams_query)
         team_info = {team.id: {"name": team.full_name, "abbreviation": team.abbreviation} for team in teams_result}
         
         # Recent games (past)
@@ -362,8 +362,8 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
             .limit(5)
         )
         
-        recent_games_result = await session.exec(recent_games_query)
-        upcoming_games_result = await session.exec(upcoming_games_query)
+        recent_games_result = await session.execute(recent_games_query)
+        upcoming_games_result = await session.execute(upcoming_games_query)
         
         recent_games = recent_games_result.all()
         upcoming_games = upcoming_games_result.all()

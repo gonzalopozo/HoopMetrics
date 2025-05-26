@@ -53,7 +53,7 @@ async def read_players_sorted_by_ppg_paginated(page:int, session: AsyncSession =
             .limit(limit)
         )
 
-        response = await session.exec(stmt)
+        response = await session.execute(stmt)
         results = response.all()
 
         # Mapear a tus Pydantic models PlayerRead / StatRead
@@ -88,7 +88,7 @@ async def read_players_by_id(id: int, session: AsyncSession = Depends(get_db)):
     try:
         # Primero verificamos si hay jugadores en la base de datos
         # Obtenemos como máximo 20 jugadores de la base de datos
-        result = await session.exec(
+        result = await session.execute(
             select(Player)
             .where(Player.id == id)
         )
@@ -105,7 +105,7 @@ async def read_players_by_id(id: int, session: AsyncSession = Depends(get_db)):
 
         # Consulta específica para las estadísticas de este jugador
         stats_query = select(MatchStatistic).where(MatchStatistic.player_id == player.id)
-        result_stats = await session.exec(stats_query)
+        result_stats = await session.execute(stats_query)
         stats = result_stats.all()
 
         # Calcular promedios si hay estadísticas

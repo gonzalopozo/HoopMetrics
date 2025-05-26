@@ -56,7 +56,7 @@ async def db_health_check():
         # Create a one-time session instead of using Depends
         from database import async_session_factory
         async with async_session_factory() as session:
-            result = await session.exec(select(1))
+            result = await session.execute(select(1))
             value = result.one()
             return {"status": "ok", "database": "connected", "test_value": value}
     except Exception as e:
