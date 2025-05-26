@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { AdminHeader } from "@/components/admin/admin-header"
+import type { DateRange } from "react-day-picker"
 import { MrrTrendsCard } from "@/components/admin/cards/mrr-trends-card"
 import { ChurnRateCard } from "@/components/admin/cards/churn-rate-card"
 import { ActiveUsersCard } from "@/components/admin/cards/active-users-card"
@@ -22,11 +23,16 @@ export default function AdminDashboardPage() {
     from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
     to: new Date(),
   })
+  const handleDateRangeChange = (range: DateRange | undefined) => {
+    if (range && range.from && range.to) {
+      setDateRange({ from: range.from, to: range.to });
+    }
+  };
 
   return (
     <>
       <AdminHeader title="Admin Dashboard" description="Monitor key business metrics and system health">
-        <DateRangePicker dateRange={dateRange} onDateRangeChange={setDateRange} />
+        <DateRangePicker dateRange={dateRange} onDateRangeChange={handleDateRangeChange} />
       </AdminHeader>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
