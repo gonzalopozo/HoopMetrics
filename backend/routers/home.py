@@ -1,6 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Depends
-from sqlmodel import Session, case, desc, func, select
+from sqlmodel import case, desc, func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 

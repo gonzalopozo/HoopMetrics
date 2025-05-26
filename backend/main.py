@@ -1,6 +1,6 @@
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import Session, select, select
+from sqlmodel import select, select
 
 from models import UserRole
 
