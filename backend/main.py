@@ -33,14 +33,22 @@ app.add_middleware(
 )
 
 @app.get("/")
-async def health_check(session: AsyncSession = Depends(get_db)):
+async def health_check():
+    try:
+        # Simple health check without DB connection first
+        return {"status": "ok", "message": "API is running"}
+    except Exception as e:
+        print(f"Error in health check: {e}")
+        return {"status": "error", "message": str(e)}
+
+@app.get("/health/db")
+async def db_health_check(session: AsyncSession = Depends(get_db)):
     try:
         result = await session.exec(select(1))
         abc = result.one()
-        return {"status": "ok"}
+        return {"status": "ok", "database": "connected"}
     except Exception as e:
         print(f"Error connecting to database: {e}")
-        # No lanzamos excepción aquí para permitir que la app inicie de todos modos
         return {"status": "error", "message": str(e)}
 
 # Ejemplo de endpoint protegido por rol

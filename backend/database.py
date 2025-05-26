@@ -1,20 +1,22 @@
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
+from sqlmodel import SQLModel
 from config import get_settings
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, sessionmaker
-import os
 
-env = get_settings()
+settings = get_settings()
 
-# Database setup
-database_url = env.DATABASE_URL
+# Configure engine with parameters better suited for serverless
 engine = create_async_engine(
-    database_url,
-    echo=env.db_echo,
+    settings.database_url,
+    echo=settings.db_echo,
     future=True,
     pool_pre_ping=True,
-    pool_recycle=3600,
+    pool_recycle=300,  # Shorter recycle time for serverless
+    pool_size=5,       # Smaller pool size
+    max_overflow=10,   # Limit max connections
+    connect_args={"connect_timeout": 10}  # Timeout faster
 )
 
-# Create session factory
 async_session_factory = sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False
 )
