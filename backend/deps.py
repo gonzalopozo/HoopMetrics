@@ -1,7 +1,7 @@
 # app/deps.py
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from database import get_session
+from database import get_db  # Change from get_session to get_db
 from security import decode_access_token
 from models import User, UserRole
 from crud import get_user_by_email
@@ -10,9 +10,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
-
-# Use the new session generator
-get_db = get_session
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db=Depends(get_db)) -> User:
     payload = decode_access_token(token)
