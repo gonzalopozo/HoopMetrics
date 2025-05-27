@@ -85,7 +85,7 @@ function CheckoutContent() {
             setStep("error")
             console.error("Error al parsear token:", err)
         }
-    }, [searchParams])
+    }, [])
 
     const handlePaymentSuccess = (id: string) => {
         setSubscriptionId(id)
