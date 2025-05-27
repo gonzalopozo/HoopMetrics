@@ -37,6 +37,8 @@ function CheckoutContent() {
 
     // 2. SEGUNDO EFECTO: Inicializar el pago SOLO cuando ya tenemos email
     useEffect(() => {
+        console.log(document.cookie)
+
         const token = getCookie("token")
         if (!token) {
             setError("No hay sesión activa. Por favor, inicia sesión.")
