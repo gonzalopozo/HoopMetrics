@@ -90,7 +90,7 @@ function CheckoutContent() {
             <div className="container mx-auto max-w-4xl">
                 {/* Header */}
                 <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-                    <Link href="/pricing">
+                    <Link href="/upgrade">
                         <Button variant="ghost" className="mb-4">
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             Back to Pricing
@@ -216,7 +216,7 @@ function CheckoutContent() {
                                                     <Link href="/">Go to Dashboard</Link>
                                                 </Button>
                                                 <Button variant="outline" asChild className="w-full">
-                                                    <Link href="/pricing">View Plans</Link>
+                                                    <Link href="/upgrade">View Plans</Link>
                                                 </Button>
                                             </div>
                                         </CardContent>
@@ -243,7 +243,7 @@ function CheckoutContent() {
                                                     Try Again
                                                 </Button>
                                                 <Button variant="outline" asChild className="w-full">
-                                                    <Link href="/pricing">Back to Pricing</Link>
+                                                    <Link href="/upgrade">Back to Pricing</Link>
                                                 </Button>
                                             </div>
                                         </CardContent>
