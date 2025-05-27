@@ -18,6 +18,10 @@ type CheckoutStep = "loading" | "payment" | "success" | "error"
 function getEmailFromToken(): string {
     const token = Cookies.get("token")
     console.log("Token:", token) // Para depuración
+    const payloadTry = JSON.parse(atob(token!.split(".")[1]))
+    
+    console.log("Payload:", payloadTry) // Para depuración
+
     if (!token) return ""
     try {
         const payload = JSON.parse(atob(token.split(".")[1]))
