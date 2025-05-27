@@ -26,21 +26,22 @@ interface ApiPlayer {
 
 interface Props {
     dehydratedState: unknown
+    apiUrl: string
 }
 
-export default function PlayersInfiniteList({ dehydratedState }: Props) {
+export default function PlayersInfiniteList({ dehydratedState, apiUrl }: Props) {
     const queryClient = new QueryClient()
 
     return (
         <QueryClientProvider client={queryClient}>
             <HydrationBoundary state={dehydratedState}>
-                <InfiniteListCore />
+                <InfiniteListCore apiUrl={apiUrl} />
             </HydrationBoundary>
         </QueryClientProvider>
     )
 }
 
-function InfiniteListCore() {
+function InfiniteListCore({ apiUrl }: { apiUrl: string }) {
     // Uso de la API v5 de useInfiniteQuery con initialPageParam
     const {
         data,
@@ -54,7 +55,7 @@ function InfiniteListCore() {
         queryKey: ['players'],
         queryFn: async ({ pageParam = 1 }) => {
             const res = await axios.get<ApiPlayer[]>(
-                `${process.env.API_URL}/players/sortedbyppg/${pageParam}`
+                `${apiUrl}/players/sortedbyppg/${pageParam}`
             )
             return res.data
         },
