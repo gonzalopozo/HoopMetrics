@@ -13,7 +13,7 @@ interface UserAvatarProps {
 }
 
 export function UserAvatar({ fallback = "U", role }: UserAvatarProps) {
-    const { theme } = useTheme()
+    const { resolvedTheme } = useTheme() // <-- usa resolvedTheme
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
@@ -24,7 +24,7 @@ export function UserAvatar({ fallback = "U", role }: UserAvatarProps) {
         return <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
     }
 
-    const isDark = theme === "dark"
+    const isDark = resolvedTheme === "dark" // <-- usa resolvedTheme
     const borderColor = getRoleColor(role, isDark)
 
     return (
