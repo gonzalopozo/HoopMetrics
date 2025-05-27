@@ -39,21 +39,23 @@ function CheckoutContent() {
     } | null>(null)
     const [subscriptionId, setSubscriptionId] = useState<string>("")
     const [error, setError] = useState<string>("")
-    const [email, setEmail] = useState<string>("") // <--- Nuevo estado para el email
+    const [email, setEmail] = useState<string>("")
+    const [isCheckingEmail, setIsCheckingEmail] = useState(true) // <--- NUEVO
 
     // Obtén el email del JWT token de la cookie SOLO en el cliente
     useEffect(() => {
         const emailFromToken = getEmailFromToken()
-        if (!emailFromToken) {
-            setError("No se ha podido obtener el email del usuario. Por favor, inicia sesión de nuevo.")
-            setStep("error")
-        } else {
-            setEmail(emailFromToken)
-        }
+        setEmail(emailFromToken)
+        setIsCheckingEmail(false) // <--- Ya hemos comprobado
     }, [])
 
     useEffect(() => {
-        if (!email) return // Espera a tener el email
+        if (isCheckingEmail) return // Espera a terminar de comprobar el email
+        if (!email) {
+            setError("No se ha podido obtener el email del usuario. Por favor, inicia sesión de nuevo.")
+            setStep("error")
+            return
+        }
 
         const plan = searchParams.get("plan") as PlanType
         const billing = searchParams.get("billing") as BillingCycle
@@ -83,7 +85,7 @@ function CheckoutContent() {
         }
 
         initializePayment()
-    }, [searchParams, email]) // <-- Ahora depende de email
+    }, [searchParams, email, isCheckingEmail])
 
     const handlePaymentSuccess = (id: string) => {
         setSubscriptionId(id)
