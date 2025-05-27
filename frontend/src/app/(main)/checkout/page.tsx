@@ -51,12 +51,14 @@ function CheckoutContent() {
             const payload = JSON.parse(atob(token.split('.')[1]));
             console.log("Payload JWT:", payload);
 
-            if (!payload.email) {
+            // Usa payload.email o payload.sub como email
+            const userEmail = payload.email || payload.sub;
+            if (!userEmail) {
                 setError("No se ha podido obtener el email del usuario. Por favor, inicia sesión de nuevo.")
                 setStep("error")
                 return
             }
-            setEmail(payload.email)
+            setEmail(userEmail);
 
             // Si hay email, inicializar el pago
             const plan = searchParams.get("plan") as PlanType
