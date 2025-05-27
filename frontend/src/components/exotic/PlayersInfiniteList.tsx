@@ -54,7 +54,7 @@ function InfiniteListCore() {
         queryKey: ['players'],
         queryFn: async ({ pageParam = 1 }) => {
             const res = await axios.get<ApiPlayer[]>(
-                `${process.env.API_URL}/players/sortedbyppg/${pageParam}`
+                `${process.env.NEXT_PUBLIC_API_URL}/players/sortedbyppg/${pageParam}`
             )
             return res.data
         },
