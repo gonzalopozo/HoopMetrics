@@ -45,6 +45,7 @@ export async function confirmSubscription(paymentIntentId: string) {
 
         // Create customer if needed
         const customer = await stripe.customers.create({
+            // TODO: Replace with actual email
             email: "user@example.com", // Replace with actual user email
             metadata: {
                 paymentIntentId,

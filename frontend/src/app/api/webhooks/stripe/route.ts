@@ -27,10 +27,19 @@ export async function POST(request: NextRequest) {
                 const paymentIntent = event.data.object as Stripe.PaymentIntent
                 console.log("Payment succeeded:", paymentIntent.id)
 
-                // Here you would typically:
-                // 1. Update user subscription in your database
-                // 2. Send confirmation email
-                // 3. Grant access to premium features
+                // Extrae el email y el tier del metadata del paymentIntent
+                // TODO: revisar en el dashboard de Stripe si el metadata es correcto
+                const email = paymentIntent.metadata?.email
+                const newRole = paymentIntent.metadata?.tier // "premium" o "ultimate"
+
+                if (email && newRole) {
+                    // Llama a tu backend para actualizar el tier y obtener el nuevo JWT
+                    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/upgrade`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email, new_role: newRole }),
+                    })
+                }
 
                 break
 

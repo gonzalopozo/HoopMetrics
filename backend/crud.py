@@ -20,3 +20,13 @@ async def authenticate_user(db: AsyncSession, email: str, password: str):
     if not user or not verify_password(password, user.password_hash):
         return None
     return user
+
+async def update_user_role(db: AsyncSession, id: int, new_role: UserRole):
+    user = await db.get(User, id)
+    if not user:
+        return None
+    user.role = new_role
+    await db.commit()
+    await db.refresh(user)
+    return user
+
