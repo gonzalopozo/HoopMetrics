@@ -26,7 +26,7 @@ app.include_router(teams.router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[env.FRONTEND_URL],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
