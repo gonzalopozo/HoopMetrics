@@ -1,33 +1,25 @@
 export type UserRole = "free" | "premium" | "ultimate" | "admin"
 
-export interface RoleColors {
-    light: string
-    dark: string
-}
-
-export const roleColors: Record<UserRole, RoleColors> = {
+export const roleColors = {
     free: {
-        light: "#A8D5FF", // pale sky blue
-        dark: "#FFB3B3", // soft coral pink
+        light: "#32CD32",    // Lime Green
+        dark: "#ADFF2F",     // Green Yellow
     },
     premium: {
-        light: "#4DA6FF", // mid dodger blue
-        dark: "#FF6666", // standard tomato red
+        light: "#FFA500",    // Vibrant Orange
+        dark: "#FFD700",     // Gold
     },
     ultimate: {
-        light: "#005FCC", // deep royal blue
-        dark: "#CC0000", // strong crimson red
+        light: "#8A2BE2",    // Blue Violet
+        dark: "#DA70D6",     // Orchid
     },
     admin: {
-        light: "#002147", // navy/ink blue
-        dark: "#800000", // dark maroon
+        light: "#00CED1",    // Dark Turquoise
+        dark: "#40E0D0",     // Turquoise
     },
-}
+};
 
-export function getRoleColor(role: UserRole, theme: "light" | "dark"): string {
-    return roleColors[role][theme]
-}
 
-export function getRoleDisplayName(role: UserRole): string {
-    return role.charAt(0).toUpperCase() + role.slice(1)
+export function getRoleColor(role: UserRole, isDark: boolean): string {
+    return roleColors[role][isDark ? "dark" : "light"]
 }

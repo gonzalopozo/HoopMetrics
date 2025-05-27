@@ -118,9 +118,9 @@ export function Header() {
                                 </Avatar> */}
                                 <UserAvatar
                                     // src="/placeholder.svg?height=32&width=32"
-                                    alt={user.name}
+                                    fallback={user.name[0]?.toUpperCase()}
                                     role={user.role as UserRole}
-                                    size="md"
+                                    // size="md"
                                 />
                             </div>
                             <button
