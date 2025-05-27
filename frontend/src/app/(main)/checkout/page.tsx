@@ -15,22 +15,6 @@ import Cookies from "js-cookie"
 
 type CheckoutStep = "loading" | "payment" | "success" | "error"
 
-function getEmailFromToken(): string {
-    const token = Cookies.get("token")
-    console.log("Token:", token) // Para depuración
-    const payloadTry = JSON.parse(atob(token!.split(".")[1]))
-    
-    console.log("Payload:", payloadTry) // Para depuración
-
-    if (!token) return ""
-    try {
-        const payload = JSON.parse(atob(token.split(".")[1]))
-        return payload.email || ""
-    } catch {
-        return ""
-    }
-}
-
 function CheckoutContent() {
     const searchParams = useSearchParams()
     const [step, setStep] = useState<CheckoutStep>("loading")
@@ -44,51 +28,73 @@ function CheckoutContent() {
     const [subscriptionId, setSubscriptionId] = useState<string>("")
     const [error, setError] = useState<string>("")
     const [email, setEmail] = useState<string>("")
-    const [isCheckingEmail, setIsCheckingEmail] = useState(true) // <--- NUEVO
+    const [isCheckingEmail, setIsCheckingEmail] = useState(true)
 
-    // Obtén el email del JWT token de la cookie SOLO en el cliente
+    // 1. PRIMER EFECTO: Obtener el email del token
     useEffect(() => {
-        const emailFromToken = getEmailFromToken()
-        setEmail(emailFromToken)
-        setIsCheckingEmail(false) // <--- Ya hemos comprobado
+        // Al iniciar, marcamos como que estamos verificando
+        setIsCheckingEmail(true)
+        
+        try {
+            const token = Cookies.get("token")
+            if (token) {
+                const payload = JSON.parse(atob(token.split(".")[1]))
+                if (payload.email) {
+                    console.log("Email obtenido:", payload.email)
+                    setEmail(payload.email)
+                } else {
+                    console.log("Token no contiene email")
+                    setError("No se ha podido obtener el email del usuario. Por favor, inicia sesión de nuevo.")
+                    setStep("error")
+                }
+            } else {
+                console.log("No hay token")
+                setError("No hay sesión activa. Por favor, inicia sesión.")
+                setStep("error")
+            }
+        } catch (err) {
+            console.error("Error al parsear token:", err)
+            setError("Error al obtener datos de la sesión. Por favor, inicia sesión de nuevo.")
+            setStep("error")
+        } finally {
+            // Siempre marcamos que ya terminamos de verificar, aunque haya error
+            setIsCheckingEmail(false)
+        }
     }, [])
 
+    // 2. SEGUNDO EFECTO: Inicializar el pago SOLO cuando ya tenemos email
     useEffect(() => {
-        if (isCheckingEmail) return // Espera a terminar de comprobar el email
-        if (!email) {
-            setError("No se ha podido obtener el email del usuario. Por favor, inicia sesión de nuevo.")
-            setStep("error")
-            return
-        }
+        // Solo ejecuta si ya NO estamos verificando email Y tenemos un email
+        if (!isCheckingEmail && email) {
+            const plan = searchParams.get("plan") as PlanType
+            const billing = searchParams.get("billing") as BillingCycle
 
-        const plan = searchParams.get("plan") as PlanType
-        const billing = searchParams.get("billing") as BillingCycle
-
-        if (!plan || !billing || !(plan in SUBSCRIPTION_PLANS) || !(billing in SUBSCRIPTION_PLANS[plan])) {
-            setError("Invalid subscription parameters")
-            setStep("error")
-            return
-        }
-
-        const initializePayment = async () => {
-            try {
-                const result = await createPaymentIntent(plan, billing, email)
-                setClientSecret(result.clientSecret)
-                setSubscriptionDetails({
-                    plan,
-                    billing,
-                    amount: result.amount,
-                    planName: plan.charAt(0).toUpperCase() + plan.slice(1),
-                })
-                setStep("payment")
-            } catch (err) {
-                setError("Failed to initialize payment")
+            if (!plan || !billing || !(plan in SUBSCRIPTION_PLANS) || !(billing in SUBSCRIPTION_PLANS[plan])) {
+                setError("Invalid subscription parameters")
                 setStep("error")
-                console.error("Payment initialization error:", err)
+                return
             }
-        }
 
-        initializePayment()
+            const initializePayment = async () => {
+                try {
+                    const result = await createPaymentIntent(plan, billing, email)
+                    setClientSecret(result.clientSecret)
+                    setSubscriptionDetails({
+                        plan,
+                        billing,
+                        amount: result.amount,
+                        planName: plan.charAt(0).toUpperCase() + plan.slice(1),
+                    })
+                    setStep("payment")
+                } catch (err) {
+                    setError("Failed to initialize payment")
+                    setStep("error")
+                    console.error("Payment initialization error:", err)
+                }
+            }
+
+            initializePayment()
+        }
     }, [searchParams, email, isCheckingEmail])
 
     const handlePaymentSuccess = (id: string) => {
