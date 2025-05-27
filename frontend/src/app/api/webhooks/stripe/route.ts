@@ -1,6 +1,7 @@
 import { headers } from "next/headers"
 import { type NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
+import axios from "axios"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2025-04-30.basil",
@@ -28,17 +29,26 @@ export async function POST(request: NextRequest) {
                 console.log("Payment succeeded:", paymentIntent.id)
 
                 // Extrae el email y el tier del metadata del paymentIntent
-                // TODO: revisar en el dashboard de Stripe si el metadata es correcto
                 const email = paymentIntent.metadata?.email
                 const newRole = paymentIntent.metadata?.tier // "premium" o "ultimate"
 
                 if (email && newRole) {
                     // Llama a tu backend para actualizar el tier y obtener el nuevo JWT
-                    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/upgrade`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ email, new_role: newRole }),
-                    })
+                    const response = await axios.post(
+                        `${process.env.NEXT_PUBLIC_API_URL}/auth/upgrade`,
+                        { email, new_role: newRole },
+                        { headers: { "Content-Type": "application/json" } }
+                    )
+
+                    // Recoge el nuevo JWT
+                    const newToken = response.data.access_token
+                    if (newToken) {
+                        // Setea la cookie 'token' (sobrescribe la anterior)
+                        // NOTA: Esto solo funciona si el webhook es llamado desde el navegador del usuario,
+                        // pero los webhooks de Stripe se llaman desde Stripe, así que aquí NO puedes setear la cookie directamente.
+                        // Debes devolver el token al frontend o hacer que el frontend lo pida tras el pago.
+                        // Puedes guardar el token en tu base de datos o devolverlo en la respuesta si el pago fue iniciado desde el frontend.
+                    }
                 }
 
                 break

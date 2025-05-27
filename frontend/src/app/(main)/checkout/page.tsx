@@ -11,8 +11,20 @@ import { PaymentForm } from "@/components/checkout/payment-form"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
+import Cookies from "js-cookie"
 
 type CheckoutStep = "loading" | "payment" | "success" | "error"
+
+function getEmailFromToken(): string {
+    const token = Cookies.get("token")
+    if (!token) return ""
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]))
+        return payload.email || ""
+    } catch {
+        return ""
+    }
+}
 
 function CheckoutContent() {
     const searchParams = useSearchParams()
@@ -27,6 +39,9 @@ function CheckoutContent() {
     const [subscriptionId, setSubscriptionId] = useState<string>("")
     const [error, setError] = useState<string>("")
 
+    // Obtén el email del JWT token de la cookie
+    const email = getEmailFromToken()
+
     useEffect(() => {
         const plan = searchParams.get("plan") as PlanType
         const billing = searchParams.get("billing") as BillingCycle
@@ -39,7 +54,7 @@ function CheckoutContent() {
 
         const initializePayment = async () => {
             try {
-                const result = await createPaymentIntent(plan, billing)
+                const result = await createPaymentIntent(plan, billing, email) // <-- pasa el email aquí
                 setClientSecret(result.clientSecret)
                 setSubscriptionDetails({
                     plan,
@@ -56,7 +71,7 @@ function CheckoutContent() {
         }
 
         initializePayment()
-    }, [searchParams])
+    }, [searchParams, email])
 
     const handlePaymentSuccess = (id: string) => {
         setSubscriptionId(id)
@@ -186,6 +201,7 @@ function CheckoutContent() {
                                             plan={subscriptionDetails.plan}
                                             onSuccess={handlePaymentSuccess}
                                             onError={handlePaymentError}
+                                            email={email} // <-- Aquí pasas el email extraído del JWT
                                         />
                                     </Elements>
                                 </motion.div>

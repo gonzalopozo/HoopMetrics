@@ -1,6 +1,8 @@
 "use client"
 
 import type React from "react"
+import axios from "axios"
+import Cookies from "js-cookie"
 
 import { useState } from "react"
 import { useStripe, useElements, PaymentElement, AddressElement } from "@stripe/react-stripe-js"
@@ -19,9 +21,10 @@ interface PaymentFormProps {
     plan: string
     onSuccess: (subscriptionId: string) => void
     onError: (error: string) => void
+    email: string // <--- Añade esta línea
 }
 
-export function PaymentForm({ amount, currency, planName, billing, plan, onSuccess, onError }: PaymentFormProps) {
+export function PaymentForm({ amount, currency, planName, billing, plan, onSuccess, onError, email }: PaymentFormProps) {
     const stripe = useStripe()
     const elements = useElements()
     const router = useRouter()
@@ -48,10 +51,21 @@ export function PaymentForm({ amount, currency, planName, billing, plan, onSucce
                 setErrorMessage(error.message || "An error occurred")
                 onError(error.message || "Payment failed")
             } else if (paymentIntent && paymentIntent.status === "succeeded") {
+                // 1. Confirma la suscripción en tu backend
                 const result = await confirmSubscription(paymentIntent.id)
                 if (result.success) {
+                    // 2. Llama a /auth/upgrade para obtener el nuevo JWT
+                    const response = await axios.post(
+                        `${process.env.NEXT_PUBLIC_API_URL}/auth/upgrade`,
+                        { email, new_role: plan },
+                        { headers: { "Content-Type": "application/json" } }
+                    )
+                    const newToken = response.data.access_token
+                    if (newToken) {
+                        // 3. Sobrescribe la cookie 'token' con el nuevo JWT
+                        Cookies.set("token", newToken, { path: "/" })
+                    }
                     onSuccess(result.subscriptionId!)
-                    // Redirect to success page
                     router.push(`/checkout/success?plan=${plan}&billing=${billing}`)
                 } else {
                     setErrorMessage(result.error || "Subscription confirmation failed")
@@ -76,7 +90,18 @@ export function PaymentForm({ amount, currency, planName, billing, plan, onSucce
                         Payment Details
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-4">
+                    {/* Email bloqueado */}
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Email</label>
+                        <input
+                            type="email"
+                            value={email}
+                            disabled
+                            className="w-full rounded-md border px-3 py-2 bg-muted text-muted-foreground cursor-not-allowed"
+                        />
+                    </div>
+
                     {/* Order Summary */}
                     <div className="bg-accent/50 rounded-lg p-4 space-y-2">
                         <div className="flex justify-between items-center">

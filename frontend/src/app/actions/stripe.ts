@@ -7,7 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2025-04-30.basil",
 })
 
-export async function createPaymentIntent(plan: PlanType, billing: BillingCycle) {
+export async function createPaymentIntent(plan: PlanType, billing: BillingCycle, email: string) {
     try {
         const planConfig = SUBSCRIPTION_PLANS[plan][billing]
         const amount = Math.round(planConfig.price * 100) // Convert to cents
@@ -22,6 +22,8 @@ export async function createPaymentIntent(plan: PlanType, billing: BillingCycle)
                 plan,
                 billing,
                 priceId: planConfig.priceId!,
+                email, // email real del usuario
+                tier: plan, // premium o ultimate
             },
         })
 
