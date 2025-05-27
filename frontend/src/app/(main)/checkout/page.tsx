@@ -17,6 +17,7 @@ type CheckoutStep = "loading" | "payment" | "success" | "error"
 
 function getEmailFromToken(): string {
     const token = Cookies.get("token")
+    console.log("Token:", token) // Para depuración
     if (!token) return ""
     try {
         const payload = JSON.parse(atob(token.split(".")[1]))
@@ -42,7 +43,13 @@ function CheckoutContent() {
 
     // Obtén el email del JWT token de la cookie SOLO en el cliente
     useEffect(() => {
-        setEmail(getEmailFromToken())
+        const emailFromToken = getEmailFromToken()
+        if (!emailFromToken) {
+            setError("No se ha podido obtener el email del usuario. Por favor, inicia sesión de nuevo.")
+            setStep("error")
+        } else {
+            setEmail(emailFromToken)
+        }
     }, [])
 
     useEffect(() => {
