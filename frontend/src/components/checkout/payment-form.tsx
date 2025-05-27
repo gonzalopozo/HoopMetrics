@@ -55,9 +55,10 @@ export function PaymentForm({ amount, currency, planName, billing, plan, onSucce
                 const result = await confirmSubscription(paymentIntent.id)
                 if (result.success) {
                     // 2. Llama a /auth/upgrade para obtener el nuevo JWT
+                    console.log({ email, new_role: plan.toLowerCase() })
                     const response = await axios.post(
                         `${process.env.NEXT_PUBLIC_API_URL}/auth/upgrade`,
-                        { email, new_role: plan },
+                        { email, new_role: plan.toLowerCase() },
                         { headers: { "Content-Type": "application/json" } }
                     )
                     const newToken = response.data.access_token

@@ -38,11 +38,16 @@ function CheckoutContent() {
     } | null>(null)
     const [subscriptionId, setSubscriptionId] = useState<string>("")
     const [error, setError] = useState<string>("")
+    const [email, setEmail] = useState<string>("") // <--- Nuevo estado para el email
 
-    // Obtén el email del JWT token de la cookie
-    const email = getEmailFromToken()
+    // Obtén el email del JWT token de la cookie SOLO en el cliente
+    useEffect(() => {
+        setEmail(getEmailFromToken())
+    }, [])
 
     useEffect(() => {
+        if (!email) return // Espera a tener el email
+
         const plan = searchParams.get("plan") as PlanType
         const billing = searchParams.get("billing") as BillingCycle
 
@@ -54,7 +59,7 @@ function CheckoutContent() {
 
         const initializePayment = async () => {
             try {
-                const result = await createPaymentIntent(plan, billing, email) // <-- pasa el email aquí
+                const result = await createPaymentIntent(plan, billing, email)
                 setClientSecret(result.clientSecret)
                 setSubscriptionDetails({
                     plan,
@@ -71,7 +76,7 @@ function CheckoutContent() {
         }
 
         initializePayment()
-    }, [searchParams, email])
+    }, [searchParams, email]) // <-- Ahora depende de email
 
     const handlePaymentSuccess = (id: string) => {
         setSubscriptionId(id)

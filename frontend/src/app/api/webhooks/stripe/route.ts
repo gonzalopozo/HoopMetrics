@@ -33,10 +33,12 @@ export async function POST(request: NextRequest) {
                 const newRole = paymentIntent.metadata?.tier // "premium" o "ultimate"
 
                 if (email && newRole) {
+                    console.log({ email, new_role: newRole.toLowerCase() })
+
                     // Llama a tu backend para actualizar el tier y obtener el nuevo JWT
                     const response = await axios.post(
                         `${process.env.NEXT_PUBLIC_API_URL}/auth/upgrade`,
-                        { email, new_role: newRole },
+                        { email, new_role: newRole.toLowerCase() },
                         { headers: { "Content-Type": "application/json" } }
                     )
 
