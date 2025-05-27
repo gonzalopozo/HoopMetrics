@@ -21,7 +21,7 @@ export function UserAvatar({ fallback = "U", role }: UserAvatarProps) {
     }, [])
 
     if (!mounted) {
-        return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+        return <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
     }
 
     const isDark = theme === "dark"
@@ -29,17 +29,17 @@ export function UserAvatar({ fallback = "U", role }: UserAvatarProps) {
 
     return (
         <div className="relative">
-            {/* Avatar with colored border */}
-            <div className="h-8 w-8 rounded-full p-0.5" style={{ backgroundColor: borderColor }}>
+            {/* Avatar with colored border - increased size */}
+            <div className="h-10 w-10 rounded-full p-0.5" style={{ backgroundColor: borderColor }}>
                 <Avatar className="h-full w-full">
                     {/* <AvatarImage src={src || "/placeholder.svg"} alt={alt} /> */}
-                    <AvatarFallback className="text-xs font-medium">{fallback}</AvatarFallback>
+                    <AvatarFallback className="text-sm font-medium">{fallback}</AvatarFallback>
                 </Avatar>
             </div>
 
-            {/* Role badge */}
+            {/* Role badge - made smaller */}
             <div
-                className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 px-1 py-0.5 rounded text-[10px] font-bold text-white uppercase"
+                className="absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 px-1 py-0 rounded text-[8px] font-bold text-white uppercase leading-tight"
                 style={{ backgroundColor: borderColor }}
             >
                 {role}
