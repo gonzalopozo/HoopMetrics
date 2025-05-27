@@ -11,7 +11,7 @@ import { TopPerformer } from "@/types"
 
 
 export default async function CardsWrapper() {
-    const response = await axios.get<TopPerformer[]>(`${process.env.API_URL}/home/top-performers`)
+    const response = await axios.get<TopPerformer[]>(`${process.env.NEXT_PUBLIC_API_URL}/home/top-performers`)
     const topPerformers: TopPerformer[] = response.data
 
     return (

@@ -28,7 +28,7 @@ type TeamPageProps = {
 // Server-side data fetching function
 async function fetchTeam(id: string): Promise<TeamDetails | null> {
     try {
-        const response = await axios.get<TeamDetails>(`${process.env.API_URL}/teams/${id}`);
+        const response = await axios.get<TeamDetails>(`${process.env.NEXT_PUBLIC_API_URL}/teams/${id}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching team data:", error);

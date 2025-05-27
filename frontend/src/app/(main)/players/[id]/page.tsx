@@ -287,7 +287,7 @@ function StatCard({
 // Server-side data fetching function
 async function fetchPlayer(id: string): Promise<Player | null> {
     try {
-        const response = await axios.get<Player>(`${process.env.API_URL}/players/${id}`);
+        const response = await axios.get<Player>(`${process.env.NEXT_PUBLIC_API_URL}/players/${id}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching player data:", error);
