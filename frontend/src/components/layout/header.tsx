@@ -8,6 +8,8 @@ import { SearchBar } from "@/components/ui/search-bar"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { UserAvatar } from "../ui/user-avatar"
+import { UserRole } from "@/lib/role-colors"
 
 export class AppUser {
     _name: string
@@ -110,10 +112,16 @@ export function Header() {
                                 </Link>
                             )}
                             <div className="flex items-center gap-3">
-                                <Avatar>
-                                    {/* <AvatarImage src="/placeholder.svg?height=32&width=32" alt={user.name} /> */}
+                                {/* <Avatar>
+                                    // <AvatarImage src="/placeholder.svg?height=32&width=32" alt={user.name} />
                                     <AvatarFallback>{user.getInitials()}</AvatarFallback>
-                                </Avatar>
+                                </Avatar> */}
+                                <UserAvatar
+                                    // src="/placeholder.svg?height=32&width=32"
+                                    alt={user.name}
+                                    role={user.role as UserRole}
+                                    size="md"
+                                />
                             </div>
                             <button
                                 onClick={handleLogout}
