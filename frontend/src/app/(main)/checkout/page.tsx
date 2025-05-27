@@ -29,17 +29,18 @@ function CheckoutContent() {
     const [email, setEmail] = useState<string>("")
 
     function getCookie(name: string) {
-        return document.cookie
-            .split('; ')
-            .find(row => row.startsWith(name + '='))
-            ?.split('=')[1]
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()!.split(';').shift();
     }
 
     // 2. SEGUNDO EFECTO: Inicializar el pago SOLO cuando ya tenemos email
     useEffect(() => {
-        console.log(document.cookie)
+        console.log("document.cookie:", document.cookie);
 
-        const token = getCookie("token")
+        const token = getCookie("token");
+        console.log("Token leído:", token);
+
         if (!token) {
             setError("No hay sesión activa. Por favor, inicia sesión.")
             setStep("error")
@@ -47,7 +48,9 @@ function CheckoutContent() {
         }
 
         try {
-            const payload = JSON.parse(atob(token.split('.')[1]))
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            console.log("Payload JWT:", payload);
+
             if (!payload.email) {
                 setError("No se ha podido obtener el email del usuario. Por favor, inicia sesión de nuevo.")
                 setStep("error")
