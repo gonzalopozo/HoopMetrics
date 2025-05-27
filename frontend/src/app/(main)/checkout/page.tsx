@@ -11,7 +11,6 @@ import { PaymentForm } from "@/components/checkout/payment-form"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
-import Cookies from "js-cookie"
 
 type CheckoutStep = "loading" | "payment" | "success" | "error"
 
@@ -28,44 +27,31 @@ function CheckoutContent() {
     const [subscriptionId, setSubscriptionId] = useState<string>("")
     const [error, setError] = useState<string>("")
     const [email, setEmail] = useState<string>("")
-    const [isCheckingEmail, setIsCheckingEmail] = useState(true)
-
-    // 1. PRIMER EFECTO: Obtener el email del token
-    useEffect(() => {
-        // Al iniciar, marcamos como que estamos verificando
-        setIsCheckingEmail(true)
-        
-        try {
-            const token = Cookies.get("token")
-            if (token) {
-                const payload = JSON.parse(atob(token.split(".")[1]))
-                if (payload.email) {
-                    console.log("Email obtenido:", payload.email)
-                    setEmail(payload.email)
-                } else {
-                    console.log("Token no contiene email")
-                    setError("No se ha podido obtener el email del usuario. Por favor, inicia sesión de nuevo.")
-                    setStep("error")
-                }
-            } else {
-                console.log("No hay token")
-                setError("No hay sesión activa. Por favor, inicia sesión.")
-                setStep("error")
-            }
-        } catch (err) {
-            console.error("Error al parsear token:", err)
-            setError("Error al obtener datos de la sesión. Por favor, inicia sesión de nuevo.")
-            setStep("error")
-        } finally {
-            // Siempre marcamos que ya terminamos de verificar, aunque haya error
-            setIsCheckingEmail(false)
-        }
-    }, [])
 
     // 2. SEGUNDO EFECTO: Inicializar el pago SOLO cuando ya tenemos email
     useEffect(() => {
-        // Solo ejecuta si ya NO estamos verificando email Y tenemos un email
-        if (!isCheckingEmail && email) {
+        // Buscar el token en las cookies manualmente
+        const token = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('token='))
+            ?.split('=')[1]
+
+        if (!token) {
+            setError("No hay sesión activa. Por favor, inicia sesión.")
+            setStep("error")
+            return
+        }
+
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]))
+            if (!payload.email) {
+                setError("No se ha podido obtener el email del usuario. Por favor, inicia sesión de nuevo.")
+                setStep("error")
+                return
+            }
+            setEmail(payload.email)
+
+            // Si hay email, inicializar el pago
             const plan = searchParams.get("plan") as PlanType
             const billing = searchParams.get("billing") as BillingCycle
 
@@ -77,7 +63,7 @@ function CheckoutContent() {
 
             const initializePayment = async () => {
                 try {
-                    const result = await createPaymentIntent(plan, billing, email)
+                    const result = await createPaymentIntent(plan, billing, payload.email)
                     setClientSecret(result.clientSecret)
                     setSubscriptionDetails({
                         plan,
@@ -94,8 +80,12 @@ function CheckoutContent() {
             }
 
             initializePayment()
+        } catch (err) {
+            setError("Error al obtener datos de la sesión. Por favor, inicia sesión de nuevo.")
+            setStep("error")
+            console.error("Error al parsear token:", err)
         }
-    }, [searchParams, email, isCheckingEmail])
+    }, [searchParams])
 
     const handlePaymentSuccess = (id: string) => {
         setSubscriptionId(id)
