@@ -11,7 +11,7 @@ import { AlertTriangle, CreditCard, Lock, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { confirmSubscription } from "@/app/actions/stripe"
-import { useRouter } from "next/navigation"
+// import { useRouter } from "next/navigation"
 
 interface PaymentFormProps {
     amount: number
@@ -27,7 +27,7 @@ interface PaymentFormProps {
 export function PaymentForm({ amount, currency, planName, billing, plan, onSuccess, onError, email }: PaymentFormProps) {
     const stripe = useStripe()
     const elements = useElements()
-    const router = useRouter()
+    // const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
 
@@ -67,7 +67,8 @@ export function PaymentForm({ amount, currency, planName, billing, plan, onSucce
                         Cookies.set("token", newToken, { path: "/" })
                     }
                     onSuccess(result.subscriptionId!)
-                    router.push(`/checkout/success?plan=${plan}&billing=${billing}`)
+                    // router.push(`/checkout/success?plan=${plan}&billing=${billing}`)
+                    window.location.href = `/checkout/success?plan=${plan}&billing=${billing}`
                 } else {
                     setErrorMessage(result.error || "Subscription confirmation failed")
                     onError(result.error || "Subscription confirmation failed")
