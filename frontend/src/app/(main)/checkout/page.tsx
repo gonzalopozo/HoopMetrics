@@ -28,14 +28,16 @@ function CheckoutContent() {
     const [error, setError] = useState<string>("")
     const [email, setEmail] = useState<string>("")
 
+    function getCookie(name: string) {
+        return document.cookie
+            .split('; ')
+            .find(row => row.startsWith(name + '='))
+            ?.split('=')[1]
+    }
+
     // 2. SEGUNDO EFECTO: Inicializar el pago SOLO cuando ya tenemos email
     useEffect(() => {
-        // Buscar el token en las cookies manualmente
-        const token = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('token='))
-            ?.split('=')[1]
-
+        const token = getCookie("token")
         if (!token) {
             setError("No hay sesión activa. Por favor, inicia sesión.")
             setStep("error")
@@ -85,7 +87,7 @@ function CheckoutContent() {
             setStep("error")
             console.error("Error al parsear token:", err)
         }
-    }, [])
+    }, [searchParams])
 
     const handlePaymentSuccess = (id: string) => {
         setSubscriptionId(id)
