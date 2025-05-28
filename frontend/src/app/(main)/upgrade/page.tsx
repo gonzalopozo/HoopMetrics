@@ -323,9 +323,6 @@ export default function UpgradePage() {
                                     <FeatureItem included>Unlimited favorites</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
-                                    <FeatureItem included>Priority customer support</FeatureItem>
-                                </motion.div>
-                                <motion.div variants={featureVariants}>
                                     <FeatureItem included>Early access to new features</FeatureItem>
                                 </motion.div>
                             </motion.div>

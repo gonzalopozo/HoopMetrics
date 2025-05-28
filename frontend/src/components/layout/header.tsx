@@ -103,7 +103,7 @@ export function Header() {
                     ) : isLoggedIn ? (
                         // When logged in
                         <div className="flex items-center gap-3">
-                            {(user.role !== 'premium' && user.role !== 'ultimate' && user.role !== 'admin') && (
+                            {(user.role !== 'ultimate' && user.role !== 'admin') && (
                                 <Link
                                     href="/upgrade"
                                     className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"

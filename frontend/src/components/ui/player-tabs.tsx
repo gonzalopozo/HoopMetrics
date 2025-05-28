@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { Trophy, BarChart3 } from "lucide-react"
+import { Trophy, BarChart3, Lock } from "lucide-react"
+import { BarChart, LineChart, PieChart, RadarChart } from "@/components/ui/player-charts"
 
 interface PlayerStats {
     minutes_played: number;
@@ -46,9 +47,59 @@ interface PlayerTabsProps {
     shootingPercentages: ShootingPercentages;
 }
 
+function getUserRoleFromToken(): string {
+    if (typeof document === "undefined") return "free"
+    const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='))
+        ?.split('=')[1]
+    if (!token) return "free"
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        return payload.role || "free"
+    } catch {
+        return "free"
+    }
+}
+
 export default function PlayerTabs({ player, careerHighs, shootingPercentages }: PlayerTabsProps) {
     const [, setActiveTab] = useState("overview")
     const [selectedGameIndex, setSelectedGameIndex] = useState<number | null>(null)
+    const [userRole, setUserRole] = useState<string>("free")
+
+    useEffect(() => {
+        setUserRole(getUserRoleFromToken())
+    }, [])
+
+    const isPremium = userRole === "premium" || userRole === "ultimate"
+
+    // Sample data for charts (LeBron James example)
+    const barData = [
+        { name: "PTS", value: 27 },
+        { name: "REB", value: 7.4 },
+        { name: "AST", value: 7.4 },
+        { name: "STL", value: 1.6 },
+        { name: "BLK", value: 0.8 },
+    ]
+    const lineData = [
+        { game: "1", points: 25 },
+        { game: "2", points: 32 },
+        { game: "3", points: 28 },
+        { game: "4", points: 35 },
+        { game: "5", points: 22 },
+    ]
+    const pieData = [
+        { label: "2PT", value: 55 },
+        { label: "3PT", value: 30 },
+        { label: "FT", value: 15 },
+    ]
+    const radarData = [
+        { stat: "Scoring", value: 90 },
+        { stat: "Passing", value: 85 },
+        { stat: "Defense", value: 70 },
+        { stat: "Rebounding", value: 80 },
+        { stat: "Leadership", value: 95 },
+    ]
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -56,6 +107,25 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="shooting">Shooting</TabsTrigger>
                 <TabsTrigger value="gamelog">Game Log</TabsTrigger>
+                <TabsTrigger
+                    value="premium"
+                    className={cn(
+                        "relative",
+                        !isPremium && "cursor-not-allowed opacity-60"
+                    )}
+                    tabIndex={0}
+                    aria-disabled={!isPremium}
+                    onClick={e => {
+                        if (!isPremium) e.preventDefault()
+                    }}
+                >
+                    Premium
+                    {!isPremium && (
+                        <span className="absolute -top-2 -right-2 text-xs text-muted-foreground">
+                            <Lock className="inline h-4 w-4" />
+                        </span>
+                    )}
+                </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
@@ -94,8 +164,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                     </CardContent>
                 </Card>
 
-                {/* Rest of the overview tab content */}
-                {/* ... efficiency metrics card from the original code ... */}
+                {/* Efficiency Metrics */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
@@ -176,7 +245,9 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             <div
                                                 className="h-full bg-primary rounded-full"
                                                 style={{
-                                                    width: `${(player.average_stats.field_goals_made / player.average_stats.field_goals_attempted) * 100}%`,
+                                                    width: player.average_stats.field_goals_attempted > 0
+                                                        ? `${(player.average_stats.field_goals_made / player.average_stats.field_goals_attempted) * 100}%`
+                                                        : "0%",
                                                 }}
                                             />
                                         </div>
@@ -233,7 +304,9 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             <div
                                                 className="h-full bg-primary rounded-full"
                                                 style={{
-                                                    width: `${(player.average_stats.free_throws_made / player.average_stats.free_throws_attempted) * 100}%`,
+                                                    width: player.average_stats.free_throws_attempted > 0
+                                                        ? `${(player.average_stats.free_throws_made / player.average_stats.free_throws_attempted) * 100}%`
+                                                        : "0%",
                                                 }}
                                             />
                                         </div>
@@ -277,7 +350,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             key={index}
                                             className={cn(
                                                 "border-b border-border hover:bg-accent/50 cursor-pointer transition-colors",
-                                                selectedGameIndex === index && "bg-accent",
+                                                selectedGameIndex === index && "bg-accent"
                                             )}
                                             onClick={() => setSelectedGameIndex(index === selectedGameIndex ? null : index)}
                                         >
@@ -285,7 +358,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             <td
                                                 className={cn(
                                                     "px-4 py-3 text-center",
-                                                    game.points > player.average_stats.points && "text-primary font-medium",
+                                                    game.points > player.average_stats.points && "text-primary font-medium"
                                                 )}
                                             >
                                                 {game.points}
@@ -293,7 +366,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             <td
                                                 className={cn(
                                                     "px-4 py-3 text-center",
-                                                    game.rebounds > player.average_stats.rebounds && "text-primary font-medium",
+                                                    game.rebounds > player.average_stats.rebounds && "text-primary font-medium"
                                                 )}
                                             >
                                                 {game.rebounds}
@@ -301,7 +374,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             <td
                                                 className={cn(
                                                     "px-4 py-3 text-center",
-                                                    game.assists > player.average_stats.assists && "text-primary font-medium",
+                                                    game.assists > player.average_stats.assists && "text-primary font-medium"
                                                 )}
                                             >
                                                 {game.assists}
@@ -309,7 +382,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             <td
                                                 className={cn(
                                                     "px-4 py-3 text-center",
-                                                    game.steals > player.average_stats.steals && "text-primary font-medium",
+                                                    game.steals > player.average_stats.steals && "text-primary font-medium"
                                                 )}
                                             >
                                                 {game.steals}
@@ -317,7 +390,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             <td
                                                 className={cn(
                                                     "px-4 py-3 text-center",
-                                                    game.blocks > player.average_stats.blocks && "text-primary font-medium",
+                                                    game.blocks > player.average_stats.blocks && "text-primary font-medium"
                                                 )}
                                             >
                                                 {game.blocks}
@@ -369,6 +442,71 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                         )}
                     </CardContent>
                 </Card>
+            </TabsContent>
+
+            <TabsContent value="premium" className={cn(!isPremium && "pointer-events-none select-none opacity-60")}>
+                {isPremium ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Points by Category</CardTitle>
+                                <CardDescription>Distribution of points scored</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <PieChart
+                                    data={pieData}
+                                />
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Game Log (Last 5)</CardTitle>
+                                <CardDescription>Points per game</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <LineChart
+                                    data={lineData}
+                                />
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Stat Comparison</CardTitle>
+                                <CardDescription>Key stats this season</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <BarChart
+                                    data={barData}
+                                />
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Skill Radar</CardTitle>
+                                <CardDescription>Player skill profile</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <RadarChart
+                                    data={radarData}
+                                />
+                            </CardContent>
+                        </Card>
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center py-16">
+                        <Lock className="h-10 w-10 text-muted-foreground mb-4" />
+                        <h3 className="text-lg font-semibold mb-2">Premium Feature</h3>
+                        <p className="text-muted-foreground mb-4 text-center max-w-xs">
+                            Upgrade to Premium or Ultimate to unlock advanced analytics and visualizations for this player.
+                        </p>
+                        <a
+                            href="/upgrade"
+                            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+                        >
+                            Upgrade Now
+                        </a>
+                    </div>
+                )}
             </TabsContent>
         </Tabs>
     )
