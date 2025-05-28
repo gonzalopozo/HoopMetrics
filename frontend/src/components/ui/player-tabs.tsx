@@ -101,6 +101,39 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         { stat: "Leadership", value: 95 },
     ]
 
+    // Ultimate only
+    const isUltimate = userRole === "ultimate"
+
+    // Advanced sample data for ultimate tab
+    const advancedBarData = [
+        { name: "Usage %", value: 32.5 },
+        { name: "AST/TO", value: 2.1 },
+        { name: "PER", value: 28.7 },
+        { name: "TS%", value: 61.2 },
+        { name: "PIE", value: 18.3 },
+    ]
+    const advancedLineData = [
+        { game: "1", vorp: 0.8 },
+        { game: "2", vorp: 1.1 },
+        { game: "3", vorp: 0.9 },
+        { game: "4", vorp: 1.3 },
+        { game: "5", vorp: 1.0 },
+    ]
+    const advancedPieData = [
+        { label: "Isolation", value: 22 },
+        { label: "Pick & Roll", value: 38 },
+        { label: "Spot Up", value: 18 },
+        { label: "Transition", value: 12 },
+        { label: "Post Up", value: 10 },
+    ]
+    const advancedRadarData = [
+        { stat: "Offensive Impact", value: 95 },
+        { stat: "Defensive Impact", value: 80 },
+        { stat: "Clutch", value: 88 },
+        { stat: "Versatility", value: 92 },
+        { stat: "On/Off Diff", value: 85 },
+    ]
+
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
             <TabsList className="mb-4">
@@ -121,6 +154,25 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 >
                     Premium
                     {!isPremium && (
+                        <span className="absolute -top-2 -right-2 text-xs text-muted-foreground">
+                            <Lock className="inline h-4 w-4" />
+                        </span>
+                    )}
+                </TabsTrigger>
+                <TabsTrigger
+                    value="ultimate"
+                    className={cn(
+                        "relative",
+                        !isUltimate && "cursor-not-allowed opacity-60"
+                    )}
+                    tabIndex={0}
+                    aria-disabled={!isUltimate}
+                    onClick={e => {
+                        if (!isUltimate) e.preventDefault()
+                    }}
+                >
+                    Ultimate
+                    {!isUltimate && (
                         <span className="absolute -top-2 -right-2 text-xs text-muted-foreground">
                             <Lock className="inline h-4 w-4" />
                         </span>
@@ -498,6 +550,65 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                         <h3 className="text-lg font-semibold mb-2">Premium Feature</h3>
                         <p className="text-muted-foreground mb-4 text-center max-w-xs">
                             Upgrade to Premium or Ultimate to unlock advanced analytics and visualizations for this player.
+                        </p>
+                        <a
+                            href="/upgrade"
+                            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+                        >
+                            Upgrade Now
+                        </a>
+                    </div>
+                )}
+            </TabsContent>
+
+            <TabsContent value="ultimate" className={cn(!isUltimate && "pointer-events-none select-none opacity-60")}>
+                {isUltimate ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Advanced Efficiency</CardTitle>
+                                <CardDescription>PER, Usage, TS%, PIE</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <BarChart data={advancedBarData} />
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>VORP by Game</CardTitle>
+                                <CardDescription>Value Over Replacement Player (last 5 games)</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <LineChart
+                                    data={advancedLineData.map(d => ({ game: d.game, points: d.vorp }))}
+                                />
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Play Type Distribution</CardTitle>
+                                <CardDescription>Offensive play types (sample)</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <PieChart data={advancedPieData} />
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Advanced Impact Radar</CardTitle>
+                                <CardDescription>Composite advanced metrics</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <RadarChart data={advancedRadarData} />
+                            </CardContent>
+                        </Card>
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center py-16">
+                        <Lock className="h-10 w-10 text-muted-foreground mb-4" />
+                        <h3 className="text-lg font-semibold mb-2">Ultimate Feature</h3>
+                        <p className="text-muted-foreground mb-4 text-center max-w-xs">
+                            Upgrade to Ultimate to unlock the most advanced analytics and visualizations for this player.
                         </p>
                         <a
                             href="/upgrade"
