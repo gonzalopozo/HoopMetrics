@@ -157,6 +157,8 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     const yTicks = [];
     for (let i = yMin; i <= yMax; i += 10) yTicks.push(i);
 
+    console.log({yMin, yMax, yTicks, pointsProgression})
+
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
             <TabsList className="mb-4">
