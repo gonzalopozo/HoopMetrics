@@ -90,6 +90,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 )
                 setPointsProgression(res.data)
             } catch (e) {
+                console.error("Error fetching points progression:", e)
                 setPointsProgression([])
             }
         }
