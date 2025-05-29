@@ -102,7 +102,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     const [pointsProgression, setPointsProgression] = useState<PointsProgression[]>([])
     const isPremium = userRole === "premium" || userRole === "ultimate"
     const isUltimate = userRole === "ultimate"
-    const { theme } = useTheme()
+    const { resolvedTheme } = useTheme()
 
     useEffect(() => {
         setUserRole(getUserRoleFromToken())
@@ -519,11 +519,11 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div style={{ width: "100%", height: 300 }}>
+                                <div style={{ width: "100%", height: 320 }}>
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart
                                             data={pointsProgression}
-                                            margin={{ left: 12, right: 12, top: 16, bottom: 16 }}
+                                            margin={{ left: 20, right: 25, top: 20, bottom: 20 }}
                                         >
                                             <CartesianGrid
                                                 horizontal={true}
@@ -535,14 +535,14 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 dataKey="date"
                                                 tickLine={false}
                                                 axisLine={false}
-                                                tick={false} // Quita las etiquetas del eje X
+                                                tick={false}
                                             />
                                             <YAxis
                                                 tickLine={false}
                                                 axisLine={false}
-                                                tickMargin={8}
+                                                tickMargin={12}
                                                 stroke="var(--muted-foreground)"
-                                                ticks={[0, 10, 20, 30, 40, 50, 60]} // Incrementos de 10 en 10
+                                                ticks={[0, 10, 20, 30, 40, 50, 60]}
                                             />
                                             <Tooltip
                                                 content={<CustomTooltip />}
@@ -551,17 +551,17 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             <Line
                                                 type="monotone"
                                                 dataKey="points"
-                                                stroke={theme === 'dark' ? "hsl(0 80% 45%)" : "hsl(214 80% 45%)"}
-                                                strokeWidth={2.5}
+                                                stroke={resolvedTheme === 'dark' ? "hsl(0 80% 45%)" : "hsl(214 80% 45%)"}
+                                                strokeWidth={2}
                                                 dot={{
-                                                    fill: theme === 'dark' ? "hsl(0 80% 45%)" : "hsl(214 80% 45%)",
-                                                    r: 4
+                                                    fill: resolvedTheme === 'dark' ? "hsl(0 80% 45%)" : "hsl(214 80% 45%)",
+                                                    r: 3 // Puntos más pequeños (antes 4)
                                                 }}
                                                 activeDot={{
-                                                    r: 7,
-                                                    fill: theme === 'dark' ? "hsl(0 80% 60%)" : "hsl(214 80% 60%)",
+                                                    r: 5, // Puntos activos más pequeños (antes 7)
+                                                    fill: resolvedTheme === 'dark' ? "hsl(0 80% 60%)" : "hsl(214 80% 60%)",
                                                     stroke: "var(--background)",
-                                                    strokeWidth: 2
+                                                    strokeWidth: 1.5
                                                 }}
                                             />
                                         </LineChart>
