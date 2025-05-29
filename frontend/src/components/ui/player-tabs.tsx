@@ -144,6 +144,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 );
                 setPointsType(res.data);
             } catch (e) {
+                console.error("Error fetching points type:", e);
                 setPointsType(null);
             }
         }
