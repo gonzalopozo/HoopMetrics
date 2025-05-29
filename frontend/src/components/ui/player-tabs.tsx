@@ -89,7 +89,7 @@ function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
                         year: "numeric"
                     })}
                 </div>
-                <div className="font-bold text-lg text-primary">{points} pts</div>
+                <div className="font-bold text-lg text-primary">{points} points</div>
             </div>
         )
     }
@@ -145,6 +145,27 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             }
         })
         return Array.from(months.values())
+    }, [pointsProgression])
+
+    // Agrupa los partidos por mes para la barra de meses
+    const monthsData = useMemo(() => {
+        const months: { key: string, label: string, count: number }[] = []
+        let lastKey = ""
+        pointsProgression.forEach(({ date }) => {
+            const d = new Date(date)
+            const key = `${d.getFullYear()}-${d.getMonth()}`
+            if (months.length === 0 || months[months.length - 1].key !== key) {
+                months.push({
+                    key,
+                    label: d.toLocaleDateString("es-ES", { month: "long" }),
+                    count: 1,
+                })
+            } else {
+                months[months.length - 1].count += 1
+            }
+            lastKey = key
+        })
+        return months
     }, [pointsProgression])
 
     return (
@@ -520,7 +541,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div style={{ width: "100%", height: 300 }}>
+                                <div style={{ width: "100%", height: 300, position: "relative" }}>
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart
                                             data={pointsProgression}
@@ -532,7 +553,6 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 type="category"
                                                 ticks={xTicks}
                                                 tickFormatter={dateOrMs => {
-                                                    // Si es string (de los datos), muestra día corto
                                                     if (typeof dateOrMs === "string") {
                                                         const d = new Date(dateOrMs)
                                                         return d.toLocaleDateString("es-ES", {
@@ -540,10 +560,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                             month: "short"
                                                         })
                                                     }
-                                                    // Si es número (de los ticks), muestra solo el mes
-                                                    return new Date(dateOrMs).toLocaleDateString("es-ES", {
-                                                        month: "long"
-                                                    })
+                                                    return ""
                                                 }}
                                                 tickLine={false}
                                                 axisLine={false}
@@ -569,6 +586,43 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             />
                                         </LineChart>
                                     </ResponsiveContainer>
+                                    {/* Barra de meses personalizada */}
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            position: "absolute",
+                                            left: 48, // margen izquierdo del chart
+                                            right: 24, // margen derecho del chart
+                                            bottom: 0,
+                                            height: 32,
+                                            pointerEvents: "none",
+                                            zIndex: 1,
+                                        }}
+                                    >
+                                        {monthsData.map((month, idx) => (
+                                            <div
+                                                key={month.key}
+                                                style={{
+                                                    flex: month.count,
+                                                    display: "flex",
+                                                    justifyContent: "center",
+                                                    alignItems: "flex-end",
+                                                    borderLeft: idx === 0 ? "none" : "1px solid var(--border)",
+                                                }}
+                                            >
+                                                <span
+                                                    style={{
+                                                        fontSize: 14,
+                                                        color: "var(--muted-foreground)",
+                                                        fontWeight: 500,
+                                                        textTransform: "capitalize",
+                                                    }}
+                                                >
+                                                    {month.label}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
