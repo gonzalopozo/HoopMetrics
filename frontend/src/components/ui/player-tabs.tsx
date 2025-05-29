@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { Trophy, BarChart3, Lock } from "lucide-react"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, TooltipProps, ResponsiveContainer, ReferenceArea } from "recharts"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, TooltipProps, ResponsiveContainer } from "recharts"
 
 import axios from "axios"
 import { useTheme } from "next-themes"
@@ -131,27 +131,6 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             ? "#f83c3c" // rojo NBA
             : "#4273ff" // azul NBA
     const dotColor = lineColor
-
-    // Agrupa los partidos por mes para la barra de meses
-    const monthsData = useMemo(() => {
-        const months: { key: string, label: string, count: number }[] = []
-        // let lastKey = ""
-        pointsProgression.forEach(({ date }) => {
-            const d = new Date(date)
-            const key = `${d.getFullYear()}-${d.getMonth()}`
-            if (months.length === 0 || months[months.length - 1].key !== key) {
-                months.push({
-                    key,
-                    label: d.toLocaleDateString("es-ES", { month: "long" }),
-                    count: 1,
-                })
-            } else {
-                months[months.length - 1].count += 1
-            }
-            // lastKey = key
-        })
-        return months
-    }, [pointsProgression])
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
