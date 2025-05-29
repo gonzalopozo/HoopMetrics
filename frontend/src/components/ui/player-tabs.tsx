@@ -1,12 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { Trophy, BarChart3, Lock } from "lucide-react"
 import { LineChart, Line, XAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import axios from "axios"
+import { useTheme } from "next-themes"
 
 interface PlayerStats {
     minutes_played: number;
@@ -69,11 +70,32 @@ function getUserRoleFromToken(): string {
     }
 }
 
+// Custom Tooltip for the chart
+function CustomTooltip({ active, payload, label }: any) {
+    if (active && payload && payload.length) {
+        const { date, points } = payload[0].payload
+        return (
+            <div className="rounded-lg border border-border bg-card p-3 shadow-lg min-w-[120px]">
+                <div className="text-xs text-muted-foreground mb-1">
+                    {new Date(date).toLocaleDateString("es-ES", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                    })}
+                </div>
+                <div className="font-bold text-lg text-primary">{points} pts</div>
+            </div>
+        )
+    }
+    return null
+}
+
 export default function PlayerTabs({ player, careerHighs, shootingPercentages }: PlayerTabsProps) {
     const [, setActiveTab] = useState("overview")
     const [selectedGameIndex, setSelectedGameIndex] = useState<number | null>(null)
     const [userRole, setUserRole] = useState<string>("free")
     const [pointsProgression, setPointsProgression] = useState<PointsProgression[]>([])
+    const { resolvedTheme } = useTheme()
     const isPremium = userRole === "premium" || userRole === "ultimate"
     const isUltimate = userRole === "ultimate"
 
@@ -96,6 +118,30 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         }
         if (isPremium) fetchPointsProgression()
     }, [player.id, isPremium])
+
+    // Agrupa los puntos por mes para el eje X
+    const pointsByMonth = useMemo(() => {
+        const map = new Map<string, { month: string; points: number[] }>()
+        pointsProgression.forEach(({ date, points }) => {
+            const d = new Date(date)
+            const key = `${d.getFullYear()}-${d.getMonth()}`
+            const label = d.toLocaleDateString("es-ES", { month: "short", year: "2-digit" })
+            if (!map.has(key)) map.set(key, { month: label, points: [] })
+            map.get(key)!.points.push(points)
+        })
+        // Devuelve el promedio de puntos por mes
+        return Array.from(map.values()).map(({ month, points }) => ({
+            month,
+            points: points.length ? (points.reduce((a, b) => a + b, 0) / points.length) : 0
+        }))
+    }, [pointsProgression])
+
+    // Colores según tema
+    const lineColor =
+        resolvedTheme === "dark"
+            ? "hsl(var(--chart-1, 0 80% 45%))"
+            : "hsl(var(--chart-1, 214 80% 45%))"
+    const dotColor = lineColor
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -473,40 +519,28 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                 <div style={{ width: "100%", height: 300 }}>
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart
-                                            data={pointsProgression}
+                                            data={pointsByMonth}
                                             margin={{ left: 12, right: 12, top: 16, bottom: 16 }}
                                         >
                                             <CartesianGrid vertical={false} strokeDasharray="3 3" />
                                             <XAxis
-                                                dataKey="date"
+                                                dataKey="month"
                                                 tickLine={false}
                                                 axisLine={false}
                                                 tickMargin={8}
-                                                tickFormatter={date =>
-                                                    // Muestra solo "dd MMM" (ej: 12 Ene)
-                                                    new Date(date).toLocaleDateString("es-ES", {
-                                                        day: "2-digit",
-                                                        month: "short"
-                                                    })
-                                                }
+                                                // Solo muestra el mes (ej: "ene 24")
                                             />
                                             <Tooltip
-                                                contentStyle={{ background: "var(--background)", border: "1px solid var(--border)" }}
-                                                labelFormatter={date =>
-                                                    new Date(date).toLocaleDateString("es-ES", {
-                                                        day: "2-digit",
-                                                        month: "short",
-                                                        year: "numeric"
-                                                    })
-                                                }
+                                                content={<CustomTooltip />}
+                                                cursor={{ stroke: lineColor, strokeDasharray: "3 3" }}
                                             />
                                             <Line
                                                 type="monotone"
                                                 dataKey="points"
-                                                stroke="hsl(var(--chart-1))"
+                                                stroke={lineColor}
                                                 strokeWidth={2}
-                                                dot={{ fill: "hsl(var(--chart-1))" }}
-                                                activeDot={{ r: 6 }}
+                                                dot={{ fill: dotColor }}
+                                                activeDot={{ r: 6, fill: dotColor, stroke: lineColor, strokeWidth: 2 }}
                                             />
                                         </LineChart>
                                     </ResponsiveContainer>
