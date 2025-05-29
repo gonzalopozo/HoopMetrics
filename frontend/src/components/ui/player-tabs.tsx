@@ -540,7 +540,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 axisLine={false}
                                                 tickLine={false}
                                                 ticks={[0, 10, 20, 30, 40, 50, 60]}
-                                                domain={[0, 60]}
+                                                domain={[0, 10, 20, 30, 40, 50, 60]}
                                             />
                                             <Tooltip
                                                 content={<CustomTooltip />}
