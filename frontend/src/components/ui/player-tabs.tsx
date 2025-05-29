@@ -531,7 +531,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 strokeDasharray="3 3"
                                                 stroke="var(--border)"
                                             />
-                                            <XAxis
+                                            {/* <XAxis
                                                 dataKey="date"
                                                 tickLine={false}
                                                 axisLine={false}
@@ -544,7 +544,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 tickMargin={0} // Ya no necesitamos margen para los números
                                                 stroke="var(--muted-foreground)"
                                                 ticks={[0, 10, 20, 30, 40, 50, 60]} // Mantener los ticks para las líneas horizontales
-                                            />
+                                            /> */}
                                             <Tooltip
                                                 content={<CustomTooltip />}
                                                 cursor={{ stroke: "var(--muted-foreground)", strokeWidth: 1, strokeDasharray: "3 3" }}
