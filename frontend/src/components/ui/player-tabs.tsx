@@ -524,7 +524,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart
                                             data={pointsProgression}
-                                            margin={{ left: 12, right: 12, top: 16, bottom: 16 }}
+                                            margin={{ left: 12, right: 12, top: 16, bottom: 32 }}
                                         >
                                             <CartesianGrid vertical={false} strokeDasharray="3 3" />
                                             <XAxis
@@ -548,6 +548,12 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 tickLine={false}
                                                 axisLine={false}
                                                 tickMargin={8}
+                                                label={{
+                                                    value: "Fecha del partido",
+                                                    position: "insideBottom",
+                                                    offset: -18,
+                                                    style: { fill: "var(--muted-foreground)", fontSize: 14 }
+                                                }}
                                             />
                                             <Tooltip
                                                 content={<CustomTooltip />}
