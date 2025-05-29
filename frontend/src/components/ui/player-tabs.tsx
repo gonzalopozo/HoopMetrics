@@ -157,8 +157,6 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     const yTicks = [];
     for (let i = yMin; i <= yMax; i += 10) yTicks.push(i);
 
-    console.log({yMin, yMax, yTicks, pointsProgression})
-
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
             <TabsList className="mb-4">
@@ -540,11 +538,11 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             margin={{ left: 12, right: 12 }}
                                         >
                                             <YAxis
+                                                dataKey="points"
                                                 tick={false}
                                                 axisLine={false}
                                                 tickLine={false}
                                                 ticks={yTicks}
-                                                domain={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90]}
                                                 width={0}
                                             />
                                             <CartesianGrid
