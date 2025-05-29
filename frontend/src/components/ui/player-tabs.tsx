@@ -150,8 +150,8 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     const pointsStats = getPointsStats();
 
     // Calcula el máximo de puntos para ajustar el grid dinámicamente
-    const maxPoints = Math.max(60, ...pointsProgression.map(p => p.points || 0));
-    const yMax = Math.ceil(maxPoints / 10) * 10;
+    const maxPoints = Math.max(...pointsProgression.map(p => p.points ?? 0), 0);
+    const yMax = Math.ceil(Math.max(60, maxPoints) / 10) * 10;
     const yTicks = [];
     for (let i = 0; i <= yMax; i += 10) yTicks.push(i);
 
@@ -532,7 +532,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart
                                             accessibilityLayer
-                                            data={pointsProgression}
+                                            data={pointsProgression.length ? pointsProgression : [{ date: "", points: 0 }]}
                                             margin={{ left: 12, right: 12 }}
                                         >
                                             <YAxis
