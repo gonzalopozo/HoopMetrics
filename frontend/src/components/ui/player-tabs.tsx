@@ -537,6 +537,23 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             data={pointsProgression.length ? pointsProgression : [{ date: "", points: 0 }]}
                                             margin={{ left: 12, right: 12 }}
                                         >
+                                            {/* PRIMERO: Dibujar las líneas horizontales manualmente */}
+                                            {yTicks.map(tick => (
+                                                <svg key={tick} style={{ overflow: 'visible' }}>
+                                                    <line
+                                                        x1="0%"
+                                                        x2="100%"
+                                                        y1={tick}
+                                                        y2={tick}
+                                                        stroke={resolvedTheme === 'dark' ? "rgba(255, 76, 76, 0.18)" : "rgba(66, 115, 255, 0.18)"}
+                                                        strokeDasharray="3 3"
+                                                        // Truco crucial: usa strokeWidth para que sean visibles
+                                                        strokeWidth={1}
+                                                    />
+                                                </svg>
+                                            ))}
+                                            
+                                            {/* Después el eje Y sin width y los demás elementos */}
                                             <YAxis
                                                 dataKey="points"
                                                 tick={false}
@@ -544,14 +561,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 tickLine={false}
                                                 ticks={yTicks}
                                                 width={0}
-                                            />
-                                            <CartesianGrid
-                                                vertical={false}
-                                                horizontal={true}
-                                                strokeDasharray="3 3"
-                                                stroke={resolvedTheme === 'dark'
-                                                    ? "orange"
-                                                    : "rgba(66, 115, 255, 0.18)"}
+                                                domain={[0, yMax]}
                                             />
                                             <Tooltip
                                                 content={<CustomTooltip />}
@@ -564,10 +574,10 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 strokeWidth={2}
                                                 dot={{
                                                     fill: resolvedTheme === 'dark' ? "hsl(0 80% 45%)" : "hsl(214 80% 45%)",
-                                                    r: 3 // Puntos más pequeños (antes 4)
+                                                    r: 3
                                                 }}
                                                 activeDot={{
-                                                    r: 5, // Puntos activos más pequeños (antes 7)
+                                                    r: 5,
                                                     fill: resolvedTheme === 'dark' ? "hsl(0 80% 60%)" : "hsl(214 80% 60%)",
                                                     stroke: "var(--background)",
                                                     strokeWidth: 1.5
