@@ -344,8 +344,7 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
         # Get all teams info for names
         teams_query = select(Team.id, Team.full_name, Team.abbreviation)
         teams_result = await session.execute(teams_query)
-        team_info = {team.id: {"name": team.full_name, "abbreviation": team.abbreviation} 
-                     for team in teams_result.scalars()}  # Add .scalars()
+        team_info = {id_: {"name": name, "abbreviation": abbr} for id_, name, abbr in teams_result.all()}
         
         # Recent games (past)
         recent_games_query = (
