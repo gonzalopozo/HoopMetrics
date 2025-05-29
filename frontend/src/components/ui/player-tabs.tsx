@@ -533,15 +533,14 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 vertical={false}
                                                 horizontal={true}
                                                 strokeDasharray="3 3"
-                                                stroke={resolvedTheme === 'dark' ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}
+                                                stroke={resolvedTheme === 'dark' ? "rgba(255, 76, 76, 0.18)" : "rgba(66, 115, 255, 0.18)"}
                                             />
-                                            {/* Añade YAxis para controlar las líneas horizontales cada 10 unidades */}
-                                            <YAxis 
-                                                tickLine={false}
+                                            <YAxis
+                                                tick={false} // Oculta los labels
                                                 axisLine={false}
-                                                tick={false} // Oculta los números
-                                                ticks={[0, 10, 20, 30, 40, 50, 60]} // Incrementos de 10 en 10
-                                                domain={[0, 'dataMax + 5']} // Asegura que hay espacio arriba del valor máximo
+                                                tickLine={false}
+                                                ticks={[0, 10, 20, 30, 40, 50, 60]}
+                                                domain={[0, 60]}
                                             />
                                             <Tooltip
                                                 content={<CustomTooltip />}
