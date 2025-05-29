@@ -125,26 +125,6 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         if (isPremium) fetchPointsProgression()
     }, [player.id, isPremium])
 
-    // Agrupa los puntos por mes para el eje X (promedio por mes)
-    const pointsByMonth = useMemo(() => {
-        const map = new Map<string, { month: string; points: number[]; midDate: Date }>()
-        pointsProgression.forEach(({ date, points }) => {
-            const d = new Date(date)
-            const key = `${d.getFullYear()}-${d.getMonth()}`
-            const label = d.toLocaleDateString("es-ES", { month: "long" })
-            // Calcular el día medio del mes para la posición del label
-            const midDate = new Date(d.getFullYear(), d.getMonth(), 15)
-            if (!map.has(key)) map.set(key, { month: label, points: [], midDate })
-            map.get(key)!.points.push(points)
-        })
-        // Devuelve el promedio de puntos por mes y la fecha media del mes
-        return Array.from(map.values()).map(({ month, points, midDate }) => ({
-            month,
-            points: points.length ? (points.reduce((a, b) => a + b, 0) / points.length) : 0,
-            midDate,
-        }))
-    }, [pointsProgression])
-
     // Colores según tema
     const lineColor =
         resolvedTheme === "dark"
@@ -152,8 +132,20 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             : "#4273ff" // azul NBA
     const dotColor = lineColor
 
-    // Eje X: solo meses, label centrado en el mes
-    const xTicks = pointsByMonth.map(({ midDate }) => midDate.getTime())
+    // Eje X: ticks por mes, pero datos día a día
+    const xTicks = useMemo(() => {
+        // Extrae los meses únicos y calcula el día medio de cada mes para el tick
+        const months = new Map<string, number>()
+        pointsProgression.forEach(({ date }) => {
+            const d = new Date(date)
+            const key = `${d.getFullYear()}-${d.getMonth()}`
+            if (!months.has(key)) {
+                // Día 15 del mes para centrar el label
+                months.set(key, new Date(d.getFullYear(), d.getMonth(), 15).getTime())
+            }
+        })
+        return Array.from(months.values())
+    }, [pointsProgression])
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -531,20 +523,28 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                 <div style={{ width: "100%", height: 300 }}>
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart
-                                            data={pointsByMonth}
+                                            data={pointsProgression}
                                             margin={{ left: 12, right: 12, top: 16, bottom: 16 }}
                                         >
                                             <CartesianGrid vertical={false} strokeDasharray="3 3" />
                                             <XAxis
-                                                dataKey="midDate"
-                                                type="number"
-                                                domain={['dataMin', 'dataMax']}
+                                                dataKey="date"
+                                                type="category"
                                                 ticks={xTicks}
-                                                tickFormatter={midDate =>
-                                                    new Date(midDate).toLocaleDateString("es-ES", {
+                                                tickFormatter={dateOrMs => {
+                                                    // Si es string (de los datos), muestra día corto
+                                                    if (typeof dateOrMs === "string") {
+                                                        const d = new Date(dateOrMs)
+                                                        return d.toLocaleDateString("es-ES", {
+                                                            day: "2-digit",
+                                                            month: "short"
+                                                        })
+                                                    }
+                                                    // Si es número (de los ticks), muestra solo el mes
+                                                    return new Date(dateOrMs).toLocaleDateString("es-ES", {
                                                         month: "long"
                                                     })
-                                                }
+                                                }}
                                                 tickLine={false}
                                                 axisLine={false}
                                                 tickMargin={8}
