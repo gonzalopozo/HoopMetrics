@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { Trophy, BarChart3, Lock, TrendingUp, Target } from "lucide-react"
-import { LineChart, Line, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from "recharts"
+import { LineChart, Line, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps, YAxis } from "recharts"
 import axios from "axios"
 import { useTheme } from "next-themes"
 
@@ -531,15 +531,18 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                         >
                                             <CartesianGrid
                                                 vertical={false}
-                                                // stroke="var(--border)"
+                                                horizontal={true}
+                                                strokeDasharray="3 3"
+                                                stroke={resolvedTheme === 'dark' ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}
                                             />
-                                            {/* <XAxis
-                                                dataKey="date"
+                                            {/* Añade YAxis para controlar las líneas horizontales cada 10 unidades */}
+                                            <YAxis 
                                                 tickLine={false}
                                                 axisLine={false}
-                                                tick={false}
+                                                tick={false} // Oculta los números
+                                                ticks={[0, 10, 20, 30, 40, 50, 60]} // Incrementos de 10 en 10
+                                                domain={[0, 'dataMax + 5']} // Asegura que hay espacio arriba del valor máximo
                                             />
-                                            /> */}
                                             <Tooltip
                                                 content={<CustomTooltip />}
                                                 cursor={{ stroke: "var(--muted-foreground)", strokeWidth: 1, strokeDasharray: "3 3" }}
