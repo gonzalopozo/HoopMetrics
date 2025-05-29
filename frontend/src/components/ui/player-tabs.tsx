@@ -540,9 +540,10 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             <YAxis
                                                 tickLine={false}
                                                 axisLine={false}
-                                                tickMargin={12}
+                                                tick={false} // Quitar los números del eje Y
+                                                tickMargin={0} // Ya no necesitamos margen para los números
                                                 stroke="var(--muted-foreground)"
-                                                ticks={[0, 10, 20, 30, 40, 50, 60]}
+                                                ticks={[0, 10, 20, 30, 40, 50, 60]} // Mantener los ticks para las líneas horizontales
                                             />
                                             <Tooltip
                                                 content={<CustomTooltip />}
