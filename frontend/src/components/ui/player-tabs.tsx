@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { Trophy, BarChart3, Lock, TrendingUp, Target } from "lucide-react"
-import { LineChart, Line, Tooltip, ResponsiveContainer, TooltipProps, YAxis } from "recharts"
+import { LineChart, Line, Tooltip, ResponsiveContainer, TooltipProps, YAxis, ReferenceLine } from "recharts"
 import axios from "axios"
 import { useTheme } from "next-themes"
 
@@ -537,23 +537,17 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             data={pointsProgression.length ? pointsProgression : [{ date: "", points: 0 }]}
                                             margin={{ left: 12, right: 12 }}
                                         >
-                                            {/* PRIMERO: Dibujar las líneas horizontales manualmente */}
+                                            {/* Reemplaza las líneas SVG manuales con ReferenceLines */}
                                             {yTicks.map(tick => (
-                                                <svg key={tick} style={{ overflow: 'visible' }}>
-                                                    <line
-                                                        x1="0%"
-                                                        x2="100%"
-                                                        y1={tick}
-                                                        y2={tick}
-                                                        stroke={resolvedTheme === 'dark' ? "rgba(255, 76, 76, 0.18)" : "rgba(66, 115, 255, 0.18)"}
-                                                        strokeDasharray="3 3"
-                                                        // Truco crucial: usa strokeWidth para que sean visibles
-                                                        strokeWidth={1}
-                                                    />
-                                                </svg>
+                                                <ReferenceLine
+                                                    key={tick}
+                                                    y={tick}
+                                                    stroke={resolvedTheme === 'dark' ? "rgba(255, 76, 76, 0.18)" : "rgba(66, 115, 255, 0.18)"}
+                                                    strokeDasharray="3 3"
+                                                    ifOverflow="extendDomain"
+                                                />
                                             ))}
                                             
-                                            {/* Después el eje Y sin width y los demás elementos */}
                                             <YAxis
                                                 dataKey="points"
                                                 tick={false}
