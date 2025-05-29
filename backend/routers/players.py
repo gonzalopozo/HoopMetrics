@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlmodel import desc, func, select
 from typing import List
 from sqlmodel.ext.asyncio.session import AsyncSession
-from models import Match, PointsProgression
+from models import Match, PointsProgression, PointsTypeDistribution
 
 from deps import get_db
 from models import MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead
@@ -189,4 +189,36 @@ async def read_players_basic_stats(id: int, session: AsyncSession = Depends(get_
 
     except Exception as e:
         print(f"Error in read_players_basic_stats: {str(e)}")
+        raise
+
+@router.get("/{id}/basicstats/pointstype", response_model=PointsTypeDistribution)
+async def read_players_points_by_type(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Devuelve la distribución de puntos por tipo de tiro para un jugador concreto.
+    Formato: { "two_points": 320, "three_points": 120, "free_throws": 80 }
+    """
+    try:
+        stmt = (
+            select(
+                func.sum(
+                    (func.coalesce(MatchStatistic.field_goals_made, 0) - func.coalesce(MatchStatistic.three_points_made, 0)) * 2
+                ).label("two_points"),
+                func.sum(
+                    func.coalesce(MatchStatistic.three_points_made, 0) * 3
+                ).label("three_points"),
+                func.sum(
+                    func.coalesce(MatchStatistic.free_throws_made, 0)
+                ).label("free_throws")
+            )
+            .where(MatchStatistic.player_id == id)
+        )
+        result = await session.execute(stmt)
+        row = result.first()
+        return {
+            "two_points": row.two_points or 0,
+            "three_points": row.three_points or 0,
+            "free_throws": row.free_throws or 0
+        }
+    except Exception as e:
+        print(f"Error in read_players_points_by_type: {str(e)}")
         raise

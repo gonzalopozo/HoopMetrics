@@ -8,6 +8,13 @@ import { Trophy, BarChart3, Lock, TrendingUp, Target } from "lucide-react"
 import { LineChart, Line, Tooltip, ResponsiveContainer, TooltipProps, YAxis, ReferenceLine } from "recharts"
 import axios from "axios"
 import { useTheme } from "next-themes"
+import { Pie, PieChart as RePieChart } from "recharts";
+import {
+    ChartConfig,
+    ChartContainer,
+    ChartLegend,
+    ChartLegendContent,
+} from "@/components/ui/chart";
 
 // Añadir este import para el tooltip personalizado
 import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
@@ -17,7 +24,7 @@ const CustomTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) =
     if (active && payload && payload.length) {
         // Obtiene la fecha directamente del payload para asegurar que sea la correcta
         const dateValue = payload[0].payload.date;
-        
+
         return (
             <div className="rounded-lg border bg-card p-3 shadow-md">
                 <p className="font-medium text-sm">
@@ -103,6 +110,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     const [selectedGameIndex, setSelectedGameIndex] = useState<number | null>(null)
     const [userRole, setUserRole] = useState<string>("free")
     const [pointsProgression, setPointsProgression] = useState<PointsProgression[]>([])
+    const [pointsType, setPointsType] = useState<{ two_points: number; three_points: number; free_throws: number } | null>(null);
     const isPremium = userRole === "premium" || userRole === "ultimate"
     const isUltimate = userRole === "ultimate"
     const { resolvedTheme } = useTheme()
@@ -126,6 +134,21 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         }
         if (isPremium) fetchPointsProgression()
     }, [player.id, isPremium])
+
+    // Hook para la distribución de puntos por tipo de tiro
+    useEffect(() => {
+        async function fetchPointsType() {
+            try {
+                const res = await axios.get<{ two_points: number; three_points: number; free_throws: number }>(
+                    `${process.env.NEXT_PUBLIC_API_URL}/players/${player.id}/basicstats/pointstype`
+                );
+                setPointsType(res.data);
+            } catch (e) {
+                setPointsType(null);
+            }
+        }
+        if (isPremium) fetchPointsType();
+    }, [player.id, isPremium]);
 
     // Calcular estadísticas para el resumen del gráfico
     const getPointsStats = () => {
@@ -156,6 +179,22 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     const yMax = Math.ceil(Math.max(60, maxPoints) / 10) * 10;
     const yTicks = [];
     for (let i = yMin; i <= yMax; i += 10) yTicks.push(i);
+
+    // Pie chart data y config
+    const pieData = pointsType
+        ? [
+            { type: "2PT", value: pointsType.two_points, fill: "hsl(var(--chart-1))" },
+            { type: "3PT", value: pointsType.three_points, fill: "hsl(var(--chart-2))" },
+            { type: "FT", value: pointsType.free_throws, fill: "hsl(var(--chart-3))" },
+        ]
+        : [];
+
+    const pieChartConfig: ChartConfig = {
+        "2PT": { label: "2PT", color: "hsl(var(--chart-1))" },
+        "3PT": { label: "3PT", color: "hsl(var(--chart-2))" },
+        FT: { label: "FT", color: "hsl(var(--chart-3))" },
+        value: { label: "Points" },
+    };
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -522,6 +561,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             <TabsContent value="premium" className={cn(!isPremium && "pointer-events-none select-none opacity-60")}>
                 {isPremium ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {/* Gráfico de línea de progresión de puntos */}
                         <Card>
                             <CardHeader>
                                 <CardTitle>Points Progression</CardTitle>
@@ -547,7 +587,6 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                     ifOverflow="extendDomain"
                                                 />
                                             ))}
-                                            
                                             <YAxis
                                                 dataKey="points"
                                                 tick={false}
@@ -616,6 +655,40 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                     </div>
                                 </div>
                             </CardFooter>
+                        </Card>
+
+                        {/* Pie Chart de distribución de puntos */}
+                        <Card className="flex flex-col">
+                            <CardHeader className="items-center pb-0">
+                                <CardTitle>Points Distribution</CardTitle>
+                                <CardDescription>Por tipo de tiro</CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-1 pb-0">
+                                <ChartContainer
+                                    config={pieChartConfig}
+                                    className="mx-auto aspect-square max-h-[300px]"
+                                >
+                                    <RePieChart>
+                                        <Pie
+                                            data={pieData}
+                                            dataKey="value"
+                                            nameKey="type"
+                                            cx="50%"
+                                            cy="50%"
+                                            outerRadius={90}
+                                            innerRadius={60}
+                                            label={({ percent }) =>
+                                                percent > 0 ? `${Math.round(percent * 100)}%` : ""
+                                            }
+                                            isAnimationActive={false}
+                                        />
+                                        <ChartLegend
+                                            content={<ChartLegendContent nameKey="type" />}
+                                            className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+                                        />
+                                    </RePieChart>
+                                </ChartContainer>
+                            </CardContent>
                         </Card>
                     </div>
                 ) : (

@@ -249,3 +249,8 @@ class PlayerReadTeams(SQLModel):
 class PointsProgression(SQLModel):
     date: str  # ISO format
     points: Optional[float] = None
+
+class PointsTypeDistribution(SQLModel):
+    two_points: int
+    three_points: int
+    free_throws: int
