@@ -150,7 +150,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     // Agrupa los partidos por mes para la barra de meses
     const monthsData = useMemo(() => {
         const months: { key: string, label: string, count: number }[] = []
-        let lastKey = ""
+        // let lastKey = ""
         pointsProgression.forEach(({ date }) => {
             const d = new Date(date)
             const key = `${d.getFullYear()}-${d.getMonth()}`
@@ -163,7 +163,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             } else {
                 months[months.length - 1].count += 1
             }
-            lastKey = key
+            // lastKey = key
         })
         return months
     }, [pointsProgression])
