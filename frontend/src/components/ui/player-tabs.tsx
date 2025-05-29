@@ -550,7 +550,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 horizontal={true}
                                                 strokeDasharray="3 3"
                                                 stroke={resolvedTheme === 'dark'
-                                                    ? "rgba(255, 76, 76, 0.18)"
+                                                    ? "orange"
                                                     : "rgba(66, 115, 255, 0.18)"}
                                             />
                                             <Tooltip
