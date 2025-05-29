@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { Trophy, BarChart3, Lock } from "lucide-react"
-import { LineChart, Line, XAxis, CartesianGrid, Tooltip, TooltipProps, ResponsiveContainer } from "recharts"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, TooltipProps, ResponsiveContainer, ReferenceArea } from "recharts"
 
 import axios from "axios"
 import { useTheme } from "next-themes"
@@ -545,33 +545,69 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart
                                             data={pointsProgression}
-                                            margin={{ left: 12, right: 12, top: 16, bottom: 32 }}
+                                            margin={{ left: 24, right: 12, top: 16, bottom: 32 }}
                                         >
                                             <CartesianGrid vertical={false} strokeDasharray="3 3" />
                                             <XAxis
                                                 dataKey="date"
                                                 type="category"
-                                                ticks={xTicks}
-                                                tickFormatter={dateOrMs => {
-                                                    if (typeof dateOrMs === "string") {
-                                                        const d = new Date(dateOrMs)
-                                                        return d.toLocaleDateString("es-ES", {
-                                                            day: "2-digit",
-                                                            month: "short"
-                                                        })
-                                                    }
-                                                    return ""
+                                                tickFormatter={date => {
+                                                    const d = new Date(date)
+                                                    return d.toLocaleDateString("es-ES", { day: "2-digit" })
                                                 }}
                                                 tickLine={false}
                                                 axisLine={false}
                                                 tickMargin={8}
-                                                label={{
-                                                    value: "Fecha del partido",
-                                                    position: "insideBottom",
-                                                    offset: -18,
-                                                    style: { fill: "var(--muted-foreground)", fontSize: 14 }
-                                                }}
                                             />
+                                            <YAxis
+                                                domain={[
+                                                    (dataMin: number) => Math.floor(dataMin / 10) * 10,
+                                                    (dataMax: number) => Math.ceil(dataMax / 10) * 10
+                                                ]}
+                                                tickCount={5}
+                                                tickFormatter={v => `${v}`}
+                                                tickLine={false}
+                                                axisLine={false}
+                                            />
+                                            
+                                            {/* Áreas de referencia para los meses */}
+                                            {monthsData.map((month, index) => {
+                                                // Encuentra el primer y último partido del mes
+                                                const firstDate = pointsProgression.find(p => {
+                                                    const d = new Date(p.date)
+                                                    return `${d.getFullYear()}-${d.getMonth()}` === month.key
+                                                })?.date
+                                                
+                                                const lastDate = [...pointsProgression].reverse().find(p => {
+                                                    const d = new Date(p.date)
+                                                    return `${d.getFullYear()}-${d.getMonth()}` === month.key
+                                                })?.date
+                                                
+                                                if (!firstDate || !lastDate) return null
+                                                
+                                                // Alterna colores para mejor visibilidad
+                                                const fillColor = index % 2 === 0 
+                                                    ? "var(--accent)" 
+                                                    : "var(--background)"
+                                                    
+                                                return (
+                                                    <ReferenceArea 
+                                                        key={month.key}
+                                                        x1={firstDate} 
+                                                        x2={lastDate}
+                                                        fillOpacity={0.1}
+                                                        fill={fillColor}
+                                                        label={{
+                                                            value: month.label,
+                                                            position: "insideBottom",
+                                                            offset: 10,
+                                                            fontSize: 12,
+                                                            fill: "var(--muted-foreground)"
+                                                        }}
+                                                    />
+                                                )
+                                            })}
+                                            
                                             <Tooltip
                                                 content={<CustomTooltip />}
                                                 cursor={{ stroke: lineColor, strokeDasharray: "3 3" }}
@@ -586,43 +622,47 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             />
                                         </LineChart>
                                     </ResponsiveContainer>
-                                    {/* Barra de meses personalizada */}
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            position: "absolute",
-                                            left: 48, // margen izquierdo del chart
-                                            right: 24, // margen derecho del chart
-                                            bottom: 0,
-                                            height: 32,
-                                            pointerEvents: "none",
-                                            zIndex: 1,
-                                        }}
-                                    >
-                                        {monthsData.map((month, idx) => (
-                                            <div
-                                                key={month.key}
+                                </div>
+                                {/* Barra de meses personalizada alineada con el gráfico */}
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        width: "100%",
+                                        marginTop: 0,
+                                        marginLeft: 0,
+                                        marginRight: 0,
+                                        position: "relative",
+                                        zIndex: 1,
+                                        userSelect: "none",
+                                    }}
+                                >
+                                    {monthsData.map((month, idx) => (
+                                        <div
+                                            key={month.key}
+                                            style={{
+                                                flex: month.count,
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "flex-start",
+                                                borderLeft: idx === 0 ? "none" : "1px solid var(--border)",
+                                                minWidth: 0,
+                                            }}
+                                        >
+                                            <span
                                                 style={{
-                                                    flex: month.count,
-                                                    display: "flex",
-                                                    justifyContent: "center",
-                                                    alignItems: "flex-end",
-                                                    borderLeft: idx === 0 ? "none" : "1px solid var(--border)",
+                                                    fontSize: 14,
+                                                    color: "var(--muted-foreground)",
+                                                    fontWeight: 500,
+                                                    textTransform: "capitalize",
+                                                    whiteSpace: "nowrap",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
                                                 }}
                                             >
-                                                <span
-                                                    style={{
-                                                        fontSize: 14,
-                                                        color: "var(--muted-foreground)",
-                                                        fontWeight: 500,
-                                                        textTransform: "capitalize",
-                                                    }}
-                                                >
-                                                    {month.label}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
+                                                {month.label}
+                                            </span>
+                                        </div>
+                                    ))}
                                 </div>
                             </CardContent>
                         </Card>
