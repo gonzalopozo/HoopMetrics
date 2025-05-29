@@ -181,19 +181,58 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     const yTicks = [];
     for (let i = yMin; i <= yMax; i += 10) yTicks.push(i);
 
-    // Pie chart data y config
+    // Pie chart data y config adaptados a tema
     const pieData = pointsType
         ? [
-            { type: "2PT", value: pointsType.two_points, fill: "hsl(var(--chart-1))" },
-            { type: "3PT", value: pointsType.three_points, fill: "hsl(var(--chart-2))" },
-            { type: "FT", value: pointsType.free_throws, fill: "hsl(var(--chart-3))" },
+            {
+                type: "2PT",
+                value: pointsType.two_points,
+                fill:
+                    resolvedTheme === "dark"
+                        ? "hsl(0, 80%, 50%)"
+                        : "hsl(214, 80%, 55%)",
+            },
+            {
+                type: "3PT",
+                value: pointsType.three_points,
+                fill:
+                    resolvedTheme === "dark"
+                        ? "hsl(355, 70%, 40%)"
+                        : "hsl(214, 90%, 70%)",
+            },
+            {
+                type: "FT",
+                value: pointsType.free_throws,
+                fill:
+                    resolvedTheme === "dark"
+                        ? "hsl(0, 60%, 30%)"
+                        : "hsl(214, 60%, 85%)",
+            },
         ]
         : [];
 
     const pieChartConfig: ChartConfig = {
-        "2PT": { label: "2PT", color: "hsl(var(--chart-1))" },
-        "3PT": { label: "3PT", color: "hsl(var(--chart-2))" },
-        FT: { label: "FT", color: "hsl(var(--chart-3))" },
+        "2PT": {
+            label: "2PT",
+            color:
+                resolvedTheme === "dark"
+                    ? "hsl(0, 80%, 50%)"
+                    : "hsl(214, 80%, 55%)",
+        },
+        "3PT": {
+            label: "3PT",
+            color:
+                resolvedTheme === "dark"
+                    ? "hsl(355, 70%, 40%)"
+                    : "hsl(214, 90%, 70%)",
+        },
+        FT: {
+            label: "FT",
+            color:
+                resolvedTheme === "dark"
+                    ? "hsl(0, 60%, 30%)"
+                    : "hsl(214, 60%, 85%)",
+        },
         value: { label: "Points" },
     };
 
@@ -567,7 +606,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                             <CardHeader>
                                 <CardTitle>Points Progression</CardTitle>
                                 <CardDescription>
-                                    Evolución de puntos por partido a lo largo de la temporada
+                                    Evolution of points per game throughout the season
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -662,7 +701,9 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                         <Card className="flex flex-col">
                             <CardHeader className="items-center pb-0">
                                 <CardTitle>Points Distribution</CardTitle>
-                                <CardDescription>Por tipo de tiro</CardDescription>
+                                <CardDescription>
+                                    Distribution of total points by shot type
+                                </CardDescription>
                             </CardHeader>
                             <CardContent className="flex-1 pb-0">
                                 <ChartContainer
@@ -690,6 +731,88 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                     </RePieChart>
                                 </ChartContainer>
                             </CardContent>
+                            <CardFooter className="border-t pt-4">
+                                <div className="w-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="font-semibold text-sm">
+                                            {`${player.name || "Player"}'s Shot Profile`}
+                                        </h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            {pointsType
+                                                ? `${pointsType.two_points + pointsType.three_points + pointsType.free_throws} total points`
+                                                : "No data"}
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <BarChart3 className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Most Used</p>
+                                                <p className="font-bold">
+                                                    {pointsType
+                                                        ? (() => {
+                                                            const arr = [
+                                                                { label: "2PT", value: pointsType.two_points },
+                                                                { label: "3PT", value: pointsType.three_points },
+                                                                { label: "FT", value: pointsType.free_throws },
+                                                            ];
+                                                            const max = arr.reduce((a, b) => (a.value > b.value ? a : b));
+                                                            return `${max.label} (${max.value})`;
+                                                        })()
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Highest %</p>
+                                                <p className="font-bold">
+                                                    {pointsType
+                                                        ? (() => {
+                                                            const total = pointsType.two_points + pointsType.three_points + pointsType.free_throws;
+                                                            if (!total) return "-";
+                                                            const arr = [
+                                                                { label: "2PT", value: pointsType.two_points },
+                                                                { label: "3PT", value: pointsType.three_points },
+                                                                { label: "FT", value: pointsType.free_throws },
+                                                            ];
+                                                            const max = arr.reduce((a, b) => (a.value / total > b.value / total ? a : b));
+                                                            return `${max.label} (${Math.round((max.value / total) * 100)}%)`;
+                                                        })()
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Target className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Closest Split</p>
+                                                <p className="font-bold">
+                                                    {pointsType
+                                                        ? (() => {
+                                                            const arr = [
+                                                                { label: "2PT", value: pointsType.two_points },
+                                                                { label: "3PT", value: pointsType.three_points },
+                                                                { label: "FT", value: pointsType.free_throws },
+                                                            ];
+                                                            arr.sort((a, b) => a.value - b.value);
+                                                            // Most similar pair
+                                                            const diffs = [
+                                                                { pair: `${arr[0].label} & ${arr[1].label}`, diff: Math.abs(arr[0].value - arr[1].value) },
+                                                                { pair: `${arr[1].label} & ${arr[2].label}`, diff: Math.abs(arr[1].value - arr[2].value) },
+                                                                { pair: `${arr[0].label} & ${arr[2].label}`, diff: Math.abs(arr[0].value - arr[2].value) },
+                                                            ];
+                                                            const min = diffs.reduce((a, b) => (a.diff < b.diff ? a : b));
+                                                            return `${min.pair} (${min.diff} pts diff)`;
+                                                        })()
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardFooter>
                         </Card>
                     </div>
                 ) : (
