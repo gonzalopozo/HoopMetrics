@@ -15,10 +15,13 @@ import { NameType, ValueType } from "recharts/types/component/DefaultTooltipCont
 // Añade el componente CustomTooltip para personalizar la apariencia del tooltip
 const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {
     if (active && payload && payload.length) {
+        // Obtiene la fecha directamente del payload para asegurar que sea la correcta
+        const dateValue = payload[0].payload.date;
+        
         return (
             <div className="rounded-lg border bg-card p-3 shadow-md">
                 <p className="font-medium text-sm">
-                    {new Date(label).toLocaleDateString("es-ES", {
+                    {new Date(dateValue).toLocaleDateString("es-ES", {
                         day: "2-digit",
                         month: "short",
                         year: "numeric"
@@ -528,7 +531,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                         >
                                             <CartesianGrid
                                                 vertical={false}
-                                                stroke="var(--border)"
+                                                // stroke="var(--border)"
                                             />
                                             {/* <XAxis
                                                 dataKey="date"
