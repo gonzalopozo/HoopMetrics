@@ -132,21 +132,6 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             : "#4273ff" // azul NBA
     const dotColor = lineColor
 
-    // Eje X: ticks por mes, pero datos día a día
-    const xTicks = useMemo(() => {
-        // Extrae los meses únicos y calcula el día medio de cada mes para el tick
-        const months = new Map<string, number>()
-        pointsProgression.forEach(({ date }) => {
-            const d = new Date(date)
-            const key = `${d.getFullYear()}-${d.getMonth()}`
-            if (!months.has(key)) {
-                // Día 15 del mes para centrar el label
-                months.set(key, new Date(d.getFullYear(), d.getMonth(), 15).getTime())
-            }
-        })
-        return Array.from(months.values())
-    }, [pointsProgression])
-
     // Agrupa los partidos por mes para la barra de meses
     const monthsData = useMemo(() => {
         const months: { key: string, label: string, count: number }[] = []
