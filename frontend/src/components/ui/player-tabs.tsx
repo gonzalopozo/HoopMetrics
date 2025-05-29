@@ -13,7 +13,7 @@ import { useTheme } from "next-themes"
 import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
 
 // Añade el componente CustomTooltip para personalizar la apariencia del tooltip
-const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {
+const CustomTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
     if (active && payload && payload.length) {
         // Obtiene la fecha directamente del payload para asegurar que sea la correcta
         const dateValue = payload[0].payload.date;
