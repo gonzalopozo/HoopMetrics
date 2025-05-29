@@ -151,9 +151,11 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
 
     // Calcula el máximo de puntos para ajustar el grid dinámicamente
     const maxPoints = Math.max(...pointsProgression.map(p => p.points ?? 0), 0);
+    const minPoints = Math.min(...pointsProgression.map(p => p.points ?? 0), 0);
+    const yMin = Math.floor(minPoints / 10) * 10;
     const yMax = Math.ceil(Math.max(60, maxPoints) / 10) * 10;
     const yTicks = [];
-    for (let i = 0; i <= yMax; i += 10) yTicks.push(i);
+    for (let i = yMin; i <= yMax; i += 10) yTicks.push(i);
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -540,7 +542,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 axisLine={false}
                                                 tickLine={false}
                                                 ticks={yTicks}
-                                                domain={[0, yMax]}
+                                                domain={[yMin, yMax]}
                                                 width={0}
                                             />
                                             <CartesianGrid
