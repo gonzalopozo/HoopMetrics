@@ -5,7 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { Trophy, BarChart3, Lock } from "lucide-react"
-import { BarChart, LineChart, PieChart, RadarChart } from "@/components/ui/player-charts"
+import { LineChart, Line, XAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+import axios from "axios"
 
 interface PlayerStats {
     minutes_played: number;
@@ -23,6 +24,7 @@ interface PlayerStats {
 }
 
 interface Player {
+    id: number;
     average_stats: PlayerStats;
     stats: PlayerStats[];
 }
@@ -39,6 +41,11 @@ interface ShootingPercentages {
     fg: string | number;
     threePoint: string | number;
     ft: string | number;
+}
+
+interface PointsProgression {
+    date: string;
+    points: number;
 }
 
 interface PlayerTabsProps {
@@ -66,73 +73,28 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     const [, setActiveTab] = useState("overview")
     const [selectedGameIndex, setSelectedGameIndex] = useState<number | null>(null)
     const [userRole, setUserRole] = useState<string>("free")
+    const [pointsProgression, setPointsProgression] = useState<PointsProgression[]>([])
+    const isPremium = userRole === "premium" || userRole === "ultimate"
+    const isUltimate = userRole === "ultimate"
 
     useEffect(() => {
         setUserRole(getUserRoleFromToken())
     }, [])
 
-    const isPremium = userRole === "premium" || userRole === "ultimate"
-
-    // Sample data for charts (LeBron James example)
-    const barData = [
-        { name: "PTS", value: 27 },
-        { name: "REB", value: 7.4 },
-        { name: "AST", value: 7.4 },
-        { name: "STL", value: 1.6 },
-        { name: "BLK", value: 0.8 },
-    ]
-    const lineData = [
-        { game: "1", points: 25 },
-        { game: "2", points: 32 },
-        { game: "3", points: 28 },
-        { game: "4", points: 35 },
-        { game: "5", points: 22 },
-    ]
-    const pieData = [
-        { label: "2PT", value: 55 },
-        { label: "3PT", value: 30 },
-        { label: "FT", value: 15 },
-    ]
-    const radarData = [
-        { stat: "Scoring", value: 90 },
-        { stat: "Passing", value: 85 },
-        { stat: "Defense", value: 70 },
-        { stat: "Rebounding", value: 80 },
-        { stat: "Leadership", value: 95 },
-    ]
-
-    // Ultimate only
-    const isUltimate = userRole === "ultimate"
-
-    // Advanced sample data for ultimate tab
-    const advancedBarData = [
-        { name: "Usage %", value: 32.5 },
-        { name: "AST/TO", value: 2.1 },
-        { name: "PER", value: 28.7 },
-        { name: "TS%", value: 61.2 },
-        { name: "PIE", value: 18.3 },
-    ]
-    const advancedLineData = [
-        { game: "1", vorp: 0.8 },
-        { game: "2", vorp: 1.1 },
-        { game: "3", vorp: 0.9 },
-        { game: "4", vorp: 1.3 },
-        { game: "5", vorp: 1.0 },
-    ]
-    const advancedPieData = [
-        { label: "Isolation", value: 22 },
-        { label: "Pick & Roll", value: 38 },
-        { label: "Spot Up", value: 18 },
-        { label: "Transition", value: 12 },
-        { label: "Post Up", value: 10 },
-    ]
-    const advancedRadarData = [
-        { stat: "Offensive Impact", value: 95 },
-        { stat: "Defensive Impact", value: 80 },
-        { stat: "Clutch", value: 88 },
-        { stat: "Versatility", value: 92 },
-        { stat: "On/Off Diff", value: 85 },
-    ]
+    // Fetch points progression for premium tab
+    useEffect(() => {
+        async function fetchPointsProgression() {
+            try {
+                const res = await axios.get<PointsProgression[]>(
+                    `${process.env.NEXT_PUBLIC_API_URL}/players/${player.id}/basicstats/pointsprogression`
+                )
+                setPointsProgression(res.data)
+            } catch (e) {
+                setPointsProgression([])
+            }
+        }
+        if (isPremium) fetchPointsProgression()
+    }, [player.id, isPremium])
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -501,46 +463,53 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Points by Category</CardTitle>
-                                <CardDescription>Distribution of points scored</CardDescription>
+                                <CardTitle>Points Progression</CardTitle>
+                                <CardDescription>
+                                    Evolución de puntos por partido (Line Chart)
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <PieChart
-                                    data={pieData}
-                                />
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Game Log (Last 5)</CardTitle>
-                                <CardDescription>Points per game</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <LineChart
-                                    data={lineData}
-                                />
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Stat Comparison</CardTitle>
-                                <CardDescription>Key stats this season</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <BarChart
-                                    data={barData}
-                                />
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Skill Radar</CardTitle>
-                                <CardDescription>Player skill profile</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <RadarChart
-                                    data={radarData}
-                                />
+                                <div style={{ width: "100%", height: 300 }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart
+                                            data={pointsProgression}
+                                            margin={{ left: 12, right: 12, top: 16, bottom: 16 }}
+                                        >
+                                            <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                                            <XAxis
+                                                dataKey="date"
+                                                tickLine={false}
+                                                axisLine={false}
+                                                tickMargin={8}
+                                                tickFormatter={date =>
+                                                    // Muestra solo "dd MMM" (ej: 12 Ene)
+                                                    new Date(date).toLocaleDateString("es-ES", {
+                                                        day: "2-digit",
+                                                        month: "short"
+                                                    })
+                                                }
+                                            />
+                                            <Tooltip
+                                                contentStyle={{ background: "var(--background)", border: "1px solid var(--border)" }}
+                                                labelFormatter={date =>
+                                                    new Date(date).toLocaleDateString("es-ES", {
+                                                        day: "2-digit",
+                                                        month: "short",
+                                                        year: "numeric"
+                                                    })
+                                                }
+                                            />
+                                            <Line
+                                                type="monotone"
+                                                dataKey="points"
+                                                stroke="hsl(var(--chart-1))"
+                                                strokeWidth={2}
+                                                dot={{ fill: "hsl(var(--chart-1))" }}
+                                                activeDot={{ r: 6 }}
+                                            />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
                             </CardContent>
                         </Card>
                     </div>
@@ -564,7 +533,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             <TabsContent value="ultimate" className={cn(!isUltimate && "pointer-events-none select-none opacity-60")}>
                 {isUltimate ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <Card>
+                        {/* <Card>
                             <CardHeader>
                                 <CardTitle>Advanced Efficiency</CardTitle>
                                 <CardDescription>PER, Usage, TS%, PIE</CardDescription>
@@ -601,7 +570,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                             <CardContent>
                                 <RadarChart data={advancedRadarData} />
                             </CardContent>
-                        </Card>
+                        </Card> */}
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center py-16">
