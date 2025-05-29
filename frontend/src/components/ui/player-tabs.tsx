@@ -149,6 +149,12 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
 
     const pointsStats = getPointsStats();
 
+    // Calcula el máximo de puntos para ajustar el grid dinámicamente
+    const maxPoints = Math.max(60, ...pointsProgression.map(p => p.points || 0));
+    const yMax = Math.ceil(maxPoints / 10) * 10;
+    const yTicks = [];
+    for (let i = 0; i <= yMax; i += 10) yTicks.push(i);
+
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
             <TabsList className="mb-4">
@@ -529,18 +535,21 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             data={pointsProgression}
                                             margin={{ left: 12, right: 12 }}
                                         >
+                                            <YAxis
+                                                tick={false}
+                                                axisLine={false}
+                                                tickLine={false}
+                                                ticks={yTicks}
+                                                domain={[0, yMax]}
+                                                width={0}
+                                            />
                                             <CartesianGrid
                                                 vertical={false}
                                                 horizontal={true}
                                                 strokeDasharray="3 3"
-                                                stroke={resolvedTheme === 'dark' ? "rgba(255, 76, 76, 0.18)" : "rgba(66, 115, 255, 0.18)"}
-                                            />
-                                            <YAxis
-                                                tick={false} // Oculta los labels
-                                                axisLine={false}
-                                                tickLine={false}
-                                                ticks={[0, 10, 20, 30, 40, 50, 60]}
-                                                domain={[0, 10, 20, 30, 40, 50, 60]}
+                                                stroke={resolvedTheme === 'dark'
+                                                    ? "rgba(255, 76, 76, 0.18)"
+                                                    : "rgba(66, 115, 255, 0.18)"}
                                             />
                                             <Tooltip
                                                 content={<CustomTooltip />}
