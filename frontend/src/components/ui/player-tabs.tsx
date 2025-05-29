@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { Trophy, BarChart3, Lock } from "lucide-react"
-import { LineChart, Line, XAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+import { LineChart, Line, XAxis, CartesianGrid, Tooltip, TooltipProps, ResponsiveContainer } from "recharts"
 import axios from "axios"
 import { useTheme } from "next-themes"
 
@@ -71,7 +71,8 @@ function getUserRoleFromToken(): string {
 }
 
 // Custom Tooltip for the chart
-function CustomTooltip({ active, payload, label }: any) {
+
+function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
     if (active && payload && payload.length) {
         const { date, points } = payload[0].payload
         return (
