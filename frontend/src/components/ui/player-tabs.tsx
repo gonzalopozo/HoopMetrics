@@ -117,6 +117,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 )
                 setPointsProgression(res.data)
             } catch (e) {
+                console.error("Error fetching points progression:", e)
                 setPointsProgression([])
             }
         }
@@ -571,7 +572,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                 <div className="w-full">
                                     <div className="flex items-center justify-between mb-2">
                                         <h3 className="font-semibold text-sm">
-                                            {player.name || "Player"}'s Scoring Profile
+                                            {`${player.name || "Player"}'s Scoring Profile`}
                                         </h3>
                                         <span className="text-xs text-muted-foreground">
                                             {pointsProgression.length} games analyzed
