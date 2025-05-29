@@ -5,10 +5,33 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { Trophy, BarChart3, Lock } from "lucide-react"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, TooltipProps, ResponsiveContainer } from "recharts"
-
+import { LineChart, Line, XAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from "recharts"
 import axios from "axios"
 import { useTheme } from "next-themes"
+
+// Añadir este import para el tooltip personalizado
+import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
+
+// Añade el componente CustomTooltip para personalizar la apariencia del tooltip
+const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameType>) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="rounded-lg border bg-card p-3 shadow-md">
+                <p className="font-medium text-sm">
+                    {new Date(label).toLocaleDateString("es-ES", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                    })}
+                </p>
+                <p className="text-lg font-bold text-primary mt-1">
+                    {payload[0].value} <span className="text-xs text-muted-foreground">pts</span>
+                </p>
+            </div>
+        );
+    }
+    return null;
+};
 
 interface PlayerStats {
     minutes_played: number;
@@ -71,39 +94,14 @@ function getUserRoleFromToken(): string {
     }
 }
 
-function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
-    if (active && payload && payload.length) {
-        const { date, points } = payload[0].payload
-        return (
-            <div
-                className="rounded-lg border border-border p-3 shadow-lg min-w-[120px]"
-                style={{
-                    background: "hsl(var(--card))",
-                    color: "hsl(var(--card-foreground))",
-                }}
-            >
-                <div className="text-xs text-muted-foreground mb-1">
-                    {new Date(date).toLocaleDateString("es-ES", {
-                        day: "2-digit",
-                        month: "long",
-                        year: "numeric"
-                    })}
-                </div>
-                <div className="font-bold text-lg text-primary">{points} points</div>
-            </div>
-        )
-    }
-    return null
-}
-
 export default function PlayerTabs({ player, careerHighs, shootingPercentages }: PlayerTabsProps) {
     const [, setActiveTab] = useState("overview")
     const [selectedGameIndex, setSelectedGameIndex] = useState<number | null>(null)
     const [userRole, setUserRole] = useState<string>("free")
     const [pointsProgression, setPointsProgression] = useState<PointsProgression[]>([])
-    const { resolvedTheme } = useTheme()
     const isPremium = userRole === "premium" || userRole === "ultimate"
     const isUltimate = userRole === "ultimate"
+    const { theme } = useTheme()
 
     useEffect(() => {
         setUserRole(getUserRoleFromToken())
@@ -118,19 +116,11 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 )
                 setPointsProgression(res.data)
             } catch (e) {
-                console.error("Error fetching points progression:", e)
                 setPointsProgression([])
             }
         }
         if (isPremium) fetchPointsProgression()
     }, [player.id, isPremium])
-
-    // Colores según tema
-    const lineColor =
-        resolvedTheme === "dark"
-            ? "#f83c3c" // rojo NBA
-            : "#4273ff" // azul NBA
-    const dotColor = lineColor
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -501,66 +491,53 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                             <CardHeader>
                                 <CardTitle>Points Progression</CardTitle>
                                 <CardDescription>
-                                    Evolución de puntos por partido (Line Chart)
+                                    Evolución de puntos por partido a lo largo de la temporada
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div style={{ width: "100%", height: 300, position: "relative" }}>
+                                <div style={{ width: "100%", height: 300 }}>
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart
                                             data={pointsProgression}
-                                            margin={{ left: 24, right: 12, top: 16, bottom: 12 }}
+                                            margin={{ left: 12, right: 12, top: 16, bottom: 16 }}
                                         >
-                                            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                                            
-                                            {/* X-axis without labels */}
-                                            <XAxis 
+                                            <CartesianGrid
+                                                vertical={false}
+                                                strokeDasharray="3 3"
+                                                stroke="var(--border)"
+                                            />
+                                            <XAxis
                                                 dataKey="date"
-                                                tick={false}
                                                 tickLine={false}
                                                 axisLine={false}
+                                                tickMargin={8}
+                                                stroke="var(--muted-foreground)"
+                                                tickFormatter={date =>
+                                                    new Date(date).toLocaleDateString("es-ES", {
+                                                        day: "2-digit",
+                                                        month: "short"
+                                                    })
+                                                }
                                             />
-                                            
-                                            <YAxis
-                                                domain={[
-                                                    (dataMin: number) => Math.floor(dataMin / 10) * 10, // Round down to nearest 10
-                                                    (dataMax: number) => Math.ceil(dataMax / 10) * 10   // Round up to nearest 10
-                                                ]}
-                                                ticks={(() => {
-                                                    const min = Math.floor(Math.min(...pointsProgression.map((p: PointsProgression) => p.points)) / 10) * 10;
-                                                    const max = Math.ceil(Math.max(...pointsProgression.map((p: PointsProgression) => p.points)) / 10) * 10;
-                                                    const result: number[] = [];
-                                                    for (let i = min; i <= max; i += 10) {
-                                                        result.push(i);
-                                                    }
-                                                    return result;
-                                                })()}
-                                                tickFormatter={(v: number) => `${v} pts`}
-                                                label={{ 
-                                                    value: "Puntos por partido", 
-                                                    angle: -90, 
-                                                    position: "insideLeft",
-                                                    style: {
-                                                        fill: "var(--muted-foreground)",
-                                                        fontSize: 14,
-                                                        textAnchor: "middle"
-                                                    } as React.CSSProperties
-                                                }}
-                                                tickLine={false}
-                                                axisLine={false}
-                                            />
-                                            
                                             <Tooltip
                                                 content={<CustomTooltip />}
-                                                cursor={{ stroke: lineColor, strokeDasharray: "3 3" }}
+                                                cursor={{ stroke: "var(--muted-foreground)", strokeWidth: 1, strokeDasharray: "3 3" }}
                                             />
                                             <Line
                                                 type="monotone"
                                                 dataKey="points"
-                                                stroke={lineColor}
-                                                strokeWidth={2}
-                                                dot={{ fill: dotColor }}
-                                                activeDot={{ r: 6, fill: dotColor, stroke: lineColor, strokeWidth: 2 }}
+                                                stroke={theme === 'dark' ? "hsl(0 80% 45%)" : "hsl(214 80% 45%)"}
+                                                strokeWidth={2.5}
+                                                dot={{
+                                                    fill: theme === 'dark' ? "hsl(0 80% 45%)" : "hsl(214 80% 45%)",
+                                                    r: 4
+                                                }}
+                                                activeDot={{
+                                                    r: 7,
+                                                    fill: theme === 'dark' ? "hsl(0 80% 60%)" : "hsl(214 80% 60%)",
+                                                    stroke: "var(--background)",
+                                                    strokeWidth: 2
+                                                }}
                                             />
                                         </LineChart>
                                     </ResponsiveContainer>
