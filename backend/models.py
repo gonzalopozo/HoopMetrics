@@ -245,3 +245,7 @@ class PlayerReadTeams(SQLModel):
     team: Optional[TeamRead] = None
     url_pic: Optional[str] = None
     average_stats: Optional[StatRead] = None
+
+class PointsProgression(SQLModel):
+    date: str  # ISO format
+    points: Optional[float] = None

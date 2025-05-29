@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlmodel import desc, func, select
 from typing import List
 from sqlmodel.ext.asyncio.session import AsyncSession
+from models import Match, PointsProgression
 
 from deps import get_db
 from models import MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead
@@ -163,4 +164,29 @@ async def read_players_by_id(id: int, session: AsyncSession = Depends(get_db)):
         # Log the exception for debugging
         print(f"Error in read_players: {str(e)}")
         # Re-raise it so FastAPI can handle it appropriately
+        raise
+
+@router.get("/{id}/basicstats/pointsprogression", response_model=List[PointsProgression])
+async def read_players_basic_stats(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Devuelve la progresión de puntos por partido para un jugador concreto.
+    Formato: [{ "date": "2024-01-12", "points": 28 }, ...]
+    """
+    try:
+        stmt = (
+            select(Match.date, MatchStatistic.points)
+            .join(Match, Match.id == MatchStatistic.match_id)
+            .where(MatchStatistic.player_id == id)
+            .order_by(Match.date)
+        )
+        result = await session.execute(stmt)
+        rows = result.all()
+
+        return [
+            PointsProgression(date=date.isoformat(), points=points)
+            for date, points in rows
+        ]
+
+    except Exception as e:
+        print(f"Error in read_players_basic_stats: {str(e)}")
         raise
