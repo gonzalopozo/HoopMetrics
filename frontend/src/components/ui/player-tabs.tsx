@@ -169,6 +169,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 );
                 setSkillProfile(res.data);
             } catch (e) {
+                console.error("Error fetching skill profile:", e);
                 setSkillProfile(null);
             }
         }
@@ -864,7 +865,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                             <CardHeader className="items-center pb-0">
                                 <CardTitle>Skill Profile</CardTitle>
                                 <CardDescription>
-                                    Player's average performance in key categories
+                                    {`Player's average performance in key categories`}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="flex-1 pb-0">
