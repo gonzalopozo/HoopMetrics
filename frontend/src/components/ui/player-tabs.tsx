@@ -24,8 +24,8 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<ValueType, NameT
                         year: "numeric"
                     })}
                 </p>
-                <p className="text-lg font-bold text-primary mt-1">
-                    {payload[0].value} <span className="text-xs text-muted-foreground">pts</span>
+                <p className="text-base font-bold text-primary mt-1">
+                    {payload[0].value} <span className="text-sm text-muted-foreground">points</span>
                 </p>
             </div>
         );
@@ -522,13 +522,12 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                 <div style={{ width: "100%", height: 320 }}>
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart
+                                            accessibilityLayer
                                             data={pointsProgression}
-                                            margin={{ left: 20, right: 25, top: 20, bottom: 20 }}
+                                            margin={{ left: 12, right: 12 }}
                                         >
                                             <CartesianGrid
-                                                horizontal={true}
                                                 vertical={false}
-                                                strokeDasharray="3 3"
                                                 stroke="var(--border)"
                                             />
                                             {/* <XAxis
@@ -537,21 +536,14 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 axisLine={false}
                                                 tick={false}
                                             />
-                                            <YAxis
-                                                tickLine={false}
-                                                axisLine={false}
-                                                tick={false} // Quitar los números del eje Y
-                                                tickMargin={0} // Ya no necesitamos margen para los números
-                                                stroke="var(--muted-foreground)"
-                                                ticks={[0, 10, 20, 30, 40, 50, 60]} // Mantener los ticks para las líneas horizontales
                                             /> */}
                                             <Tooltip
                                                 content={<CustomTooltip />}
                                                 cursor={{ stroke: "var(--muted-foreground)", strokeWidth: 1, strokeDasharray: "3 3" }}
                                             />
                                             <Line
-                                                type="monotone"
                                                 dataKey="points"
+                                                type="monotone"
                                                 stroke={resolvedTheme === 'dark' ? "hsl(0 80% 45%)" : "hsl(214 80% 45%)"}
                                                 strokeWidth={2}
                                                 dot={{
