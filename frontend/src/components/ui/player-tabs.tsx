@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { Trophy, BarChart3, Lock } from "lucide-react"
-import { LineChart, Line, XAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from "recharts"
+import { Trophy, BarChart3, Lock, TrendingUp, Target } from "lucide-react"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from "recharts"
 import axios from "axios"
 import { useTheme } from "next-themes"
 
@@ -50,6 +50,7 @@ interface PlayerStats {
 
 interface Player {
     id: number;
+    name: string; // Added name property
     average_stats: PlayerStats;
     stats: PlayerStats[];
 }
@@ -116,12 +117,33 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 )
                 setPointsProgression(res.data)
             } catch (e) {
-                console.error("Error fetching points progression:", e)
                 setPointsProgression([])
             }
         }
         if (isPremium) fetchPointsProgression()
     }, [player.id, isPremium])
+
+    // Calcular estadísticas para el resumen del gráfico
+    const getPointsStats = () => {
+        if (!pointsProgression.length) return { avg: 0, max: 0, consistency: 0 };
+
+        const points = pointsProgression.map(p => p.points);
+        const avg = points.reduce((sum, p) => sum + p, 0) / points.length;
+        const max = Math.max(...points);
+
+        // Calcular consistencia (menor desviación estándar = mayor consistencia)
+        const variance = points.reduce((sum, p) => sum + Math.pow(p - avg, 2), 0) / points.length;
+        const stdDev = Math.sqrt(variance);
+        const consistency = Math.max(0, 100 - (stdDev / avg * 100));
+
+        return {
+            avg: parseFloat(avg.toFixed(1)),
+            max,
+            consistency: parseFloat(consistency.toFixed(0))
+        };
+    };
+
+    const pointsStats = getPointsStats();
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -503,6 +525,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             margin={{ left: 12, right: 12, top: 16, bottom: 16 }}
                                         >
                                             <CartesianGrid
+                                                horizontal={true}
                                                 vertical={false}
                                                 strokeDasharray="3 3"
                                                 stroke="var(--border)"
@@ -511,14 +534,14 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 dataKey="date"
                                                 tickLine={false}
                                                 axisLine={false}
+                                                tick={false} // Quita las etiquetas del eje X
+                                            />
+                                            <YAxis
+                                                tickLine={false}
+                                                axisLine={false}
                                                 tickMargin={8}
                                                 stroke="var(--muted-foreground)"
-                                                tickFormatter={date =>
-                                                    new Date(date).toLocaleDateString("es-ES", {
-                                                        day: "2-digit",
-                                                        month: "short"
-                                                    })
-                                                }
+                                                ticks={[0, 10, 20, 30, 40, 50, 60]} // Incrementos de 10 en 10
                                             />
                                             <Tooltip
                                                 content={<CustomTooltip />}
@@ -544,6 +567,41 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                     </ResponsiveContainer>
                                 </div>
                             </CardContent>
+                            <CardFooter className="border-t pt-4">
+                                <div className="w-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="font-semibold text-sm">
+                                            {player.name || "Player"}'s Scoring Profile
+                                        </h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            {pointsProgression.length} games analyzed
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">PPG</p>
+                                                <p className="font-bold">{pointsStats.avg}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Trophy className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Season High</p>
+                                                <p className="font-bold">{pointsStats.max}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Target className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Consistency</p>
+                                                <p className="font-bold">{pointsStats.consistency}%</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardFooter>
                         </Card>
                     </div>
                 ) : (
