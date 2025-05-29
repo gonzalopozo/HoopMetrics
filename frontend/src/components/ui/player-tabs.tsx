@@ -15,6 +15,8 @@ import {
     ChartLegend,
     ChartLegendContent,
 } from "@/components/ui/chart";
+import { RadarChart as ReRadarChart, Radar, PolarAngleAxis, PolarGrid } from "recharts"
+
 
 // Añadir este import para el tooltip personalizado
 import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
@@ -111,6 +113,13 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     const [userRole, setUserRole] = useState<string>("free")
     const [pointsProgression, setPointsProgression] = useState<PointsProgression[]>([])
     const [pointsType, setPointsType] = useState<{ two_points: number; three_points: number; free_throws: number } | null>(null);
+    const [skillProfile, setSkillProfile] = useState<{
+        points: number
+        rebounds: number
+        assists: number
+        steals: number
+        blocks: number
+    } | null>(null);
     const isPremium = userRole === "premium" || userRole === "ultimate"
     const isUltimate = userRole === "ultimate"
     const { resolvedTheme } = useTheme()
@@ -151,6 +160,21 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         if (isPremium) fetchPointsType();
     }, [player.id, isPremium]);
 
+    // Fetch skill profile for premium tab
+    useEffect(() => {
+        async function fetchSkillProfile() {
+            try {
+                const res = await axios.get<{ points: number; rebounds: number; assists: number; steals: number; blocks: number }>(
+                    `${process.env.NEXT_PUBLIC_API_URL}/players/${player.id}/basicstats/skillprofile`
+                );
+                setSkillProfile(res.data);
+            } catch (e) {
+                setSkillProfile(null);
+            }
+        }
+        if (isPremium) fetchSkillProfile();
+    }, [player.id, isPremium]);
+
     // Calcular estadísticas para el resumen del gráfico
     const getPointsStats = () => {
         if (!pointsProgression.length) return { avg: 0, max: 0, consistency: 0 };
@@ -181,7 +205,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     const yTicks = [];
     for (let i = yMin; i <= yMax; i += 10) yTicks.push(i);
 
-    // Pie chart data y config adaptados a tema
+    // Pie chart data y config adaptados a tema con tonos más legibles
     const pieData = pointsType
         ? [
             {
@@ -189,24 +213,24 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 value: pointsType.two_points,
                 fill:
                     resolvedTheme === "dark"
-                        ? "hsl(0, 80%, 50%)"
-                        : "hsl(214, 80%, 55%)",
+                        ? "hsl(0, 80%, 50%)"      // Rojo vivo (principal dark)
+                        : "hsl(214, 80%, 55%)",  // Azul vivo (principal light)
             },
             {
                 type: "3PT",
                 value: pointsType.three_points,
                 fill:
                     resolvedTheme === "dark"
-                        ? "hsl(355, 70%, 40%)"
-                        : "hsl(214, 90%, 70%)",
+                        ? "hsl(0, 60%, 40%)"      // Rojo más oscuro, mejor contraste dark
+                        : "hsl(214, 65%, 40%)",   // Azul más oscuro, mejor contraste light
             },
             {
                 type: "FT",
                 value: pointsType.free_throws,
                 fill:
                     resolvedTheme === "dark"
-                        ? "hsl(0, 60%, 30%)"
-                        : "hsl(214, 60%, 85%)",
+                        ? "hsl(0, 40%, 70%)"      // Rojo claro, buen contraste dark
+                        : "hsl(214, 90%, 80%)",   // Azul claro, buen contraste light
             },
         ]
         : [];
@@ -223,17 +247,37 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             label: "3PT",
             color:
                 resolvedTheme === "dark"
-                    ? "hsl(355, 70%, 40%)"
-                    : "hsl(214, 90%, 70%)",
+                    ? "hsl(0, 60%, 40%)"
+                    : "hsl(214, 65%, 40%)",
         },
         FT: {
             label: "FT",
             color:
                 resolvedTheme === "dark"
-                    ? "hsl(0, 60%, 30%)"
-                    : "hsl(214, 60%, 85%)",
+                    ? "hsl(0, 40%, 70%)"
+                    : "hsl(214, 90%, 80%)",
         },
         value: { label: "Points" },
+    };
+
+    // Radar chart data/config adaptados a tema y estructura shadcn
+    const radarData = skillProfile
+        ? [
+            { skill: "Points", value: skillProfile.points },
+            { skill: "Rebounds", value: skillProfile.rebounds },
+            { skill: "Assists", value: skillProfile.assists },
+            { skill: "Steals", value: skillProfile.steals },
+            { skill: "Blocks", value: skillProfile.blocks },
+        ]
+        : [];
+
+    const radarChartConfig: ChartConfig = {
+        value: {
+            label: "Skill",
+            color: resolvedTheme === "dark"
+                ? "hsl(0, 80%, 50%)"
+                : "hsl(214, 80%, 55%)",
+        },
     };
 
     return (
@@ -811,6 +855,56 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                            </CardFooter>
+                        </Card>
+
+                        {/* Radar Chart de perfil de habilidades */}
+                        <Card>
+                            <CardHeader className="items-center pb-0">
+                                <CardTitle>Skill Profile</CardTitle>
+                                <CardDescription>
+                                    Player's average performance in key categories
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-1 pb-0">
+                                <ChartContainer
+                                    config={radarChartConfig}
+                                    className="mx-auto aspect-square max-h-[300px]"
+                                >
+                                    <ReRadarChart data={radarData}>
+                                        <PolarAngleAxis dataKey="skill" />
+                                        <PolarGrid />
+                                        <Radar
+                                            dataKey="value"
+                                            fill={resolvedTheme === "dark" ? "hsl(0, 80%, 50%)" : "hsl(214, 80%, 55%)"}
+                                            fillOpacity={0.6}
+                                            stroke={resolvedTheme === "dark" ? "hsl(0, 80%, 50%)" : "hsl(214, 80%, 55%)"}
+                                            dot={{ r: 4, fillOpacity: 1 }}
+                                        />
+                                    </ReRadarChart>
+                                </ChartContainer>
+                            </CardContent>
+                            <CardFooter className="flex-col gap-2 text-sm">
+                                <div className="flex items-center gap-2 font-medium leading-none">
+                                    {skillProfile
+                                        ? `Best: ${(() => {
+                                            const arr = [
+                                                { label: "Points", value: skillProfile.points },
+                                                { label: "Rebounds", value: skillProfile.rebounds },
+                                                { label: "Assists", value: skillProfile.assists },
+                                                { label: "Steals", value: skillProfile.steals },
+                                                { label: "Blocks", value: skillProfile.blocks },
+                                            ];
+                                            const max = arr.reduce((a, b) => (a.value > b.value ? a : b));
+                                            return `${max.label} (${max.value})`;
+                                        })()}`
+                                        : "No data"}
+                                </div>
+                                <div className="flex items-center gap-2 leading-none text-muted-foreground">
+                                    {skillProfile
+                                        ? `All values are per game averages`
+                                        : ""}
                                 </div>
                             </CardFooter>
                         </Card>

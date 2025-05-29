@@ -254,3 +254,10 @@ class PointsTypeDistribution(SQLModel):
     two_points: int
     three_points: int
     free_throws: int
+
+class PlayerSkillProfile(SQLModel):
+    points: float
+    rebounds: float
+    assists: float
+    steals: float
+    blocks: float

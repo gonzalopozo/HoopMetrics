@@ -5,7 +5,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from models import Match, PointsProgression, PointsTypeDistribution
 
 from deps import get_db
-from models import MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead
+from models import MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, PlayerSkillProfile
 
 router = APIRouter(
     prefix="/players",
@@ -221,4 +221,32 @@ async def read_players_points_by_type(id: int, session: AsyncSession = Depends(g
         }
     except Exception as e:
         print(f"Error in read_players_points_by_type: {str(e)}")
+        raise
+
+@router.get("/{id}/basicstats/skillprofile", response_model=PlayerSkillProfile)
+async def read_player_skill_profile(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Devuelve el perfil de habilidades del jugador para el radar chart.
+    """
+    try:
+        # Obtener promedios de average_stats
+        result = await session.execute(
+            select(
+                func.avg(MatchStatistic.points).label("points"),
+                func.avg(MatchStatistic.rebounds).label("rebounds"),
+                func.avg(MatchStatistic.assists).label("assists"),
+                func.avg(MatchStatistic.steals).label("steals"),
+                func.avg(MatchStatistic.blocks).label("blocks"),
+            ).where(MatchStatistic.player_id == id)
+        )
+        row = result.first()
+        return PlayerSkillProfile(
+            points=round(row.points or 0, 1),
+            rebounds=round(row.rebounds or 0, 1),
+            assists=round(row.assists or 0, 1),
+            steals=round(row.steals or 0, 1),
+            blocks=round(row.blocks or 0, 1),
+        )
+    except Exception as e:
+        print(f"Error in read_player_skill_profile: {str(e)}")
         raise
