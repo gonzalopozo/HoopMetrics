@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { Trophy, BarChart3, Lock } from "lucide-react"
-import { LineChart, Line, XAxis, CartesianGrid, Tooltip, TooltipProps, ResponsiveContainer } from "recharts"
+import { LineChart, Line, XAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import axios from "axios"
 import { useTheme } from "next-themes"
 
@@ -70,17 +70,22 @@ function getUserRoleFromToken(): string {
     }
 }
 
-// Custom Tooltip for the chart
-
-function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
+// Custom Tooltip para el gráfico
+function CustomTooltip({ active, payload }: any) {
     if (active && payload && payload.length) {
         const { date, points } = payload[0].payload
         return (
-            <div className="rounded-lg border border-border bg-card p-3 shadow-lg min-w-[120px]">
+            <div
+                className="rounded-lg border border-border p-3 shadow-lg min-w-[120px]"
+                style={{
+                    background: "hsl(var(--card))",
+                    color: "hsl(var(--card-foreground))",
+                }}
+            >
                 <div className="text-xs text-muted-foreground mb-1">
                     {new Date(date).toLocaleDateString("es-ES", {
                         day: "2-digit",
-                        month: "short",
+                        month: "long",
                         year: "numeric"
                     })}
                 </div>
@@ -120,29 +125,35 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         if (isPremium) fetchPointsProgression()
     }, [player.id, isPremium])
 
-    // Agrupa los puntos por mes para el eje X
+    // Agrupa los puntos por mes para el eje X (promedio por mes)
     const pointsByMonth = useMemo(() => {
-        const map = new Map<string, { month: string; points: number[] }>()
+        const map = new Map<string, { month: string; points: number[]; midDate: Date }>()
         pointsProgression.forEach(({ date, points }) => {
             const d = new Date(date)
             const key = `${d.getFullYear()}-${d.getMonth()}`
-            const label = d.toLocaleDateString("es-ES", { month: "short", year: "2-digit" })
-            if (!map.has(key)) map.set(key, { month: label, points: [] })
+            const label = d.toLocaleDateString("es-ES", { month: "long" })
+            // Calcular el día medio del mes para la posición del label
+            const midDate = new Date(d.getFullYear(), d.getMonth(), 15)
+            if (!map.has(key)) map.set(key, { month: label, points: [], midDate })
             map.get(key)!.points.push(points)
         })
-        // Devuelve el promedio de puntos por mes
-        return Array.from(map.values()).map(({ month, points }) => ({
+        // Devuelve el promedio de puntos por mes y la fecha media del mes
+        return Array.from(map.values()).map(({ month, points, midDate }) => ({
             month,
-            points: points.length ? (points.reduce((a, b) => a + b, 0) / points.length) : 0
+            points: points.length ? (points.reduce((a, b) => a + b, 0) / points.length) : 0,
+            midDate,
         }))
     }, [pointsProgression])
 
     // Colores según tema
     const lineColor =
         resolvedTheme === "dark"
-            ? "hsl(var(--chart-1, 0 80% 45%))"
-            : "hsl(var(--chart-1, 214 80% 45%))"
+            ? "#f83c3c" // rojo NBA
+            : "#4273ff" // azul NBA
     const dotColor = lineColor
+
+    // Eje X: solo meses, label centrado en el mes
+    const xTicks = pointsByMonth.map(({ midDate }) => midDate.getTime())
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -525,11 +536,18 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                         >
                                             <CartesianGrid vertical={false} strokeDasharray="3 3" />
                                             <XAxis
-                                                dataKey="month"
+                                                dataKey="midDate"
+                                                type="number"
+                                                domain={['dataMin', 'dataMax']}
+                                                ticks={xTicks}
+                                                tickFormatter={midDate =>
+                                                    new Date(midDate).toLocaleDateString("es-ES", {
+                                                        month: "long"
+                                                    })
+                                                }
                                                 tickLine={false}
                                                 axisLine={false}
                                                 tickMargin={8}
-                                                // Solo muestra el mes (ej: "ene 24")
                                             />
                                             <Tooltip
                                                 content={<CustomTooltip />}
