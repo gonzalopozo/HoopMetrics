@@ -261,3 +261,7 @@ class PlayerSkillProfile(SQLModel):
     assists: float
     steals: float
     blocks: float
+
+class PlayerBarChartData(SQLModel):
+    name: str
+    value: float

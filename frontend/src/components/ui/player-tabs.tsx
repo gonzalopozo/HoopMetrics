@@ -15,7 +15,7 @@ import {
     ChartLegend,
     ChartLegendContent,
 } from "@/components/ui/chart";
-import { RadarChart as ReRadarChart, Radar, PolarAngleAxis, PolarGrid } from "recharts"
+import { RadarChart as ReRadarChart, Radar, PolarAngleAxis, PolarGrid, PolarRadiusAxis } from "recharts"
 
 
 // Añadir este import para el tooltip personalizado
@@ -264,11 +264,11 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     // Radar chart data/config adaptados a tema y estructura shadcn
     const radarData = skillProfile
         ? [
-            { skill: "Points", value: skillProfile.points },
-            { skill: "Rebounds", value: skillProfile.rebounds },
-            { skill: "Assists", value: skillProfile.assists },
-            { skill: "Steals", value: skillProfile.steals },
-            { skill: "Blocks", value: skillProfile.blocks },
+            { skill: "Points", value: skillProfile.points, original: skillProfile.points },
+            { skill: "Rebounds", value: skillProfile.rebounds * 2, original: skillProfile.rebounds },
+            { skill: "Assists", value: skillProfile.assists * (40 / 15), original: skillProfile.assists },
+            { skill: "Steals", value: skillProfile.steals * 10, original: skillProfile.steals },
+            { skill: "Blocks", value: skillProfile.blocks * (40 / 6), original: skillProfile.blocks },
         ]
         : [];
 
@@ -279,6 +279,22 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 ? "hsl(0, 80%, 50%)"
                 : "hsl(214, 80%, 55%)",
         },
+    };
+
+    // Tooltip personalizado para RadarChart
+    const RadarTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
+        if (active && payload && payload.length) {
+            const { skill, original } = payload[0].payload;
+            return (
+                <div className="rounded-lg border bg-card p-3 shadow-md">
+                    <p className="font-medium text-sm">{skill}</p>
+                    <p className="text-base font-bold text-primary mt-1">
+                        {original?.toFixed(1)}
+                    </p>
+                </div>
+            );
+        }
+        return null;
     };
 
     return (
@@ -871,10 +887,26 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                             <CardContent className="flex-1 pb-0">
                                 <ChartContainer
                                     config={radarChartConfig}
-                                    className="mx-auto aspect-square max-h-[300px]"
+                                    className="mx-auto aspect-square max-h-[340px] w-full flex items-center justify-center"
                                 >
-                                    <ReRadarChart data={radarData}>
-                                        <PolarAngleAxis dataKey="skill" />
+                                    <ReRadarChart
+                                        data={radarData}
+                                        width={360}
+                                        height={340}
+                                        margin={{ top: 32, right: 32, bottom: 32, left: 32 }}
+                                    >
+                                        <PolarAngleAxis
+                                            dataKey="skill"
+                                            tick={{
+                                                fontSize: 14,
+                                                fill: "var(--foreground)",
+                                                dy: 8, // Desplaza las labels hacia fuera
+                                            }}
+                                            tickLine={false}
+                                            // Ajusta el radio para que las labels no se corten
+                                            radius={110}
+                                        />
+                                        <PolarRadiusAxis domain={[0, 40]} angle={90} tick={false} />
                                         <PolarGrid />
                                         <Radar
                                             dataKey="value"
@@ -883,29 +915,97 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             stroke={resolvedTheme === "dark" ? "hsl(0, 80%, 50%)" : "hsl(214, 80%, 55%)"}
                                             dot={{ r: 4, fillOpacity: 1 }}
                                         />
+                                        <Tooltip content={<RadarTooltip />} />
                                     </ReRadarChart>
                                 </ChartContainer>
                             </CardContent>
-                            <CardFooter className="flex-col gap-2 text-sm">
-                                <div className="flex items-center gap-2 font-medium leading-none">
-                                    {skillProfile
-                                        ? `Best: ${(() => {
-                                            const arr = [
-                                                { label: "Points", value: skillProfile.points },
-                                                { label: "Rebounds", value: skillProfile.rebounds },
-                                                { label: "Assists", value: skillProfile.assists },
-                                                { label: "Steals", value: skillProfile.steals },
-                                                { label: "Blocks", value: skillProfile.blocks },
-                                            ];
-                                            const max = arr.reduce((a, b) => (a.value > b.value ? a : b));
-                                            return `${max.label} (${max.value})`;
-                                        })()}`
-                                        : "No data"}
-                                </div>
-                                <div className="flex items-center gap-2 leading-none text-muted-foreground">
-                                    {skillProfile
-                                        ? `All values are per game averages`
-                                        : ""}
+                            <CardFooter className="border-t pt-4">
+                                <div className="w-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="font-semibold text-sm">
+                                            {`${player.name || "Player"}'s Skill Profile`}
+                                        </h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            {skillProfile
+                                                ? "Scaled for visual comparison"
+                                                : "No data"}
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Best Stat</p>
+                                                <p className="font-bold">
+                                                    {skillProfile
+                                                        ? (() => {
+                                                            const arr = [
+                                                                { label: "Points", value: skillProfile.points },
+                                                                { label: "Rebounds", value: skillProfile.rebounds },
+                                                                { label: "Assists", value: skillProfile.assists },
+                                                                { label: "Steals", value: skillProfile.steals },
+                                                                { label: "Blocks", value: skillProfile.blocks },
+                                                            ];
+                                                            const max = arr.reduce((a, b) => (a.value > b.value ? a : b));
+                                                            return `${max.label} (${max.value.toFixed(1)})`;
+                                                        })()
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Target className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Most Balanced Pair</p>
+                                                <p className="font-bold">
+                                                    {skillProfile
+                                                        ? (() => {
+                                                            const arr = [
+                                                                { label: "Points", value: skillProfile.points },
+                                                                { label: "Rebounds", value: skillProfile.rebounds },
+                                                                { label: "Assists", value: skillProfile.assists },
+                                                                { label: "Steals", value: skillProfile.steals },
+                                                                { label: "Blocks", value: skillProfile.blocks },
+                                                            ];
+                                                            let minDiff = Infinity;
+                                                            let pair = "";
+                                                            for (let i = 0; i < arr.length; i++) {
+                                                                for (let j = i + 1; j < arr.length; j++) {
+                                                                    const diff = Math.abs(arr[i].value - arr[j].value);
+                                                                    if (diff < minDiff) {
+                                                                        minDiff = diff;
+                                                                        pair = `${arr[i].label} & ${arr[j].label}`;
+                                                                    }
+                                                                }
+                                                            }
+                                                            return `${pair} (${minDiff.toFixed(1)} diff)`;
+                                                        })()
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <BarChart3 className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Lowest Stat</p>
+                                                <p className="font-bold">
+                                                    {skillProfile
+                                                        ? (() => {
+                                                            const arr = [
+                                                                { label: "Points", value: skillProfile.points },
+                                                                { label: "Rebounds", value: skillProfile.rebounds },
+                                                                { label: "Assists", value: skillProfile.assists },
+                                                                { label: "Steals", value: skillProfile.steals },
+                                                                { label: "Blocks", value: skillProfile.blocks },
+                                                            ];
+                                                            const min = arr.reduce((a, b) => (a.value < b.value ? a : b));
+                                                            return `${min.label} (${min.value.toFixed(1)})`;
+                                                        })()
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </CardFooter>
                         </Card>
