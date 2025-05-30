@@ -265,3 +265,7 @@ class PlayerSkillProfile(SQLModel):
 class PlayerBarChartData(SQLModel):
     name: str
     value: float
+    
+class PlayerBarChartData(SQLModel):
+    name: str
+    value: float

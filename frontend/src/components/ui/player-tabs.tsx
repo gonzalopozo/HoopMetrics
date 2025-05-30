@@ -16,7 +16,7 @@ import {
     ChartLegendContent,
 } from "@/components/ui/chart";
 import { RadarChart as ReRadarChart, Radar, PolarAngleAxis, PolarGrid, PolarRadiusAxis } from "recharts"
-
+import { BarChart as ReBarChart, Bar, XAxis, CartesianGrid, LabelList, Tooltip as BarTooltip, } from "recharts";
 
 // Añadir este import para el tooltip personalizado
 import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
@@ -120,6 +120,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         steals: number
         blocks: number
     } | null>(null);
+    const [barCompareData, setBarCompareData] = useState<{ name: string; value: number }[]>([]);
     const isPremium = userRole === "premium" || userRole === "ultimate"
     const isUltimate = userRole === "ultimate"
     const { resolvedTheme } = useTheme()
@@ -174,6 +175,21 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             }
         }
         if (isPremium) fetchSkillProfile();
+    }, [player.id, isPremium]);
+
+    // Fetch bar chart comparison data for premium tab
+    useEffect(() => {
+        async function fetchBarCompare() {
+            try {
+                const res = await axios.get<{ name: string; value: number }[]>(
+                    `${process.env.NEXT_PUBLIC_API_URL}/players/${player.id}/basicstats/barcompare`
+                );
+                setBarCompareData(res.data);
+            } catch (e) {
+                setBarCompareData([]);
+            }
+        }
+        if (isPremium) fetchBarCompare();
     }, [player.id, isPremium]);
 
     // Calcular estadísticas para el resumen del gráfico
@@ -281,6 +297,16 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         },
     };
 
+    // Bar chart config for Stat Comparison
+    const barChartConfig: ChartConfig = {
+        value: {
+            label: "Stat",
+            color: resolvedTheme === "dark"
+                ? "hsl(0, 80%, 50%)"
+                : "hsl(214, 80%, 55%)",
+        },
+    };
+
     // Tooltip personalizado para RadarChart
     const RadarTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
         if (active && payload && payload.length) {
@@ -296,6 +322,44 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         }
         return null;
     };
+
+    // Tooltip para BarChart
+    const BarChartTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
+        if (active && payload && payload.length) {
+            const { name, value } = payload[0].payload;
+            return (
+                <div className="rounded-lg border bg-card p-3 shadow-md">
+                    <p className="font-medium text-sm">{name}</p>
+                    <p className="text-base font-bold text-primary mt-1">
+                        {value}
+                    </p>
+                </div>
+            );
+        }
+        return null;
+    };
+
+    // Escalado para el bar chart (máximo visual = 100 para todas las barras)
+    const barChartMax = 100;
+    const barChartScales = {
+        MIN: 48,
+        FGA: 40,
+        FGM: 20,
+        "3PA": 14,
+        "3PM": 6,
+        FTA: 18,
+        FTM: 11,
+        TO: 5,
+        PF: 5,
+    };
+
+    const barCompareDataScaled = barCompareData.map(d => ({
+        ...d,
+        scaled: barChartScales[d.name]
+            ? Math.min((d.value / barChartScales[d.name]) * barChartMax, barChartMax)
+            : d.value,
+        original: d.value,
+    }));
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -1000,6 +1064,144 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                             ];
                                                             const min = arr.reduce((a, b) => (a.value < b.value ? a : b));
                                                             return `${min.label} (${min.value.toFixed(1)})`;
+                                                        })()
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardFooter>
+                        </Card>
+
+                        {/* Bar Chart de comparación de estadísticas */}
+                        <Card>
+                            <CardHeader className="items-center pb-0">
+                                <CardTitle>Stat Comparison</CardTitle>
+                                <CardDescription>
+                                    Volume and habits per game (not shown in radar)
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-1 pb-0">
+                                <ChartContainer
+                                    config={barChartConfig}
+                                    className="mx-auto aspect-video h-full w-full flex items-center justify-center"
+                                >
+                                    <ResponsiveContainer>
+                                        <ReBarChart
+                                            data={barCompareDataScaled}
+                                            margin={{ top: 16, right: 16, left: 16, bottom: 16 }}
+                                            barCategoryGap={60}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis
+                                                dataKey="name"
+                                                tick={{ fontSize: 14, fill: "var(--foreground)" }}
+                                                axisLine={false}
+                                                tickLine={false}
+                                            />
+                                            {/* YAxis sigue oculto */}
+                                            <BarTooltip
+                                                content={({ active, payload }) => {
+                                                    if (active && payload && payload.length) {
+                                                        const { name, original } = payload[0].payload;
+                                                        return (
+                                                            <div className="rounded-lg border bg-card p-3 shadow-md">
+                                                                <p className="font-medium text-sm">{name}</p>
+                                                                <p className="text-base font-bold text-primary mt-1">
+                                                                    {original}
+                                                                </p>
+                                                            </div>
+                                                        );
+                                                    }
+                                                    return null;
+                                                }}
+                                            />
+                                            <Bar
+                                                dataKey="scaled"
+                                                radius={8}
+                                                fill={resolvedTheme === "dark" ? "hsl(0, 80%, 50%)" : "hsl(214, 80%, 55%)"}
+                                                maxBarSize={72}
+                                                barSize={72}
+                                            />
+                                        </ReBarChart>
+                                    </ResponsiveContainer>
+                                </ChartContainer>
+                            </CardContent>
+                            <CardFooter className="border-t pt-4">
+                                <div className="w-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="font-semibold text-sm">
+                                            {`${player.name || "Player"}'s Game Habits`}
+                                        </h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            {barCompareData.length ? "Scaled for visual comparison" : "No data"}
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Shot Preference</p>
+                                                <p className="font-bold">
+                                                    {barCompareData.length
+                                                        ? (() => {
+                                                            const shootingData = barCompareData.filter(d =>
+                                                                ['FGA', '3PA', 'FTA'].includes(d.name));
+                                                            if (!shootingData.length) return "-";
+                                                            const max = shootingData.reduce((a, b) =>
+                                                                (a.value > b.value ? a : b));
+                                                            return `${max.name} (${max.value.toFixed(1)})`;
+                                                        })()
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Target className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Best Efficiency</p>
+                                                <p className="font-bold">
+                                                    {barCompareData.length
+                                                        ? (() => {
+                                                            const fgm = barCompareData.find(d => d.name === 'FGM')?.value || 0;
+                                                            const fga = barCompareData.find(d => d.name === 'FGA')?.value || 0;
+                                                            const tpm = barCompareData.find(d => d.name === '3PM')?.value || 0;
+                                                            const tpa = barCompareData.find(d => d.name === '3PA')?.value || 0;
+                                                            const ftm = barCompareData.find(d => d.name === 'FTM')?.value || 0;
+                                                            const fta = barCompareData.find(d => d.name === 'FTA')?.value || 0;
+
+                                                            const efficiencies = [
+                                                                { label: "FG", value: fga > 0 ? (fgm / fga * 100) : 0 },
+                                                                { label: "3PT", value: tpa > 0 ? (tpm / tpa * 100) : 0 },
+                                                                { label: "FT", value: fta > 0 ? (ftm / fta * 100) : 0 }
+                                                            ].filter(e => e.value > 0);
+
+                                                            if (!efficiencies.length) return "-";
+                                                            const max = efficiencies.reduce((a, b) =>
+                                                                (a.value > b.value ? a : b));
+                                                            return `${max.label} (${max.value.toFixed(1)}%)`;
+                                                        })()
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <BarChart3 className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Usage Rate</p>
+                                                <p className="font-bold">
+                                                    {barCompareData.length
+                                                        ? (() => {
+                                                            const min = barCompareData.find(d => d.name === 'MIN')?.value || 0;
+                                                            const fga = barCompareData.find(d => d.name === 'FGA')?.value || 0;
+                                                            const tpa = barCompareData.find(d => d.name === '3PA')?.value || 0;
+                                                            const fta = barCompareData.find(d => d.name === 'FTA')?.value || 0;
+
+                                                            if (!min) return "-";
+                                                            // Shots attempted per minute
+                                                            const shotsPerMin = ((fga + tpa + fta) / min).toFixed(1);
+                                                            return `${shotsPerMin} per min`;
                                                         })()
                                                         : "-"}
                                                 </p>

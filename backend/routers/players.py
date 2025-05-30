@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlmodel import desc, func, select
 from typing import List
 from sqlmodel.ext.asyncio.session import AsyncSession
-from ..models import Match, PointsProgression, PointsTypeDistribution, PlayerBarChartData
+from ..models import Match, PointsProgression, PointsTypeDistribution, PlayerBarChartData, PlayerBarChartData
+from typing import List
 
 from ..deps import get_db
 from ..models import MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, PlayerSkillProfile
@@ -11,7 +12,6 @@ router = APIRouter(
     prefix="/players",
     tags=["players"]
 )
-
 
 @router.get("/sortedbyppg/{page}", response_model=List[PlayerRead])
 async def read_players_sorted_by_ppg_paginated(page:int, session: AsyncSession = Depends(get_db)):
@@ -250,32 +250,38 @@ async def read_player_skill_profile(id: int, session: AsyncSession = Depends(get
     except Exception as e:
         print(f"Error in read_player_skill_profile: {str(e)}")
         raise
-    
 
-
-@router.get("/{id}/basicstats/barcompare", response_model=list[PlayerBarChartData])
+@router.get("/{id}/basicstats/barcompare", response_model=List[PlayerBarChartData])
 async def read_player_bar_compare(id: int, session: AsyncSession = Depends(get_db)):
     """
-    Devuelve los promedios por partido para puntos, rebotes, asistencias, robos y tapones.
-    Formato: [{ "name": "PTS", "value": 23.1 }, ...]
+    Devuelve estadísticas básicas diferentes al radar chart para el Bar Chart.
+    Formato: [{ "name": "MIN", "value": 32.1 }, ...]
     """
     try:
         result = await session.execute(
             select(
-                func.avg(MatchStatistic.points).label("points"),
-                func.avg(MatchStatistic.rebounds).label("rebounds"),
-                func.avg(MatchStatistic.assists).label("assists"),
-                func.avg(MatchStatistic.steals).label("steals"),
-                func.avg(MatchStatistic.blocks).label("blocks"),
+                func.avg(MatchStatistic.minutes_played).label("min"),
+                func.avg(MatchStatistic.field_goals_attempted).label("fga"),
+                func.avg(MatchStatistic.field_goals_made).label("fgm"),
+                func.avg(MatchStatistic.three_points_attempted).label("tpa"),
+                func.avg(MatchStatistic.three_points_made).label("tpm"),
+                func.avg(MatchStatistic.free_throws_attempted).label("fta"),
+                func.avg(MatchStatistic.free_throws_made).label("ftm"),
+                func.avg(MatchStatistic.turnovers).label("to"),
+                func.avg(MatchStatistic.fouls).label("pf"),
             ).where(MatchStatistic.player_id == id)
         )
         row = result.first()
         return [
-            {"name": "PTS", "value": round(row.points or 0, 1)},
-            {"name": "REB", "value": round(row.rebounds or 0, 1)},
-            {"name": "AST", "value": round(row.assists or 0, 1)},
-            {"name": "STL", "value": round(row.steals or 0, 1)},
-            {"name": "BLK", "value": round(row.blocks or 0, 1)},
+            {"name": "MIN", "value": round(row.min or 0, 1)},
+            {"name": "FGA", "value": round(row.fga or 0, 1)},
+            {"name": "FGM", "value": round(row.fgm or 0, 1)},
+            {"name": "3PA", "value": round(row.tpa or 0, 1)},
+            {"name": "3PM", "value": round(row.tpm or 0, 1)},
+            {"name": "FTA", "value": round(row.fta or 0, 1)},
+            {"name": "FTM", "value": round(row.ftm or 0, 1)},
+            {"name": "TO", "value": round(row.to or 0, 1)},
+            {"name": "PF", "value": round(row.pf or 0, 1)},
         ]
     except Exception as e:
         print(f"Error in read_player_bar_compare: {str(e)}")

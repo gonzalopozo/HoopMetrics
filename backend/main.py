@@ -5,10 +5,10 @@ from sqlmodel import select
 import logging
 import traceback
 
-from models import UserRole
-from deps import get_db, require_role
-from config import get_settings
-from routers import home, debug, players, auth, teams
+from .models import UserRole
+from .deps import get_db, require_role
+from .config import get_settings
+from .routers import home, debug, players, auth, teams
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 # Configure logging
@@ -79,18 +79,17 @@ async def health_check():
 
 @app.get("/health/db")
 async def db_health_check():
-    """Test database connection using a fresh session factory."""
+    """Test database connection using a proper session lifecycle."""
+    session = None
     try:
-        # Import the function to create a fresh session factory
-        from database import get_session_factory
+        # Import the db module
+        from .database import SessionLocal
         
-        # Create a fresh session factory for this request
-        session_factory = get_session_factory()
-        
-        async with session_factory() as session:
-            result = await session.execute(select(1))
-            value = result.scalar_one()
-            return JSONResponse(content={"status": "ok", "database": "connected", "test_value": value})
+        # Create a session specifically for this check
+        session = SessionLocal()
+        result = await session.execute(select(1))
+        value = result.scalar_one()
+        return JSONResponse(content={"status": "ok", "database": "connected", "test_value": value})
     except Exception as e:
         error_details = str(e)
         logger.error(f"Database connection error: {error_details}")

@@ -6,8 +6,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy import literal
 from datetime import datetime, date
 
-from deps import get_db
-from models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats
+from ..deps import get_db
+from ..models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats
 
 router = APIRouter(
     prefix="/teams",
@@ -179,6 +179,7 @@ async def read_teams(session: AsyncSession = Depends(get_db)):
     except Exception as e:
         print(f"Error in read_teams: {str(e)}")
         raise
+    
     
 @router.get("/{id}")
 async def read_team(id: int, session: AsyncSession = Depends(get_db)):
