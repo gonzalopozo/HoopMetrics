@@ -19,7 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn, getNBALogo } from "@/lib/utils"
 import { TeamDetails } from "@/types"
-import { ResponsiveContainer, AreaChart as ReAreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, LineChart, Line, PieChart, Pie, Legend, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from "recharts"
+import { ResponsiveContainer, AreaChart as ReAreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, LineChart, Line, PieChart, Pie, Legend, RadarChart as ReRadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, BarChart, Bar } from "recharts"
 import axios from "axios"
 import { useTheme } from "next-themes"
 import { CardFooter } from "@/components/ui/card"
@@ -58,6 +58,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
     const [teamPointsType, setTeamPointsType] = useState<{ two_points: number; three_points: number; free_throws: number } | null>(null)
     const { resolvedTheme } = useTheme()
     const [teamRadarProfile, setTeamRadarProfile] = useState<{ points: number; rebounds: number; assists: number; steals: number; blocks: number } | null>(null)
+    const [teamShootingVolume, setTeamShootingVolume] = useState<{ name: string; value: number }[] | null>(null)
 
 
     useEffect(() => {
@@ -103,6 +104,18 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
             .then(res => setTeamRadarProfile(res.data))
             .catch(() => setTeamRadarProfile(null))
     }, [team.id, isPremium])
+
+    // Agregar este useEffect después de los otros useEffect existentes
+    useEffect(() => {
+        if (!isPremium) return
+        axios
+            .get<{ name: string; value: number }[]>(
+                `${process.env.NEXT_PUBLIC_API_URL}/teams/${team.id}/basicstats/shootingvolume`
+            )
+            .then(res => setTeamShootingVolume(res.data))
+            .catch(() => setTeamShootingVolume(null))
+    }, [team.id, isPremium])
+
 
     // Calcular estadísticas para el resumen del gráfico
     const getPointsStats = () => {
@@ -292,6 +305,58 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
         return null
     }
 
+    // Agregar la configuración del gráfico después de las otras configuraciones
+    const teamShootingVolumeConfig: ChartConfig = {
+        FGA: {
+            label: "Field Goals Attempted",
+            color: resolvedTheme === "dark" ? "hsl(0, 80%, 50%)" : "hsl(214, 80%, 55%)",
+        },
+        "3PA": {
+            label: "3-Point Attempts",
+            color: resolvedTheme === "dark" ? "hsl(0, 60%, 40%)" : "hsl(214, 65%, 40%)",
+        },
+        FTA: {
+            label: "Free Throw Attempts",
+            color: resolvedTheme === "dark" ? "hsl(0, 40%, 70%)" : "hsl(214, 90%, 80%)",
+        },
+        value: { label: "Attempts per Game" },
+    }
+
+    // Calcular estadísticas para el shooting volume
+    const getTeamShootingVolumeStats = () => {
+        if (!teamShootingVolume) return { mostAttempted: "-", totalAttempts: 0, shootingStyle: "-" }
+
+        const fga = teamShootingVolume.find(d => d.name === "FGA")?.value || 0
+        const tpa = teamShootingVolume.find(d => d.name === "3PA")?.value || 0
+        const fta = teamShootingVolume.find(d => d.name === "FTA")?.value || 0
+
+        const totalAttempts = fga + tpa + fta
+        if (!totalAttempts) return { mostAttempted: "-", totalAttempts: 0, shootingStyle: "-" }
+
+        const categories = [
+            { label: "Field Goals", value: fga },
+            { label: "3-Pointers", value: tpa },
+            { label: "Free Throws", value: fta },
+        ]
+
+        const mostAttempted = categories.reduce((a, b) => (a.value > b.value ? a : b))
+
+        // Determinar estilo de juego basado en ratios
+        let shootingStyle = "Balanced"
+        const tpaRatio = (tpa / fga) * 100
+        const ftaRatio = (fta / fga) * 100
+
+        if (tpaRatio > 45) shootingStyle = "3-Point Heavy"
+        else if (tpaRatio < 25) shootingStyle = "Inside Focused"
+        else if (ftaRatio > 30) shootingStyle = "Aggressive"
+
+        return {
+            mostAttempted: `${mostAttempted.label} (${mostAttempted.value.toFixed(1)})`,
+            totalAttempts: parseFloat(totalAttempts.toFixed(1)),
+            shootingStyle,
+        }
+    }
+    const teamShootingVolumeStats = getTeamShootingVolumeStats()
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -1071,7 +1136,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                     className="mx-auto aspect-square max-h-[340px] w-full flex items-center justify-center"
                                 >
                                     {teamRadarData.length > 0 ? (
-                                        <RadarChart
+                                        <ReRadarChart
                                             data={teamRadarData}
                                             width={360}
                                             height={340}
@@ -1097,7 +1162,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                                 dot={{ r: 4, fillOpacity: 1 }}
                                             />
                                             <Tooltip content={<TeamRadarTooltip />} />
-                                        </RadarChart>
+                                        </ReRadarChart>
                                     ) : (
                                         <div className="flex items-center justify-center h-full">
                                             <p className="text-muted-foreground">No radar data available</p>
@@ -1162,6 +1227,113 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                                     {teamRadarProfile
                                                         ? (teamRadarProfile.points + teamRadarProfile.rebounds + teamRadarProfile.assists + teamRadarProfile.steals + teamRadarProfile.blocks).toFixed(1)
                                                         : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardFooter>
+                        </Card>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    <Target className="h-5 w-5 text-primary inline mr-2" />
+                                    Shooting Volume
+                                </CardTitle>
+                                <CardDescription>
+                                    Average shot attempts per game by type
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div style={{ width: "100%", height: 300 }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        {teamShootingVolume && teamShootingVolume.length > 0 ? (
+                                            <BarChart
+                                                data={teamShootingVolume}
+                                                layout="horizontal"
+                                                margin={{ top: 16, right: 16, left: 60, bottom: 16 }}
+                                            >
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis
+                                                    type="number"
+                                                    tick={{ fontSize: 12, fill: "var(--foreground)" }}
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                />
+                                                <YAxis
+                                                    type="category"
+                                                    dataKey="name"
+                                                    tick={{ fontSize: 12, fill: "var(--foreground)" }}
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                    width={50}
+                                                />
+                                                <Tooltip
+                                                    content={({ active, payload }) => {
+                                                        if (active && payload && payload.length) {
+                                                            const { name, value } = payload[0].payload
+                                                            return (
+                                                                <div className="rounded-lg border bg-card p-3 shadow-md">
+                                                                    <p className="font-medium text-sm">{name}</p>
+                                                                    <p className="text-base font-bold text-primary mt-1">
+                                                                        {value.toFixed(1)} per game
+                                                                    </p>
+                                                                </div>
+                                                            )
+                                                        }
+                                                        return null
+                                                    }}
+                                                />
+                                                <Bar
+                                                    dataKey="value"
+                                                    fill={resolvedTheme === "dark" ? "hsl(0, 80%, 50%)" : "hsl(214, 80%, 55%)"}
+                                                    radius={[0, 4, 4, 0]}
+                                                />
+                                            </BarChart>
+                                        ) : (
+                                            <div className="flex items-center justify-center h-full">
+                                                <p className="text-muted-foreground">No shooting volume data available</p>
+                                            </div>
+                                        )}
+                                    </ResponsiveContainer>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="border-t pt-4">
+                                <div className="w-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="font-semibold text-sm">
+                                            {`${team.full_name}'s Shooting Habits`}
+                                        </h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            {teamShootingVolume ? "Per game averages" : "No data"}
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Most Attempted</p>
+                                                <p className="font-bold">
+                                                    {teamShootingVolumeStats.mostAttempted}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <BarChart3 className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Total Volume</p>
+                                                <p className="font-bold">
+                                                    {teamShootingVolumeStats.totalAttempts} attempts/game
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Activity className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Playing Style</p>
+                                                <p className="font-bold">
+                                                    {teamShootingVolumeStats.shootingStyle}
                                                 </p>
                                             </div>
                                         </div>

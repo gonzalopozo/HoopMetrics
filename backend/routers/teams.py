@@ -609,17 +609,27 @@ async def team_shooting_volume(id: int, session: AsyncSession = Depends(get_db))
     if not match_ids:
         return [{"name": "FGA", "value": 0}, {"name": "3PA", "value": 0}, {"name": "FTA", "value": 0}]
 
-    # Calcular promedios de volumen de tiro por partido
-    stmt = (
+    # Crear subconsulta que suma volumen de tiro por partido
+    team_shooting_per_match = (
         select(
-            func.avg(func.sum(MatchStatistic.field_goals_attempted)).label("fga"),
-            func.avg(func.sum(MatchStatistic.three_points_attempted)).label("tpa"),
-            func.avg(func.sum(MatchStatistic.free_throws_attempted)).label("fta")
+            MatchStatistic.match_id,
+            func.sum(MatchStatistic.field_goals_attempted).label("match_fga"),
+            func.sum(MatchStatistic.three_points_attempted).label("match_tpa"),
+            func.sum(MatchStatistic.free_throws_attempted).label("match_fta")
         )
         .where(MatchStatistic.player_id.in_(player_ids))
         .where(MatchStatistic.match_id.in_(match_ids))
         .group_by(MatchStatistic.match_id)
+        .subquery()
     )
+    
+    # Calcular promedios de la subconsulta
+    stmt = select(
+        func.avg(team_shooting_per_match.c.match_fga).label("fga"),
+        func.avg(team_shooting_per_match.c.match_tpa).label("tpa"),
+        func.avg(team_shooting_per_match.c.match_fta).label("fta")
+    )
+    
     result = await session.execute(stmt)
     fga, tpa, fta = result.one()
     
