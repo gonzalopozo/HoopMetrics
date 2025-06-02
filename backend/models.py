@@ -269,3 +269,11 @@ class PlayerBarChartData(SQLModel):
 class PlayerBarChartData(SQLModel):
     name: str
     value: float
+
+class MinutesProgression(SQLModel):
+    date: str  
+    minutes: float
+
+class ParticipationRate(SQLModel):
+    label: str
+    value: float

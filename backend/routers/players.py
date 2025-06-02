@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlmodel import desc, func, select
 from typing import List
 from sqlmodel.ext.asyncio.session import AsyncSession
-from ..models import Match, PointsProgression, PointsTypeDistribution, PlayerBarChartData, PlayerBarChartData
+from ..models import Match, PointsProgression, PointsTypeDistribution, PlayerBarChartData, PlayerBarChartData, MinutesProgression, ParticipationRate
 from typing import List
+from sqlalchemy import cast, Integer
 
 from ..deps import get_db
 from ..models import MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, PlayerSkillProfile
@@ -285,4 +286,82 @@ async def read_player_bar_compare(id: int, session: AsyncSession = Depends(get_d
         ]
     except Exception as e:
         print(f"Error in read_player_bar_compare: {str(e)}")
+        raise
+
+@router.get("/{id}/basicstats/minutesprogression", response_model=List[MinutesProgression])
+async def read_players_minutes_progression(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Devuelve la evolución de minutos jugados por partido para un jugador concreto.
+    Formato: [{ "date": "2024-01-12", "minutes": 32 }, ...]
+    """
+    try:
+        stmt = (
+            select(Match.date, MatchStatistic.minutes_played)
+            .join(Match, Match.id == MatchStatistic.match_id)
+            .where(MatchStatistic.player_id == id)
+            .order_by(Match.date)
+        )
+        result = await session.execute(stmt)
+        rows = result.all()
+
+        return [
+            MinutesProgression(date=date.isoformat(), minutes=minutes or 0)
+            for date, minutes in rows
+        ]
+    except Exception as e:
+        print(f"Error in read_players_minutes_progression: {str(e)}")
+        raise
+
+@router.get("/{id}/basicstats/participationrates", response_model=List[ParticipationRate])
+async def read_player_participation_rates(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Devuelve totales de participación en acciones básicas para un jugador.
+    Los valores representan número de juegos, máximo 85.
+    """
+    try:
+        # Partidos jugados por el jugador
+        games_played_stmt = select(func.count()).select_from(MatchStatistic).where(
+            MatchStatistic.player_id == id
+        )
+        games_played_result = await session.execute(games_played_stmt)
+        games_played = games_played_result.scalar() or 0
+
+        # Partidos con 20+ puntos
+        games_20pts_stmt = select(func.count()).select_from(MatchStatistic).where(
+            (MatchStatistic.player_id == id) & (MatchStatistic.points >= 20)
+        )
+        games_20pts_result = await session.execute(games_20pts_stmt)
+        games_20pts = games_20pts_result.scalar() or 0
+
+        # Partidos con doble-doble (al menos 10 en dos categorías)
+        double_double_stmt = select(func.count()).select_from(MatchStatistic).where(
+            (MatchStatistic.player_id == id) &
+            (
+                (cast(MatchStatistic.points >= 10, Integer) +
+                 cast(MatchStatistic.rebounds >= 10, Integer) +
+                 cast(MatchStatistic.assists >= 10, Integer) +
+                 cast(MatchStatistic.steals >= 10, Integer) +
+                 cast(MatchStatistic.blocks >= 10, Integer)
+                ) >= 2
+            )
+        )
+        double_double_result = await session.execute(double_double_stmt)
+        double_doubles = double_double_result.scalar() or 0
+
+        # Partidos con al menos 1 triple anotado
+        games_3pt_stmt = select(func.count()).select_from(MatchStatistic).where(
+            (MatchStatistic.player_id == id) & (MatchStatistic.three_points_made >= 1)
+        )
+        games_3pt_result = await session.execute(games_3pt_stmt)
+        games_3pt = games_3pt_result.scalar() or 0
+
+        # Devolver los valores totales (máximo 85 cada uno)
+        return [
+            {"label": "Games Played", "value": float(min(games_played, 85))},
+            {"label": "20+ Points", "value": float(min(games_20pts, 85))},
+            {"label": "Double-Doubles", "value": float(min(double_doubles, 85))},
+            {"label": "3PT Made", "value": float(min(games_3pt, 85))},
+        ]
+    except Exception as e:
+        print(f"Error in read_player_participation_rates: {str(e)}")
         raise

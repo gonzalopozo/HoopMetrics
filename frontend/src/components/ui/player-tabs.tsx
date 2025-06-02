@@ -17,6 +17,9 @@ import {
 } from "@/components/ui/chart";
 import { RadarChart as ReRadarChart, Radar, PolarAngleAxis, PolarGrid, PolarRadiusAxis } from "recharts"
 import { BarChart as ReBarChart, Bar, XAxis, CartesianGrid, LabelList, Tooltip as BarTooltip, } from "recharts";
+import { AreaChart as ReAreaChart, Area, Tooltip as AreaTooltip } from "recharts";
+import { RadialBarChart, RadialBar, Tooltip as RadialTooltip } from "recharts";
+
 
 // Añadir este import para el tooltip personalizado
 import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
@@ -121,6 +124,9 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         blocks: number
     } | null>(null);
     const [barCompareData, setBarCompareData] = useState<{ name: string; value: number }[]>([]);
+    const [minutesProgression, setMinutesProgression] = useState<{ date: string; minutes: number }[]>([]);
+    const [participationRates, setParticipationRates] = useState<{ label: string; value: number }[]>([]);
+
     const isPremium = userRole === "premium" || userRole === "ultimate"
     const isUltimate = userRole === "ultimate"
     const { resolvedTheme } = useTheme()
@@ -191,6 +197,95 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         }
         if (isPremium) fetchBarCompare();
     }, [player.id, isPremium]);
+
+    useEffect(() => {
+        async function fetchMinutesProgression() {
+            try {
+                const res = await axios.get<{ date: string; minutes: number }[]>(
+                    `${process.env.NEXT_PUBLIC_API_URL}/players/${player.id}/basicstats/minutesprogression`
+                );
+                setMinutesProgression(res.data);
+            } catch (e) {
+                setMinutesProgression([]);
+            }
+        }
+        if (isPremium) fetchMinutesProgression();
+    }, [player.id, isPremium]);
+    useEffect(() => {
+        async function fetchParticipationRates() {
+            try {
+                const res = await axios.get<{ label: string; value: number }[]>(
+                    `${process.env.NEXT_PUBLIC_API_URL}/players/${player.id}/basicstats/participationrates`
+                );
+                setParticipationRates(res.data);
+            } catch (e) {
+                setParticipationRates([]);
+            }
+        }
+        if (isPremium) fetchParticipationRates();
+    }, [player.id, isPremium]);
+
+    const areaChartConfig: ChartConfig = {
+        minutes: {
+            label: "Minutes",
+            color: resolvedTheme === "dark"
+                ? "hsl(43, 74%, 66%)"
+                : "hsl(43, 74%, 66%)",
+        },
+    };
+    const radialChartConfig: ChartConfig = {
+        value: {
+            label: "Participation %",
+            color: resolvedTheme === "dark"
+                ? "hsl(0, 80%, 60%)"
+                : "hsl(214, 80%, 55%)",
+        },
+    };
+
+    const radialColors = [
+        resolvedTheme === "dark" ? "#ff4c4c" : "#4273ff",
+        resolvedTheme === "dark" ? "#ff7b7b" : "#6ea8ff",
+        resolvedTheme === "dark" ? "#ffb3b3" : "#a3c9ff",
+        resolvedTheme === "dark" ? "#ffdddd" : "#d6e6ff",
+        resolvedTheme === "dark" ? "#ff2e2e" : "#1e40af",
+    ];
+
+    // Modificar el tooltip para mostrar los valores totales (no porcentajes)
+    const ParticipationTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
+        if (active && payload && payload.length) {
+            const { label, value } = payload[0].payload;
+            return (
+                <div className="rounded-lg border bg-card p-3 shadow-md">
+                    <p className="font-medium text-sm">{label}</p>
+                    <p className="text-base font-bold text-primary mt-1">
+                        {value} / 85 games
+                    </p>
+                </div>
+            );
+        }
+        return null;
+    };
+
+    const MinutesAreaTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
+        if (active && payload && payload.length) {
+            const { date, minutes } = payload[0].payload;
+            return (
+                <div className="rounded-lg border bg-card p-3 shadow-md">
+                    <p className="font-medium text-sm">
+                        {new Date(date).toLocaleDateString("es-ES", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric"
+                        })}
+                    </p>
+                    <p className="text-base font-bold text-primary mt-1">
+                        {minutes} <span className="text-sm text-muted-foreground">min</span>
+                    </p>
+                </div>
+            );
+        }
+        return null;
+    };
 
     // Calcular estadísticas para el resumen del gráfico
     const getPointsStats = () => {
@@ -339,6 +434,34 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         return null;
     };
 
+    const participationMax = {
+        "Games Played": 85,
+        "20+ Points": 85,
+        "Double-Doubles": 85,
+        "3PT Made": 85,
+    };
+
+    // Ordena de mayor a menor máximo (más adentro los de mayor máximo)
+    const sortedParticipation = [...participationRates]
+        .map(d => {
+            const max = participationMax[d.label as keyof typeof participationMax] || 85;
+            return {
+                ...d,
+                max,
+                percent: Math.min((d.value / max) * 100, 100), // Calculate percentage based on max value
+            };
+        })
+        .sort((a, b) => b.max - a.max);
+
+    const baseInner = 40;
+    const barWidth = 18;
+    const radialData = sortedParticipation.map((d, i) => ({
+        ...d,
+        innerRadius: baseInner + i * barWidth,
+        outerRadius: baseInner + (i + 1) * barWidth - 4,
+        fill: radialColors[i % radialColors.length],
+    }));
+
     // Escalado para el bar chart (máximo visual = 100 para todas las barras)
     const barChartMax = 100;
     const barChartScales = {
@@ -360,6 +483,23 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             : d.value,
         original: d.value,
     }));
+
+    // Modificar los datos para escalar respecto al máximo de 85
+    const scaledParticipationData = [
+        ...participationRates.map((d, i) => ({
+            ...d,
+            scaledValue: (d.value / 85) * 100, // Escala respecto al máximo de 85
+            fill: radialColors[i % radialColors.length],
+        })),
+        // Añadir valor de referencia oculto para ajustar el máximo
+        {
+            label: "", // Sin label para que no se muestre
+            value: 85,
+            scaledValue: 100, // 100% del máximo
+            fill: "transparent", // Transparente para que no se vea
+            opacity: 0, // Completamente invisible
+        }
+    ];
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -1208,6 +1348,262 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                            </CardFooter>
+                        </Card>
+                        <Card>
+                            <CardHeader className="items-center pb-0">
+                                <CardTitle>Minutes Progression</CardTitle>
+                                <CardDescription>
+                                    Evolution of minutes played per game throughout the season
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-1 pb-0">
+                                <ChartContainer
+                                    config={areaChartConfig}
+                                    className="mx-auto aspect-video h-full w-full flex items-center justify-center"
+                                >
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <ReAreaChart
+                                            data={minutesProgression}
+                                            margin={{ top: 16, right: 16, left: 16, bottom: 16 }}
+                                        >
+                                            <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                                            <XAxis
+                                                dataKey="date"
+                                                tick={false}
+                                                axisLine={false}
+                                                tickLine={false}
+                                                width={0}
+                                            />
+                                            <YAxis
+                                                dataKey="minutes"
+                                                tick={false}
+                                                axisLine={false}
+                                                tickLine={false}
+                                                width={0}
+                                                domain={[0, 48]}
+                                            />
+                                            <AreaTooltip content={<MinutesAreaTooltip />} />
+                                            <Area
+                                                dataKey="minutes"
+                                                type="monotone"
+                                                fill={resolvedTheme === "dark"
+                                                    ? "rgba(255, 76, 76, 0.18)"
+                                                    : "rgba(66, 115, 255, 0.18)"
+                                                }
+                                                fillOpacity={1}
+                                                stroke={resolvedTheme === "dark"
+                                                    ? "hsl(0, 80%, 60%)"
+                                                    : "hsl(214, 80%, 55%)"
+                                                }
+                                                strokeWidth={1.5}
+                                                dot={{
+                                                    fill: resolvedTheme === 'dark' ? "hsl(0 80% 45%)" : "hsl(214 80% 45%)",
+                                                    r: 3
+                                                }}
+                                                activeDot={{
+                                                    r: 5,
+                                                    fill: resolvedTheme === 'dark' ? "hsl(0 80% 60%)" : "hsl(214 80% 60%)",
+                                                    stroke: "var(--background)",
+                                                    strokeWidth: 1.5
+                                                }}
+                                            />
+                                        </ReAreaChart>
+                                    </ResponsiveContainer>
+                                </ChartContainer>
+                            </CardContent>
+                            <CardFooter className="border-t pt-4">
+                                <div className="w-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="font-semibold text-sm">
+                                            {`${player.name || "Player"}'s Minutes Trend`}
+                                        </h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            {minutesProgression.length} games analyzed
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Avg. Minutes</p>
+                                                <p className="font-bold">
+                                                    {minutesProgression.length
+                                                        ? (
+                                                            minutesProgression.reduce((sum, d) => sum + d.minutes, 0) /
+                                                            minutesProgression.length
+                                                        ).toFixed(1)
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Trophy className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Season High</p>
+                                                <p className="font-bold">
+                                                    {minutesProgression.length
+                                                        ? Math.max(...minutesProgression.map(d => d.minutes)).toFixed(1)
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Target className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Consistency</p>
+                                                <p className="font-bold">
+                                                    {minutesProgression.length
+                                                        ? (() => {
+                                                            const avg = minutesProgression.reduce((sum, d) => sum + d.minutes, 0) / minutesProgression.length;
+                                                            const variance = minutesProgression.reduce((sum, d) => sum + Math.pow(d.minutes - avg, 2), 0) / minutesProgression.length;
+                                                            const stdDev = Math.sqrt(variance);
+                                                            return Math.max(0, 100 - (stdDev / avg * 100)).toFixed(0) + "%";
+                                                        })()
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardFooter>
+                        </Card>
+                        <Card>
+                            <CardHeader className="items-center pb-0">
+                                <CardTitle>Participation Rates</CardTitle>
+                                <CardDescription>
+                                    Percentage of games with key actions this season
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-1 pb-0">
+                                <ChartContainer
+                                    config={radialChartConfig}
+                                    className="mx-auto aspect-square max-h-[500px] w-full"
+                                >
+                                    <ResponsiveContainer width="100%" height={480}>
+                                        <RadialBarChart
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={50}
+                                            outerRadius={200}
+                                            data={scaledParticipationData}
+                                            startAngle={90}
+                                            endAngle={-270}
+                                        >
+                                            <RadialTooltip content={<ParticipationTooltip />} cursor={false} />
+                                            <RadialBar
+                                                dataKey="scaledValue"
+                                                cornerRadius={4}
+                                                fill="#8884d8"
+                                                background
+                                                label={{
+                                                    position: "insideStart",
+                                                    fill: "#fff",
+                                                    fontSize: 12,
+                                                    formatter: (value, entry) => entry?.label || "" // Solo muestra labels no vacías
+                                                }}
+                                            />
+                                        </RadialBarChart>
+                                    </ResponsiveContainer>
+                                </ChartContainer>
+                            </CardContent>
+                            <CardFooter className="border-t pt-4">
+                                <div className="w-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="font-semibold text-sm">
+                                            {`${player.name || "Player"}'s Impact Analysis`}
+                                        </h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            Based on 85-game season
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Elite Performance</p>
+                                                <p className="font-bold">
+                                                    {participationRates.length
+                                                        ? (() => {
+                                                            // Excluir "Games Played" y encontrar el mejor logro
+                                                            const achievements = participationRates.filter(d => d.label !== "Games Played");
+                                                            if (!achievements.length) return "-";
+                                                            const max = achievements.reduce((a, b) => (a.value > b.value ? a : b));
+
+                                                            // Calcular qué tan élite es (>70% = Elite, >50% = Good, >30% = Average, <30% = Poor)
+                                                            const rate = (max.value / 85) * 100;
+                                                            let level = "Poor";
+                                                            if (rate >= 70) level = "Elite";
+                                                            else if (rate >= 50) level = "Good";
+                                                            else if (rate >= 30) level = "Average";
+
+                                                            return `${max.label.replace("Double-Doubles", "2x2").replace("3PT Made", "3PT")} (${level})`;
+                                                        })()
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Target className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Durability Score</p>
+                                                <p className="font-bold">
+                                                    {participationRates.length
+                                                        ? (() => {
+                                                            const gamesPlayed = participationRates.find(d => d.label === "Games Played")?.value || 0;
+                                                            const percentage = (gamesPlayed / 85) * 100;
+
+                                                            // Score basado en games played
+                                                            let grade = "F";
+                                                            if (percentage >= 95) grade = "A+";
+                                                            else if (percentage >= 90) grade = "A";
+                                                            else if (percentage >= 85) grade = "A-";
+                                                            else if (percentage >= 80) grade = "B+";
+                                                            else if (percentage >= 75) grade = "B";
+                                                            else if (percentage >= 70) grade = "B-";
+                                                            else if (percentage >= 65) grade = "C+";
+                                                            else if (percentage >= 60) grade = "C";
+                                                            else if (percentage >= 50) grade = "D";
+
+                                                            return `${grade} (${gamesPlayed}/85)`;
+                                                        })()
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <BarChart3 className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Clutch Factor</p>
+                                                <p className="font-bold">
+                                                    {participationRates.length
+                                                        ? (() => {
+                                                            const gamesPlayed = participationRates.find(d => d.label === "Games Played")?.value || 0;
+                                                            const points20Plus = participationRates.find(d => d.label === "20+ Points")?.value || 0;
+                                                            const doubleDoubles = participationRates.find(d => d.label === "Double-Doubles")?.value || 0;
+                                                            const threePointers = participationRates.find(d => d.label === "3PT Made")?.value || 0;
+
+                                                            if (gamesPlayed === 0) return "No Data";
+
+                                                            // Clutch factor: promedio de "big performances" por juego
+                                                            const bigPerformances = points20Plus + doubleDoubles + threePointers;
+                                                            const clutchRate = (bigPerformances / (gamesPlayed * 3)) * 100;
+
+                                                            let clutchLevel = "Cold";
+                                                            if (clutchRate >= 60) clutchLevel = "Clutch";
+                                                            else if (clutchRate >= 45) clutchLevel = "Reliable";
+                                                            else if (clutchRate >= 30) clutchLevel = "Solid";
+                                                            else if (clutchRate >= 15) clutchLevel = "Inconsistent";
+
+                                                            return `${clutchLevel} (${clutchRate.toFixed(0)}%)`;
+                                                        })()
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </CardFooter>
                         </Card>
