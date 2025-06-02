@@ -317,6 +317,14 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     const yTicks = [];
     for (let i = yMin; i <= yMax; i += 10) yTicks.push(i);
 
+    // Ejes dinámicos para Minutes Progression (cada 12 minutos)
+    const maxMinutes = Math.max(...minutesProgression.map(m => m.minutes ?? 0), 0)
+    const minMinutes = Math.min(...minutesProgression.map(m => m.minutes ?? 0), 0)
+    const yMinMinutes = Math.floor(minMinutes / 12) * 12  // Múltiplos de 12
+    const yMaxMinutes = Math.ceil(Math.max(48, maxMinutes) / 12) * 12  // Múltiplos de 12
+    const yTicksMinutes = []
+    for (let i = yMinMinutes; i <= yMaxMinutes; i += 12) yTicksMinutes.push(i)  // Incrementos de 12
+
     // Pie chart data y config adaptados a tema con tonos más legibles
     const pieData = pointsType
         ? [
@@ -1368,7 +1376,16 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             data={minutesProgression}
                                             margin={{ top: 16, right: 16, left: 16, bottom: 16 }}
                                         >
-                                            <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                                            {/* Reemplaza CartesianGrid con ReferenceLines individuales cada 12 minutos */}
+                                            {yTicksMinutes.map(tick => (
+                                                <ReferenceLine
+                                                    key={tick}
+                                                    y={tick}
+                                                    stroke={resolvedTheme === 'dark' ? "rgba(255, 76, 76, 0.18)" : "rgba(66, 115, 255, 0.18)"}
+                                                    strokeDasharray="3 3"
+                                                    ifOverflow="extendDomain"
+                                                />
+                                            ))}
                                             <XAxis
                                                 dataKey="date"
                                                 tick={false}
@@ -1381,8 +1398,9 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 tick={false}
                                                 axisLine={false}
                                                 tickLine={false}
+                                                ticks={yTicksMinutes}
                                                 width={0}
-                                                domain={[0, 48]}
+                                                domain={[yMinMinutes, yMaxMinutes]}
                                             />
                                             <AreaTooltip content={<MinutesAreaTooltip />} />
                                             <Area

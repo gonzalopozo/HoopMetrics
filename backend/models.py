@@ -277,3 +277,33 @@ class MinutesProgression(SQLModel):
 class ParticipationRate(SQLModel):
     label: str
     value: float
+
+class TeamPointsProgression(SQLModel):
+    date: str  # ISO date string
+    points: int
+
+class TeamPointsVsOpponent(SQLModel):
+    date: str  # ISO date string
+    points_for: int
+    points_against: int
+
+class TeamPointsTypeDistribution(SQLModel):
+    two_points: int
+    three_points: int
+    free_throws: int   
+
+class TeamRadarProfile(SQLModel):
+    points: float
+    rebounds: float
+    assists: float
+    steals: float
+    blocks: float
+
+class TeamShootingVolume(SQLModel):
+    name: str
+    value: float
+
+class PlayerContribution(SQLModel):
+    player_name: str
+    points: int
+    percentage: float

@@ -3,11 +3,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import func, select
 from typing import List, Dict, Any, Optional as OptionalType
 from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlalchemy import literal
+from sqlalchemy import literal, case
 from datetime import datetime, date
 
 from ..deps import get_db
-from ..models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats
+from ..models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats, TeamPointsProgression, TeamPointsVsOpponent, TeamPointsTypeDistribution, TeamRadarProfile, TeamShootingVolume, PlayerContribution
 
 router = APIRouter(
     prefix="/teams",
@@ -448,3 +448,238 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
     except Exception as e:
         print(f"Error in read_team: {str(e)}")
         raise
+
+@router.get("/{id}/basicstats/pointsprogression", response_model=List[TeamPointsProgression])
+async def team_points_progression(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Devuelve la evolución de puntos anotados por partido para un equipo.
+    Formato: [{ "date": "2024-01-12", "points": 102 }, ...]
+    """
+    stmt = (
+        select(
+            Match.date,
+            case(
+                (Match.home_team_id == id, Match.home_score),
+                else_=Match.away_score
+            ).label("points")
+        )
+        .where(((Match.home_team_id == id) | (Match.away_team_id == id)) & (Match.home_score.is_not(None)))
+        .order_by(Match.date)
+    )
+    result = await session.execute(stmt)
+    return [{"date": date.isoformat(), "points": points} for date, points in result.all()]
+
+@router.get("/{id}/basicstats/points_vs_opponent", response_model=List[TeamPointsVsOpponent])
+async def team_points_vs_opponent(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Devuelve para cada partido los puntos anotados y recibidos.
+    Formato: [{ "date": "2024-01-12", "points_for": 102, "points_against": 98 }, ...]
+    """
+    stmt = (
+        select(
+            Match.date,
+            case(
+                (Match.home_team_id == id, Match.home_score),
+                else_=Match.away_score
+            ).label("points_for"),
+            case(
+                (Match.home_team_id == id, Match.away_score),
+                else_=Match.home_score
+            ).label("points_against"),
+        )
+        .where(((Match.home_team_id == id) | (Match.away_team_id == id)) & (Match.home_score.is_not(None)))
+        .order_by(Match.date)
+    )
+    result = await session.execute(stmt)
+    return [
+        {"date": date.isoformat(), "points_for": pf, "points_against": pa}
+        for date, pf, pa in result.all()
+    ]
+
+@router.get("/{id}/basicstats/pointstype", response_model=TeamPointsTypeDistribution)
+async def team_points_by_type(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Devuelve la distribución de puntos por tipo de tiro para el equipo.
+    Formato: { "two_points": 3200, "three_points": 1200, "free_throws": 800 }
+    """
+    # Buscar todos los jugadores actuales del equipo
+    players_query = select(Player.id).where(Player.current_team_id == id)
+    players_result = await session.execute(players_query)
+    player_ids = [pid for (pid,) in players_result.all()]
+    if not player_ids:
+        return {"two_points": 0, "three_points": 0, "free_throws": 0}
+
+    stmt = (
+        select(
+            func.sum((func.coalesce(MatchStatistic.field_goals_made, 0) - func.coalesce(MatchStatistic.three_points_made, 0)) * 2).label("two_points"),
+            func.sum(func.coalesce(MatchStatistic.three_points_made, 0) * 3).label("three_points"),
+            func.sum(func.coalesce(MatchStatistic.free_throws_made, 0)).label("free_throws"),
+        )
+        .where(MatchStatistic.player_id.in_(player_ids))
+    )
+    result = await session.execute(stmt)
+    two_points, three_points, free_throws = result.one()
+    return {
+        "two_points": int(two_points or 0),
+        "three_points": int(three_points or 0),
+        "free_throws": int(free_throws or 0),
+    }
+
+@router.get("/{id}/basicstats/teamradar", response_model=TeamRadarProfile)
+async def team_radar_profile(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Devuelve el perfil radar del equipo con promedios por partido.
+    Formato: { "points": 112.5, "rebounds": 45.2, "assists": 25.8, "steals": 8.1, "blocks": 5.3 }
+    """
+    # Buscar todos los jugadores actuales del equipo
+    players_query = select(Player.id).where(Player.current_team_id == id)
+    players_result = await session.execute(players_query)
+    player_ids = [pid for (pid,) in players_result.all()]
+    if not player_ids:
+        return {"points": 0, "rebounds": 0, "assists": 0, "steals": 0, "blocks": 0}
+
+    # Obtener partidos del equipo para calcular promedios
+    team_matches_query = select(Match.id).where(
+        ((Match.home_team_id == id) | (Match.away_team_id == id)) & 
+        (Match.home_score.is_not(None))
+    )
+    team_matches_result = await session.execute(team_matches_query)
+    match_ids = [mid for (mid,) in team_matches_result.all()]
+    
+    if not match_ids:
+        return {"points": 0, "rebounds": 0, "assists": 0, "steals": 0, "blocks": 0}
+
+    # Crear subconsulta que suma estadísticas por partido
+    team_stats_per_match = (
+        select(
+            MatchStatistic.match_id,
+            func.sum(MatchStatistic.points).label("match_points"),
+            func.sum(MatchStatistic.rebounds).label("match_rebounds"),
+            func.sum(MatchStatistic.assists).label("match_assists"),
+            func.sum(MatchStatistic.steals).label("match_steals"),
+            func.sum(MatchStatistic.blocks).label("match_blocks")
+        )
+        .where(MatchStatistic.player_id.in_(player_ids))
+        .where(MatchStatistic.match_id.in_(match_ids))
+        .group_by(MatchStatistic.match_id)
+        .subquery()
+    )
+    
+    # Calcular promedios de la subconsulta
+    stmt = select(
+        func.avg(team_stats_per_match.c.match_points).label("points"),
+        func.avg(team_stats_per_match.c.match_rebounds).label("rebounds"),
+        func.avg(team_stats_per_match.c.match_assists).label("assists"),
+        func.avg(team_stats_per_match.c.match_steals).label("steals"),
+        func.avg(team_stats_per_match.c.match_blocks).label("blocks")
+    )
+    
+    result = await session.execute(stmt)
+    points, rebounds, assists, steals, blocks = result.one()
+    
+    return {
+        "points": round(float(points or 0), 1),
+        "rebounds": round(float(rebounds or 0), 1),
+        "assists": round(float(assists or 0), 1),
+        "steals": round(float(steals or 0), 1),
+        "blocks": round(float(blocks or 0), 1)
+    }
+
+@router.get("/{id}/basicstats/shootingvolume", response_model=List[TeamShootingVolume])
+async def team_shooting_volume(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Devuelve el volumen de tiro promedio por partido del equipo.
+    Formato: [{"name": "FGA", "value": 89.2}, {"name": "3PA", "value": 35.1}, {"name": "FTA", "value": 18.7}]
+    """
+    # Buscar todos los jugadores actuales del equipo
+    players_query = select(Player.id).where(Player.current_team_id == id)
+    players_result = await session.execute(players_query)
+    player_ids = [pid for (pid,) in players_result.all()]
+    if not player_ids:
+        return [{"name": "FGA", "value": 0}, {"name": "3PA", "value": 0}, {"name": "FTA", "value": 0}]
+
+    # Obtener partidos del equipo
+    team_matches_query = select(Match.id).where(
+        ((Match.home_team_id == id) | (Match.away_team_id == id)) & 
+        (Match.home_score.is_not(None))
+    )
+    team_matches_result = await session.execute(team_matches_query)
+    match_ids = [mid for (mid,) in team_matches_result.all()]
+    
+    if not match_ids:
+        return [{"name": "FGA", "value": 0}, {"name": "3PA", "value": 0}, {"name": "FTA", "value": 0}]
+
+    # Calcular promedios de volumen de tiro por partido
+    stmt = (
+        select(
+            func.avg(func.sum(MatchStatistic.field_goals_attempted)).label("fga"),
+            func.avg(func.sum(MatchStatistic.three_points_attempted)).label("tpa"),
+            func.avg(func.sum(MatchStatistic.free_throws_attempted)).label("fta")
+        )
+        .where(MatchStatistic.player_id.in_(player_ids))
+        .where(MatchStatistic.match_id.in_(match_ids))
+        .group_by(MatchStatistic.match_id)
+    )
+    result = await session.execute(stmt)
+    fga, tpa, fta = result.one()
+    
+    return [
+        {"name": "FGA", "value": round(float(fga or 0), 1)},
+        {"name": "3PA", "value": round(float(tpa or 0), 1)},
+        {"name": "FTA", "value": round(float(fta or 0), 1)}
+    ]
+
+@router.get("/{id}/basicstats/playerscontribution", response_model=List[PlayerContribution])
+async def team_players_contribution(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Devuelve la contribución de puntos de los jugadores del equipo.
+    Formato: [{"player_name": "LeBron James", "points": 1247, "percentage": 28.5}, ...]
+    """
+    # Buscar todos los jugadores actuales del equipo
+    players_query = select(Player.id, Player.name).where(Player.current_team_id == id)
+    players_result = await session.execute(players_query)
+    players_data = {pid: name for pid, name in players_result.all()}
+    
+    if not players_data:
+        return []
+
+    # Obtener partidos del equipo
+    team_matches_query = select(Match.id).where(
+        ((Match.home_team_id == id) | (Match.away_team_id == id)) & 
+        (Match.home_score.is_not(None))
+    )
+    team_matches_result = await session.execute(team_matches_query)
+    match_ids = [mid for (mid,) in team_matches_result.all()]
+    
+    if not match_ids:
+        return []
+
+    # Calcular puntos totales por jugador
+    stmt = (
+        select(
+            MatchStatistic.player_id,
+            func.sum(MatchStatistic.points).label("total_points")
+        )
+        .where(MatchStatistic.player_id.in_(list(players_data.keys())))
+        .where(MatchStatistic.match_id.in_(match_ids))
+        .group_by(MatchStatistic.player_id)
+        .order_by(func.sum(MatchStatistic.points).desc())
+    )
+    result = await session.execute(stmt)
+    player_points = result.all()
+    
+    # Calcular puntos totales del equipo
+    total_team_points = sum(points for _, points in player_points)
+    
+    # Crear respuesta con porcentajes
+    contributions = []
+    for player_id, points in player_points:
+        player_name = players_data.get(player_id, "Unknown Player")
+        percentage = (points / total_team_points * 100) if total_team_points > 0 else 0
+        contributions.append({
+            "player_name": player_name,
+            "points": int(points or 0),
+            "percentage": round(percentage, 1)
+        })
+    
+    return contributions
