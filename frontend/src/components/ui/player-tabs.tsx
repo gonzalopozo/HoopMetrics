@@ -1471,9 +1471,9 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                         </Card>
                         <Card>
                             <CardHeader className="items-center pb-0">
-                                <CardTitle>Participation Rates</CardTitle>
+                                <CardTitle>Game Participation</CardTitle>
                                 <CardDescription>
-                                    Percentage of games with key actions this season
+                                    Number of games with specific achievements this season
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="flex-1 pb-0">
