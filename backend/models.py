@@ -315,3 +315,14 @@ class AdvancedImpactMatrix(SQLModel):
     box_plus_minus: float
     games_played: int
     minutes_per_game: float
+
+# En models.py
+class PositionAverage(SQLModel):
+    position: str
+    offensive_rating: float
+    defensive_rating: float
+    minutes_per_game: float
+    win_shares: float
+    vorp: float
+    box_plus_minus: float
+    is_player_position: bool

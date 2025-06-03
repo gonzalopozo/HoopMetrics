@@ -1,28 +1,54 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { 
+    Trophy, 
+    BarChart3, 
+    Lock, 
+    TrendingUp, 
+    Target, 
+    Activity,
+    Clock
+} from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Trophy, BarChart3, Lock, TrendingUp, Target } from "lucide-react"
-import { LineChart, Line, Tooltip, ResponsiveContainer, TooltipProps, YAxis, ReferenceLine } from "recharts"
-import axios from "axios"
 import { useTheme } from "next-themes"
-import { Pie, PieChart as RePieChart } from "recharts";
-import {
-    ChartConfig,
-    ChartContainer,
-    ChartLegend,
+import axios from "axios"
+import { 
+    ChartConfig, 
+    ChartContainer, 
+    ChartLegend, 
     ChartLegendContent,
-} from "@/components/ui/chart";
-import { RadarChart as ReRadarChart, Radar, PolarAngleAxis, PolarGrid, PolarRadiusAxis } from "recharts"
-import { BarChart as ReBarChart, Bar, XAxis, CartesianGrid, LabelList, Tooltip as BarTooltip, } from "recharts";
+    ChartTooltip,
+    ChartTooltipContent 
+} from "@/components/ui/chart"
+import { 
+    LineChart, 
+    Line, 
+    XAxis, 
+    YAxis, 
+    ResponsiveContainer, 
+    PieChart as RePieChart, 
+    Pie, 
+    RadarChart as ReRadarChart, 
+    Radar, 
+    PolarAngleAxis, 
+    PolarGrid, 
+    PolarRadiusAxis, 
+    Tooltip
+} from "recharts"
+import { BarChart as ReBarChart, Bar, CartesianGrid, LabelList, Tooltip as BarTooltip, ReferenceLine } from "recharts";
 import { AreaChart as ReAreaChart, Area, Tooltip as AreaTooltip } from "recharts";
 import { RadialBarChart, RadialBar, Tooltip as RadialTooltip } from "recharts";
-
+import {
+    ScatterChart,
+    Scatter,
+} from "recharts";
 
 // Añadir este import para el tooltip personalizado
 import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
+import { TooltipProps } from "recharts"
 
 // Añade el componente CustomTooltip para personalizar la apariencia del tooltip
 const CustomTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
@@ -126,6 +152,25 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     const [barCompareData, setBarCompareData] = useState<{ name: string; value: number }[]>([]);
     const [minutesProgression, setMinutesProgression] = useState<{ date: string; minutes: number }[]>([]);
     const [participationRates, setParticipationRates] = useState<{ label: string; value: number }[]>([]);
+    const [advancedImpactMatrix, setAdvancedImpactMatrix] = useState<{
+        win_shares: number;
+        vorp: number;
+        true_shooting_pct: number;
+        box_plus_minus: number;
+        games_played: number;
+        minutes_per_game: number;
+    } | null>(null);
+
+    const [positionAverages, setPositionAverages] = useState<{
+        position: string;
+        offensive_rating: number;
+        defensive_rating: number;
+        minutes_per_game: number;
+        win_shares: number;
+        vorp: number;
+        box_plus_minus: number;
+        is_player_position: boolean;
+    }[]>([]);
 
     const isPremium = userRole === "premium" || userRole === "ultimate"
     const isUltimate = userRole === "ultimate"
@@ -211,6 +256,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         }
         if (isPremium) fetchMinutesProgression();
     }, [player.id, isPremium]);
+    
     useEffect(() => {
         async function fetchParticipationRates() {
             try {
@@ -224,6 +270,50 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         }
         if (isPremium) fetchParticipationRates();
     }, [player.id, isPremium]);
+
+    // Fetch advanced impact matrix for ultimate tab
+    useEffect(() => {
+        async function fetchAdvancedImpactMatrix() {
+            try {
+                const res = await axios.get<{
+                    win_shares: number;
+                    vorp: number;
+                    true_shooting_pct: number;
+                    box_plus_minus: number;
+                    games_played: number;
+                    minutes_per_game: number;
+                }>(`${process.env.NEXT_PUBLIC_API_URL}/players/${player.id}/advanced/impact-matrix`);
+                setAdvancedImpactMatrix(res.data);
+            } catch (e) {
+                console.error("Error fetching advanced impact matrix:", e);
+                setAdvancedImpactMatrix(null);
+            }
+        }
+        if (isUltimate) fetchAdvancedImpactMatrix();
+    }, [player.id, isUltimate]);
+
+    // Fetch position averages for ultimate tab
+    useEffect(() => {
+        async function fetchPositionAverages() {
+            try {
+                const res = await axios.get<{
+                    position: string;
+                    offensive_rating: number;
+                    defensive_rating: number;
+                    minutes_per_game: number;
+                    win_shares: number;
+                    vorp: number;
+                    box_plus_minus: number;
+                    is_player_position: boolean;
+                }[]>(`${process.env.NEXT_PUBLIC_API_URL}/players/${player.id}/advanced/position-averages`);
+                setPositionAverages(res.data);
+            } catch (e) {
+                console.error("Error fetching position averages:", e);
+                setPositionAverages([]);
+            }
+        }
+        if (isUltimate) fetchPositionAverages();
+    }, [player.id, isUltimate]);
 
     const areaChartConfig: ChartConfig = {
         minutes: {
@@ -508,6 +598,97 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             opacity: 0, // Completamente invisible
         }
     ];
+
+    const scatterData = useMemo(() => {
+        const data = [];
+        
+        // Añadir promedios por posición
+        positionAverages.forEach(pos => {
+            data.push({
+                name: `${pos.position} Average`,
+                position: pos.position,
+                offensive_rating: pos.offensive_rating,
+                defensive_rating: pos.defensive_rating,
+                minutes: pos.minutes_per_game,
+                win_shares: pos.win_shares,
+                vorp: pos.vorp,
+                box_plus_minus: pos.box_plus_minus,
+                is_player: false,
+                is_player_position: pos.is_player_position
+            });
+        });
+        
+        // Añadir datos del jugador
+        if (advancedImpactMatrix) {
+            data.push({
+                name: player.name || "Player",
+                position: "Player",
+                offensive_rating: advancedImpactMatrix.true_shooting_pct,
+                defensive_rating: Math.max(0, 100 - advancedImpactMatrix.box_plus_minus),
+                minutes: advancedImpactMatrix.minutes_per_game,
+                win_shares: advancedImpactMatrix.win_shares,
+                vorp: advancedImpactMatrix.vorp,
+                box_plus_minus: advancedImpactMatrix.box_plus_minus,
+                is_player: true,
+                is_player_position: false
+            });
+        }
+        
+        return data;
+    }, [positionAverages, advancedImpactMatrix, player.name]);
+
+    // Tooltip del scatter plot
+    const ScatterTooltip = ({ active, payload }: any) => {
+        if (active && payload && payload.length) {
+            const data = payload[0].payload;
+            return (
+                <div className="rounded-lg border bg-card p-3 shadow-md">
+                    <p className="font-medium text-sm">{data.name}</p>
+                    <div className="space-y-1 mt-2">
+                        <p className="text-xs">
+                            <span className="text-muted-foreground">Win Shares:</span>
+                            <span className="font-bold text-primary ml-1">{data.win_shares.toFixed(1)}</span>
+                        </p>
+                        <p className="text-xs">
+                            <span className="text-muted-foreground">VORP:</span>
+                            <span className="font-bold text-primary ml-1">{data.vorp.toFixed(2)}</span>
+                        </p>
+                        <p className="text-xs">
+                            <span className="text-muted-foreground">True Shooting %:</span>
+                            <span className="font-bold text-primary ml-1">{data.offensive_rating.toFixed(1)}%</span>
+                        </p>
+                        <p className="text-xs">
+                            <span className="text-muted-foreground">Minutes/Game:</span>
+                            <span className="font-bold text-primary ml-1">{data.minutes.toFixed(1)}</span>
+                        </p>
+                        <p className="text-xs">
+                            <span className="text-muted-foreground">Box +/-:</span>
+                            <span className="font-bold text-primary ml-1">{data.box_plus_minus.toFixed(1)}</span>
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+        return null;
+    };
+
+    // Función para obtener color por posición
+    const getPositionColor = (data: any) => {
+        if (data.is_player) {
+            return resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(214, 80%, 55%)"; // Color principal para el jugador
+        }
+        
+        // Colores diferentes para cada posición
+        const positionColors = {
+            'PG': resolvedTheme === "dark" ? "hsl(270, 70%, 60%)" : "hsl(270, 70%, 50%)", // Púrpura
+            'SG': resolvedTheme === "dark" ? "hsl(195, 70%, 60%)" : "hsl(195, 70%, 50%)", // Cian
+            'SF': resolvedTheme === "dark" ? "hsl(120, 70%, 60%)" : "hsl(120, 70%, 50%)", // Verde
+            'PF': resolvedTheme === "dark" ? "hsl(45, 70%, 60%)" : "hsl(45, 70%, 50%)",   // Amarillo
+            'C': resolvedTheme === "dark" ? "hsl(15, 70%, 60%)" : "hsl(15, 70%, 50%)",    // Naranja
+        };
+        
+        return positionColors[data.position as keyof typeof positionColors] || "hsl(0, 0%, 50%)";
+    };
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -1103,31 +1284,28 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                 >
                                     <ReRadarChart
                                         data={radarData}
-                                        width={360}
-                                        height={340}
-                                        margin={{ top: 32, right: 32, bottom: 32, left: 32 }}
+                                        margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
                                     >
+                                        <PolarGrid
+                                            stroke={resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"}
+                                            radialLines={true}
+                                        />
                                         <PolarAngleAxis
                                             dataKey="skill"
-                                            tick={{
-                                                fontSize: 14,
-                                                fill: "var(--foreground)",
-                                                dy: 8, // Desplaza las labels hacia fuera
-                                            }}
+                                            stroke={resolvedTheme === "dark" ? "#e2e8f0" : "#475569"}
                                             tickLine={false}
-                                            // Ajusta el radio para que las labels no se corten
-                                            radius={110}
+                                            axisLine={false}
+                                            tick={{ fontSize: 12 }}
                                         />
-                                        <PolarRadiusAxis domain={[0, 40]} angle={90} tick={false} />
-                                        <PolarGrid />
+                                        <Tooltip
+                                            content={<RadarTooltip />}
+                                        />
                                         <Radar
                                             dataKey="value"
-                                            fill={resolvedTheme === "dark" ? "hsl(0, 80%, 50%)" : "hsl(214, 80%, 55%)"}
+                                            stroke={resolvedTheme === "dark" ? "hsl(0 80% 45%)" : "hsl(214 80% 45%)"}
+                                            fill={resolvedTheme === "dark" ? "hsl(0 80% 45%)" : "hsl(214 80% 45%)"}
                                             fillOpacity={0.6}
-                                            stroke={resolvedTheme === "dark" ? "hsl(0, 80%, 50%)" : "hsl(214, 80%, 55%)"}
-                                            dot={{ r: 4, fillOpacity: 1 }}
                                         />
-                                        <Tooltip content={<RadarTooltip />} />
                                     </ReRadarChart>
                                 </ChartContainer>
                             </CardContent>
@@ -1646,44 +1824,197 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             <TabsContent value="ultimate" className={cn(!isUltimate && "pointer-events-none select-none opacity-60")}>
                 {isUltimate ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* <Card>
-                            <CardHeader>
-                                <CardTitle>Advanced Efficiency</CardTitle>
-                                <CardDescription>PER, Usage, TS%, PIE</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <BarChart data={advancedBarData} />
-                            </CardContent>
-                        </Card>
+                        {/* Position Comparison */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>VORP by Game</CardTitle>
-                                <CardDescription>Value Over Replacement Player (last 5 games)</CardDescription>
+                                <CardTitle>Position Comparison</CardTitle>
+                                <CardDescription>Player vs positional averages</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <LineChart
-                                    data={advancedLineData.map(d => ({ game: d.game, points: d.vorp }))}
-                                />
+                                <div style={{ width: "100%", height: 300 }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <ScatterChart
+                                            data={scatterData}
+                                            margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                                        >
+                                            <CartesianGrid
+                                                strokeDasharray="3 3"
+                                                stroke={resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"}
+                                                horizontal={true}
+                                                vertical={true}
+                                            />
+                                            <XAxis
+                                                type="number"
+                                                dataKey="win_shares"
+                                                name="Win Shares"
+                                                domain={[-0.5, 1.5]} // Dominio fijo de 0 a 4
+                                                tick={{
+                                                    fontSize: 12,
+                                                    fill: resolvedTheme === "dark" ? "#e2e8f0" : "#475569"
+                                                }}
+                                                axisLine={{
+                                                    stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                                                    strokeWidth: 1
+                                                }}
+                                                tickLine={{
+                                                    stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                                                    strokeWidth: 1
+                                                }}
+                                                ticks={[-0.5, 0, 0.5, 1, 1.5]} // Intervalos fijos de 0.5 en 0.5
+                                                tickFormatter={(value) => value.toFixed(1)}
+                                                label={{
+                                                    value: 'Win Shares',
+                                                    position: 'insideBottom',
+                                                    offset: -10,
+                                                    style: {
+                                                        textAnchor: 'middle',
+                                                        fill: resolvedTheme === "dark" ? "#94a3b8" : "#64748b"
+                                                    }
+                                                }}
+                                            />
+                                            <YAxis
+                                                type="number"
+                                                dataKey="vorp"
+                                                name="VORP"
+                                                domain={[0, 4]} // Dominio fijo de -2 a 4
+                                                tick={{
+                                                    fontSize: 12,
+                                                    fill: resolvedTheme === "dark" ? "#e2e8f0" : "#475569"
+                                                }}
+                                                axisLine={{
+                                                    stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                                                    strokeWidth: 1
+                                                }}
+                                                tickLine={{
+                                                    stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                                                    strokeWidth: 1
+                                                }}
+                                                ticks={[0, 1, 2, 3, 4]} // Intervalos fijos de 1 en 1
+                                                tickFormatter={(value) => value.toFixed(2)}
+                                                label={{
+                                                    value: 'VORP',
+                                                    angle: -90,
+                                                    position: 'insideLeft',
+                                                    style: {
+                                                        textAnchor: 'middle',
+                                                        fill: resolvedTheme === "dark" ? "#94a3b8" : "#64748b"
+                                                    }
+                                                }}
+                                            />
+                                            <Tooltip content={<ScatterTooltip />} />
+
+                                            {/* Scatter para promedios de posiciones */}
+                                            <Scatter
+                                                dataKey="win_shares"
+                                                data={scatterData.filter(d => !d.is_player)}
+                                                fill="#8884d8"
+                                                shape={(props) => {
+                                                    const { cx, cy, payload } = props;
+                                                    return (
+                                                        <circle
+                                                            cx={cx}
+                                                            cy={cy}
+                                                            r={6} // Aumentado de 6 a 8
+                                                            fill={getPositionColor(payload)}
+                                                            stroke="none"
+                                                            strokeWidth={0}
+                                                            opacity={0.8}
+                                                        />
+                                                    );
+                                                }}
+                                            />
+
+                                            {/* Scatter para el jugador (más grande y destacado) */}
+                                            <Scatter
+                                                dataKey="win_shares"
+                                                data={scatterData.filter(d => d.is_player)}
+                                                fill="#8884d8"
+                                                shape={(props) => {
+                                                    const { cx, cy, payload } = props;
+                                                    return (
+                                                        <circle
+                                                            cx={cx}
+                                                            cy={cy}
+                                                            r={12} // Aumentado de 10 a 12
+                                                            fill={getPositionColor(payload)}
+                                                            stroke="none"
+                                                            strokeWidth={0}
+                                                        />
+                                                    );
+                                                }}
+                                            />
+                                        </ScatterChart>
+                                    </ResponsiveContainer>
+                                </div>
                             </CardContent>
+                            <CardFooter className="border-t pt-4">
+                                <div className="w-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="font-semibold text-sm">
+                                            Position Comparison Analysis
+                                        </h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            vs League Averages
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <Trophy className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Rank vs Position</p>
+                                                <p className="font-bold">
+                                                    {advancedImpactMatrix && positionAverages.length ? (() => {
+                                                        const playerPosition = positionAverages.find(p => p.is_player_position);
+                                                        if (!playerPosition) return "-";
+                                                        
+                                                        const playerWS = advancedImpactMatrix.win_shares;
+                                                        const avgWS = playerPosition.win_shares;
+                                                        
+                                                        return playerWS > avgWS ? "Above Average" : playerWS > avgWS - 1 ? "Average" : "Below Average";
+                                                    })() : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Best Position Match</p>
+                                                <p className="font-bold">
+                                                    {advancedImpactMatrix && positionAverages.length ? (() => {
+                                                        const playerVORP = advancedImpactMatrix.vorp;
+                                                        let bestMatch = "";
+                                                        let smallestDiff = Infinity;
+                                                        
+                                                        positionAverages.forEach(pos => {
+                                                            const diff = Math.abs(playerVORP - pos.vorp);
+                                                            if (diff < smallestDiff) {
+                                                                smallestDiff = diff;
+                                                                bestMatch = pos.position;
+                                                            }
+                                                        });
+                                                        
+                                                        return bestMatch || "-";
+                                                    })() : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <BarChart3 className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Impact Level</p>
+                                                <p className="font-bold">
+                                                    {advancedImpactMatrix ? (
+                                                        advancedImpactMatrix.vorp > 4 ? "Elite" :
+                                                        advancedImpactMatrix.vorp > 2 ? "All-Star" :
+                                                        advancedImpactMatrix.vorp > 0 ? "Starter" : "Bench"
+                                                    ) : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardFooter>
                         </Card>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Play Type Distribution</CardTitle>
-                                <CardDescription>Offensive play types (sample)</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <PieChart data={advancedPieData} />
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Advanced Impact Radar</CardTitle>
-                                <CardDescription>Composite advanced metrics</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <RadarChart data={advancedRadarData} />
-                            </CardContent>
-                        </Card> */}
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center py-16">

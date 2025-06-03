@@ -2,9 +2,11 @@ from fastapi import APIRouter, Depends
 from sqlmodel import desc, func, select
 from typing import List
 from sqlmodel.ext.asyncio.session import AsyncSession
-from ..models import Match, PointsProgression, PointsTypeDistribution, PlayerBarChartData, PlayerBarChartData, MinutesProgression, ParticipationRate
+from ..models import Match, PointsProgression, PointsTypeDistribution, PlayerBarChartData, PlayerBarChartData, MinutesProgression, ParticipationRate, PositionAverage
 from typing import List
-from sqlalchemy import cast, Integer
+from sqlalchemy import func, cast, Integer, Float
+import statistics
+from collections import Counter
 
 from ..deps import get_db
 from ..models import MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, PlayerSkillProfile, AdvancedImpactMatrix
@@ -369,7 +371,7 @@ async def read_player_participation_rates(id: int, session: AsyncSession = Depen
 @router.get("/{id}/advanced/impact-matrix", response_model=AdvancedImpactMatrix)
 async def player_advanced_impact_matrix(id: int, session: AsyncSession = Depends(get_db)):
     """
-    Métricas avanzadas: Win Shares estimado vs VORP estimado
+    Métricas avanzadas: Win Shares y VORP estimados (más realistas)
     """
     try:
         stmt = select(
@@ -407,20 +409,33 @@ async def player_advanced_impact_matrix(id: int, session: AsyncSession = Depends
         avg_ftm = float(row.avg_ftm or 0)
         avg_fta = float(row.avg_fta or 0)
         games_played = int(row.games_played or 0)
-        
-        # Cálculos avanzados
+
+        # Parámetros de referencia de liga (puedes ajustar según tu dataset)
+        league_ppg = 110
+        league_rpg = 44
+        league_spg = 7
+        league_bpg = 5
+        team_games = 82
+        team_minutes = 240  # 5 jugadores * 48 min
+
         # True Shooting %
-        ts_pct = (avg_points) / (2 * (avg_fga + 0.44 * avg_fta)) * 100 if avg_fga > 0 else 0
-        
-        # Estimated Box Plus/Minus (simplificado)
+        ts_pct = (avg_points) / (2 * (avg_fga + 0.44 * avg_fta)) * 100 if (avg_fga + 0.44 * avg_fta) > 0 else 0
+
+        # Offensive Win Shares (OWS)
+        ows = (avg_points + avg_assists * 1.5) / league_ppg
+
+        # Defensive Win Shares (DWS)
+        dws = (avg_rebounds + avg_steals + avg_blocks) / (league_rpg + league_spg + league_bpg)
+
+        win_shares = (ows + dws) * (games_played / team_games)
+
+        # BPM estimado
         bpm = (avg_points + avg_rebounds + avg_assists + avg_steals + avg_blocks - avg_turnovers) / avg_minutes * 48 - 15 if avg_minutes > 0 else 0
-        
-        # Estimated Win Shares (muy simplificado)
-        win_shares = (avg_points + 0.4 * avg_rebounds + 0.7 * avg_assists + avg_steals + 0.7 * avg_blocks) / 21 * (games_played / 82)
-        
-        # Estimated VORP (simplificado)
-        vorp = max(0, bpm + 2.0) * (avg_minutes / 48) * (games_played / 82) * 2.7 if avg_minutes > 0 else 0
-        
+
+        # VORP estimado
+        minutes_played_total = avg_minutes * games_played
+        vorp = ((bpm - (-2.0)) * (minutes_played_total / (team_minutes * team_games))) if avg_minutes > 0 else 0
+
         return {
             "win_shares": round(win_shares, 2),
             "vorp": round(vorp, 2),
@@ -431,4 +446,157 @@ async def player_advanced_impact_matrix(id: int, session: AsyncSession = Depends
         }
     except Exception as e:
         print(f"Error in player_advanced_impact_matrix: {str(e)}")
+        raise
+
+@router.get("/{id}/advanced/position-averages", response_model=List[PositionAverage])
+async def player_position_averages(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Obtiene la media de los 10 valores más frecuentes de métricas avanzadas por posición
+    (usando las mismas fórmulas que el endpoint individual)
+    """
+    try:
+        # Obtener datos del jugador target
+        player_stmt = select(Player.position).where(Player.id == id)
+        player_result = await session.execute(player_stmt)
+        player_position = player_result.scalar()
+        
+        position_mapping = {
+            "PF": ["PF"],
+            "F-G": ["SF", "SG", "PG"], 
+            "C-F": ["C", "PF"],
+            "SG": ["SG"],
+            "C": ["C"],
+            "G-F": ["PG", "SG", "SF"],
+            "SF": ["SF"],
+            "G": ["PG"],
+            "F-C": ["PF", "C"],
+            "F": ["PF", "SF"]
+        }
+        standard_positions = ['PG', 'SG', 'SF', 'PF', 'C']
+        position_averages = []
+
+        def top10_mean(values):
+            if not values:
+                return 0.0
+            counter = Counter(values)
+            most_common = counter.most_common(10)
+            top_values = [v for v, count in most_common]
+            return float(sum(top_values)) / len(top_values) if top_values else 0.0
+
+        for standard_pos in standard_positions:
+            db_positions_for_standard = []
+            for db_pos, standard_list in position_mapping.items():
+                if standard_pos in standard_list:
+                    db_positions_for_standard.append(db_pos)
+            if not db_positions_for_standard:
+                continue
+
+            # Obtener todos los valores de cada estadística para la posición
+            stmt = select(
+                MatchStatistic.points,
+                MatchStatistic.rebounds,
+                MatchStatistic.assists,
+                MatchStatistic.steals,
+                MatchStatistic.blocks,
+                MatchStatistic.turnovers,
+                MatchStatistic.minutes_played,
+                MatchStatistic.field_goals_made,
+                MatchStatistic.field_goals_attempted,
+                MatchStatistic.three_points_made,
+                MatchStatistic.three_points_attempted,
+                MatchStatistic.free_throws_made,
+                MatchStatistic.free_throws_attempted
+            ).join(
+                Player, MatchStatistic.player_id == Player.id
+            ).where(
+                Player.position.in_(db_positions_for_standard)
+            )
+
+            result = await session.execute(stmt)
+            rows = result.fetchall()
+
+            if not rows:
+                continue
+
+            # Extraer listas de cada estadística
+            points = [float(r.points or 0) for r in rows]
+            rebounds = [float(r.rebounds or 0) for r in rows]
+            assists = [float(r.assists or 0) for r in rows]
+            steals = [float(r.steals or 0) for r in rows]
+            blocks = [float(r.blocks or 0) for r in rows]
+            turnovers = [float(r.turnovers or 0) for r in rows]
+            minutes = [float(r.minutes_played or 0) for r in rows]
+            fgm = [float(r.field_goals_made or 0) for r in rows]
+            fga = [float(r.field_goals_attempted or 0) for r in rows]
+            tpm = [float(r.three_points_made or 0) for r in rows]
+            tpa = [float(r.three_points_attempted or 0) for r in rows]
+            ftm = [float(r.free_throws_made or 0) for r in rows]
+            fta = [float(r.free_throws_attempted or 0) for r in rows]
+
+            # AQUÍ ESTÁ EL PROBLEMA: games_played debe ser un valor estándar (82), no el total de registros
+            games_played = 82  # Usar temporada estándar en vez de len(rows)
+
+            # Calcular la media de los 10 valores más frecuentes
+            avg_points = top10_mean(points)
+            avg_rebounds = top10_mean(rebounds)
+            avg_assists = top10_mean(assists)
+            avg_steals = top10_mean(steals)
+            avg_blocks = top10_mean(blocks)
+            avg_turnovers = top10_mean(turnovers)
+            avg_minutes = top10_mean(minutes)
+            avg_fgm = top10_mean(fgm)
+            avg_fga = top10_mean(fga)
+            avg_3pm = top10_mean(tpm)
+            avg_3pa = top10_mean(tpa)
+            avg_ftm = top10_mean(ftm)
+            avg_fta = top10_mean(fta)
+
+            # Parámetros de referencia de liga
+            league_ppg = 110
+            league_rpg = 44
+            league_spg = 7
+            league_bpg = 5
+            team_games = 82
+            team_minutes = 240
+
+            # True Shooting %
+            ts_pct = (avg_points) / (2 * (avg_fga + 0.44 * avg_fta)) * 100 if (avg_fga + 0.44 * avg_fta) > 0 else 0
+
+            # USAR LAS MISMAS FÓRMULAS QUE EL ENDPOINT INDIVIDUAL
+            # Offensive Win Shares (OWS)
+            ows = (avg_points + avg_assists * 1.5) / league_ppg
+
+            # Defensive Win Shares (DWS)
+            dws = (avg_rebounds + avg_steals + avg_blocks) / (league_rpg + league_spg + league_bpg)
+
+            # Win Shares CON el mismo multiplicador que el endpoint individual
+            win_shares = (ows + dws) * (games_played / team_games)
+
+            # BPM estimado
+            bmp = (avg_points + avg_rebounds + avg_assists + avg_steals + avg_blocks - avg_turnovers) / avg_minutes * 48 - 15 if avg_minutes > 0 else 0
+
+            # VORP CON la misma fórmula que el endpoint individual
+            minutes_played_total = avg_minutes * games_played
+            vorp = ((bmp - (-2.0)) * (minutes_played_total / (team_minutes * team_games))) if avg_minutes > 0 else 0
+
+            player_mapped_positions = []
+            if player_position in position_mapping:
+                player_mapped_positions = position_mapping[player_position]
+            is_player_position = standard_pos in player_mapped_positions
+
+            position_averages.append({
+                "position": standard_pos,
+                "offensive_rating": ts_pct,
+                "defensive_rating": max(0, 100 - bmp),
+                "minutes_per_game": avg_minutes,
+                "win_shares": round(win_shares, 2),
+                "vorp": round(vorp, 2),
+                "box_plus_minus": round(bmp, 1),
+                "is_player_position": is_player_position
+            })
+
+        return position_averages
+
+    except Exception as e:
+        print(f"Error in player_position_averages: {str(e)}")
         raise
