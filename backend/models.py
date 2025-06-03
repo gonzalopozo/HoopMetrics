@@ -307,3 +307,11 @@ class PlayerContribution(SQLModel):
     player_name: str
     points: int
     percentage: float
+
+class AdvancedImpactMatrix(SQLModel):
+    win_shares: float
+    vorp: float
+    true_shooting_pct: float
+    box_plus_minus: float
+    games_played: int
+    minutes_per_game: float

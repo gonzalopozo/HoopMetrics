@@ -59,7 +59,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
     const { resolvedTheme } = useTheme()
     const [teamRadarProfile, setTeamRadarProfile] = useState<{ points: number; rebounds: number; assists: number; steals: number; blocks: number } | null>(null)
     const [teamShootingVolume, setTeamShootingVolume] = useState<{ name: string; value: number }[] | null>(null)
-
+    const [playersContribution, setPlayersContribution] = useState<{ player_name: string; points: number; percentage: number }[]>([])
 
     useEffect(() => {
         setUserRole(getUserRoleFromToken())
@@ -105,7 +105,6 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
             .catch(() => setTeamRadarProfile(null))
     }, [team.id, isPremium])
 
-    // Agregar este useEffect después de los otros useEffect existentes
     useEffect(() => {
         if (!isPremium) return
         axios
@@ -116,6 +115,15 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
             .catch(() => setTeamShootingVolume(null))
     }, [team.id, isPremium])
 
+    useEffect(() => {
+        if (!isPremium) return
+        axios
+            .get<{ player_name: string; points: number; percentage: number }[]>(
+                `${process.env.NEXT_PUBLIC_API_URL}/teams/${team.id}/basicstats/playerscontribution`
+            )
+            .then(res => setPlayersContribution(res.data))
+            .catch(() => setPlayersContribution([]))
+    }, [team.id, isPremium])
 
     // Calcular estadísticas para el resumen del gráfico
     const getPointsStats = () => {
@@ -305,24 +313,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
         return null
     }
 
-    // Agregar la configuración del gráfico después de las otras configuraciones
-    const teamShootingVolumeConfig: ChartConfig = {
-        FGA: {
-            label: "Field Goals Attempted",
-            color: resolvedTheme === "dark" ? "hsl(0, 80%, 50%)" : "hsl(214, 80%, 55%)",
-        },
-        "3PA": {
-            label: "3-Point Attempts",
-            color: resolvedTheme === "dark" ? "hsl(0, 60%, 40%)" : "hsl(214, 65%, 40%)",
-        },
-        FTA: {
-            label: "Free Throw Attempts",
-            color: resolvedTheme === "dark" ? "hsl(0, 40%, 70%)" : "hsl(214, 90%, 80%)",
-        },
-        value: { label: "Attempts per Game" },
-    }
-
-    // Calcular estadísticas para el shooting volume
+    // Calcular estadísticas para el volumen de tiro
     const getTeamShootingVolumeStats = () => {
         if (!teamShootingVolume) return { mostAttempted: "-", totalAttempts: 0, shootingStyle: "-" }
 
@@ -357,6 +348,53 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
         }
     }
     const teamShootingVolumeStats = getTeamShootingVolumeStats()
+
+    // Procesar datos para el gráfico stacked bar
+    const top5 = playersContribution.slice(0, 5)
+    const restTotal = playersContribution.slice(5).reduce((sum, p) => sum + p.percentage, 0)
+    const stackedBarData = [
+        {
+            name: "Points Contribution",
+            ...Object.fromEntries(top5.map((p, i) => [`${i + 1}. ${p.player_name}`, p.percentage])),
+            Rest: restTotal,
+        }
+    ]
+    const barKeys = top5.map((p, i) => `${i + 1}. ${p.player_name}`).concat("Rest")
+
+    // Colores para cada barra
+    const barColors = [
+        resolvedTheme === "dark" ? "#4273ff" : "#1e40af",
+        resolvedTheme === "dark" ? "#6ea8ff" : "#2563eb",
+        resolvedTheme === "dark" ? "#a3c9ff" : "#60a5fa",
+        resolvedTheme === "dark" ? "#ffb3b3" : "#f87171",
+        resolvedTheme === "dark" ? "#ff7b7b" : "#ef4444",
+        resolvedTheme === "dark" ? "#d6e6ff" : "#a3a3a3", // Rest
+    ]
+
+    // Tooltip personalizado
+    const ContributionTooltip = ({ active, payload }: any) => {
+        if (active && payload && payload.length) {
+            return (
+                <div className="rounded-lg border bg-card p-3 shadow-md">
+                    {payload[0].payload &&
+                        barKeys.map((key, idx) =>
+                            payload[0].payload[key] > 0 ? (
+                                <div key={key} className="flex items-center gap-2">
+                                    <span
+                                        className="inline-block w-3 h-3 rounded-sm"
+                                        style={{ background: barColors[idx] }}
+                                    />
+                                    <span className="font-medium">{key}</span>
+                                    <span className="ml-2 text-primary font-bold">{payload[0].payload[key].toFixed(1)}%</span>
+                                </div>
+                            ) : null
+                        )
+                    }
+                </div>
+            )
+        }
+        return null
+    }
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -785,7 +823,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div style={{ width: "100%", height: 320 }}>
+                                <div style={{ width: "100%", height: 300 }}>
                                     <ResponsiveContainer width="100%" height="100%">
                                         {pointsProgression.length > 0 ? (
                                             <ReAreaChart
@@ -905,7 +943,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div style={{ width: "100%", height: 320 }}>
+                                <div style={{ width: "100%", height: 300 }}>
                                     <ResponsiveContainer width="100%" height="100%">
                                         {pointsVsOpponent.length > 0 ? (
                                             <LineChart
@@ -1120,7 +1158,8 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                             </CardFooter>
                         </Card>
 
-                        <Card>
+                        {/* Cuarto gráfico - Team Profile */}
+                        <Card className="flex flex-col">
                             <CardHeader className="items-center pb-0">
                                 <CardTitle>
                                     <Target className="h-5 w-5 text-primary inline mr-2" />
@@ -1235,6 +1274,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                             </CardFooter>
                         </Card>
 
+                        {/* Quinto gráfico - Team Shooting Volume */}
                         <Card>
                             <CardHeader>
                                 <CardTitle>
@@ -1251,7 +1291,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                         {teamShootingVolume && teamShootingVolume.length > 0 ? (
                                             <BarChart
                                                 data={teamShootingVolume}
-                                                layout="horizontal"
+                                                layout="vertical"
                                                 margin={{ top: 16, right: 16, left: 60, bottom: 16 }}
                                             >
                                                 <CartesianGrid strokeDasharray="3 3" />
@@ -1267,7 +1307,8 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                                     tick={{ fontSize: 12, fill: "var(--foreground)" }}
                                                     axisLine={false}
                                                     tickLine={false}
-                                                    width={50}
+                                                    width={1}
+
                                                 />
                                                 <Tooltip
                                                     content={({ active, payload }) => {
@@ -1334,6 +1375,105 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                                 <p className="text-xs text-muted-foreground">Playing Style</p>
                                                 <p className="font-bold">
                                                     {teamShootingVolumeStats.shootingStyle}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardFooter>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    <BarChart3 className="h-5 w-5 text-primary inline mr-2" />
+                                    Points Distribution (Top 5 vs Rest)
+                                </CardTitle>
+                                <CardDescription>
+                                    Star dependency vs team balance
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div style={{ width: "100%", height: 300 }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        {playersContribution.length > 0 ? (
+                                            <BarChart
+                                                data={stackedBarData}
+                                                layout="vertical"
+                                                margin={{ top: 16, right: 16, left: 16, bottom: 16 }}
+                                                barCategoryGap={40}
+                                            >
+                                                <XAxis
+                                                    type="number"
+                                                    domain={[0, 100]}
+                                                    tickFormatter={v => `${v}%`}
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                    tick={{ fontSize: 12, fill: "var(--foreground)" }}
+                                                />
+                                                <YAxis
+                                                    type="category"
+                                                    dataKey="name"
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                    width={0}
+                                                />
+                                                <Tooltip cursor={{ fill: "transparent" }} offset={20}  allowEscapeViewBox={{ x: false, y: true }} content={<ContributionTooltip />} />
+                                                {barKeys.map((key, idx) => (
+                                                    <Bar
+                                                        key={key}
+                                                        dataKey={key}
+                                                        stackId="a"
+                                                        fill={barColors[idx]}
+                                                        radius={idx === barKeys.length - 1 ? [0, 4, 4, 0] : 0}
+                                                        isAnimationActive={false}
+                                                    />
+                                                ))}
+                                            </BarChart>
+                                        ) : (
+                                            <div className="flex items-center justify-center h-full">
+                                                <p className="text-muted-foreground">No contribution data available</p>
+                                            </div>
+                                        )}
+                                    </ResponsiveContainer>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="border-t pt-4">
+                                <div className="w-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="font-semibold text-sm">
+                                            {`${team.full_name || "Team"}'s Scoring Dependency`}
+                                        </h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            {playersContribution.length} players analyzed
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Top Scorer</p>
+                                                <p className="font-bold">
+                                                    {playersContribution[0]
+                                                        ? `${playersContribution[0].player_name} (${playersContribution[0].percentage.toFixed(1)}%)`
+                                                        : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <BarChart3 className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Top 5 Share</p>
+                                                <p className="font-bold">
+                                                    {top5.reduce((sum, p) => sum + p.percentage, 0).toFixed(1)}%
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Activity className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Rest of Team</p>
+                                                <p className="font-bold">
+                                                    {restTotal.toFixed(1)}%
                                                 </p>
                                             </div>
                                         </div>

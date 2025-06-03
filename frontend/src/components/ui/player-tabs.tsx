@@ -883,7 +883,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div style={{ width: "100%", height: 320 }}>
+                                <div style={{ width: "100%", height: 300 }}>
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart
                                             accessibilityLayer

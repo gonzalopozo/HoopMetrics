@@ -7,7 +7,7 @@ from typing import List
 from sqlalchemy import cast, Integer
 
 from ..deps import get_db
-from ..models import MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, PlayerSkillProfile
+from ..models import MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, PlayerSkillProfile, AdvancedImpactMatrix
 
 router = APIRouter(
     prefix="/players",
@@ -364,4 +364,71 @@ async def read_player_participation_rates(id: int, session: AsyncSession = Depen
         ]
     except Exception as e:
         print(f"Error in read_player_participation_rates: {str(e)}")
+        raise
+
+@router.get("/{id}/advanced/impact-matrix", response_model=AdvancedImpactMatrix)
+async def player_advanced_impact_matrix(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Métricas avanzadas: Win Shares estimado vs VORP estimado
+    """
+    try:
+        stmt = select(
+            func.avg(MatchStatistic.points).label("avg_points"),
+            func.avg(MatchStatistic.rebounds).label("avg_rebounds"),
+            func.avg(MatchStatistic.assists).label("avg_assists"),
+            func.avg(MatchStatistic.steals).label("avg_steals"),
+            func.avg(MatchStatistic.blocks).label("avg_blocks"),
+            func.avg(MatchStatistic.turnovers).label("avg_turnovers"),
+            func.avg(MatchStatistic.minutes_played).label("avg_minutes"),
+            func.avg(MatchStatistic.field_goals_made).label("avg_fgm"),
+            func.avg(MatchStatistic.field_goals_attempted).label("avg_fga"),
+            func.avg(MatchStatistic.three_points_made).label("avg_3pm"),
+            func.avg(MatchStatistic.three_points_attempted).label("avg_3pa"),
+            func.avg(MatchStatistic.free_throws_made).label("avg_ftm"),
+            func.avg(MatchStatistic.free_throws_attempted).label("avg_fta"),
+            func.count(MatchStatistic.id).label("games_played")
+        ).where(MatchStatistic.player_id == id)
+        
+        result = await session.execute(stmt)
+        row = result.first()
+        
+        # Convert all values to float to avoid Decimal issues
+        avg_points = float(row.avg_points or 0)
+        avg_rebounds = float(row.avg_rebounds or 0)
+        avg_assists = float(row.avg_assists or 0)
+        avg_steals = float(row.avg_steals or 0)
+        avg_blocks = float(row.avg_blocks or 0)
+        avg_turnovers = float(row.avg_turnovers or 0)
+        avg_minutes = float(row.avg_minutes or 0)
+        avg_fgm = float(row.avg_fgm or 0)
+        avg_fga = float(row.avg_fga or 0)
+        avg_3pm = float(row.avg_3pm or 0)
+        avg_3pa = float(row.avg_3pa or 0)
+        avg_ftm = float(row.avg_ftm or 0)
+        avg_fta = float(row.avg_fta or 0)
+        games_played = int(row.games_played or 0)
+        
+        # Cálculos avanzados
+        # True Shooting %
+        ts_pct = (avg_points) / (2 * (avg_fga + 0.44 * avg_fta)) * 100 if avg_fga > 0 else 0
+        
+        # Estimated Box Plus/Minus (simplificado)
+        bpm = (avg_points + avg_rebounds + avg_assists + avg_steals + avg_blocks - avg_turnovers) / avg_minutes * 48 - 15 if avg_minutes > 0 else 0
+        
+        # Estimated Win Shares (muy simplificado)
+        win_shares = (avg_points + 0.4 * avg_rebounds + 0.7 * avg_assists + avg_steals + 0.7 * avg_blocks) / 21 * (games_played / 82)
+        
+        # Estimated VORP (simplificado)
+        vorp = max(0, bpm + 2.0) * (avg_minutes / 48) * (games_played / 82) * 2.7 if avg_minutes > 0 else 0
+        
+        return {
+            "win_shares": round(win_shares, 2),
+            "vorp": round(vorp, 2),
+            "true_shooting_pct": round(ts_pct, 1),
+            "box_plus_minus": round(bpm, 1),
+            "games_played": games_played,
+            "minutes_per_game": round(avg_minutes, 1)
+        }
+    except Exception as e:
+        print(f"Error in player_advanced_impact_matrix: {str(e)}")
         raise
