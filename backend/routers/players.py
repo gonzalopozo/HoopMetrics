@@ -608,10 +608,10 @@ async def player_position_averages(id: int, session: AsyncSession = Depends(get_
 async def player_lebron_impact_score(id: int, session: AsyncSession = Depends(get_db)):
     """
     LEBRON-style metric: Luck-adjusted player Estimate using Box prior Regularized ON-off
-    Versión corregida basada en la metodología real de LEBRON
+    Implementación corregida basada en la metodología real de LEBRON
     """
     try:
-        # Query principal del jugador
+        # Query principal del jugador con más datos necesarios
         stmt = select(
             func.avg(MatchStatistic.points).label("avg_points"),
             func.avg(MatchStatistic.rebounds).label("avg_rebounds"),
@@ -628,10 +628,11 @@ async def player_lebron_impact_score(id: int, session: AsyncSession = Depends(ge
             func.avg(MatchStatistic.free_throws_attempted).label("avg_fta"),
             func.avg(MatchStatistic.plusminus).label("avg_plusminus"),
             func.count(MatchStatistic.id).label("games_played"),
-            func.stddev(MatchStatistic.points).label("points_variance"),
-            func.stddev(MatchStatistic.plusminus).label("plusminus_variance"),
+            func.stddev(MatchStatistic.points).label("points_std"),
+            func.stddev(MatchStatistic.plusminus).label("pm_std"),
             func.avg(MatchStatistic.off_rebounds).label("avg_oreb"),
-            func.avg(MatchStatistic.def_rebounds).label("avg_dreb")
+            func.avg(MatchStatistic.def_rebounds).label("avg_dreb"),
+            func.sum(MatchStatistic.minutes_played).label("total_minutes")
         ).where(MatchStatistic.player_id == id)
         
         result = await session.execute(stmt)
@@ -660,8 +661,9 @@ async def player_lebron_impact_score(id: int, session: AsyncSession = Depends(ge
         avg_fta = float(row.avg_fta or 0)
         avg_plusminus = float(row.avg_plusminus or 0)
         games_played = int(row.games_played or 0)
-        points_variance = float(row.points_variance or 1)
-        plusminus_variance = float(row.plusminus_variance or 1)
+        total_minutes = float(row.total_minutes or 0)
+        points_std = float(row.points_std or 5.0)
+        pm_std = float(row.pm_std or 8.0)
         avg_oreb = float(row.avg_oreb or 0) if row.avg_oreb else avg_rebounds * 0.25
         avg_dreb = float(row.avg_dreb or 0) if row.avg_dreb else avg_rebounds * 0.75
         
@@ -672,122 +674,142 @@ async def player_lebron_impact_score(id: int, session: AsyncSession = Depends(ge
                 percentile_rank=50.0, games_played=games_played, minutes_per_game=0.0
             )
         
-        # Obtener promedios de liga para contextualización
+        # Obtener promedios de liga para prior bayesiano
         league_stmt = select(
             func.avg(MatchStatistic.points).label("league_ppg"),
             func.avg(MatchStatistic.rebounds).label("league_rpg"),
             func.avg(MatchStatistic.assists).label("league_apg"),
+            func.avg(MatchStatistic.steals).label("league_spg"),
+            func.avg(MatchStatistic.blocks).label("league_bpg"),
+            func.avg(MatchStatistic.turnovers).label("league_tpg"),
             func.avg(MatchStatistic.plusminus).label("league_pm"),
-            func.avg(MatchStatistic.minutes_played).label("league_mpg")
+            func.avg(MatchStatistic.minutes_played).label("league_mpg"),
+            func.avg(MatchStatistic.field_goals_made).label("league_fgm"),
+            func.avg(MatchStatistic.field_goals_attempted).label("league_fga")
         )
         league_result = await session.execute(league_stmt)
         league_row = league_result.first()
         
-        # Promedios de liga más realistas (NBA 2023-24)
-        league_ppg = float(league_row.league_ppg or 22.5)
-        league_rpg = float(league_row.league_rpg or 10.5)
-        league_apg = float(league_row.league_apg or 5.8)
-        league_pm = float(league_row.league_pm or 0)
+        # Promedios de liga
+        league_ppg = float(league_row.league_ppg or 22.0)
+        league_rpg = float(league_row.league_rpg or 10.2)
+        league_apg = float(league_row.league_apg or 5.5)
+        league_spg = float(league_row.league_spg or 1.3)
+        league_bpg = float(league_row.league_bpg or 1.0)
+        league_tpg = float(league_row.league_tpg or 3.2)
+        league_pm = float(league_row.league_pm or 0.0)
         league_mpg = float(league_row.league_mpg or 28.0)
+        league_fgm = float(league_row.league_fgm or 8.5)
+        league_fga = float(league_row.league_fga or 18.0)
         
-        # Métricas avanzadas
-        usage_rate = ((avg_fga + 0.44 * avg_fta + avg_turnovers) * (league_mpg * 5)) / (avg_minutes * (avg_fga + avg_fta + avg_turnovers))
-        usage_rate = min(max(usage_rate * 100, 10), 40)  # Convertir a porcentaje y limitar
+        # 1. BOX PRIOR COMPONENT - Basado en estadísticas de caja ajustadas
+        # Calcular métricas avanzadas
+        true_shooting = avg_points / (2 * (avg_fga + 0.44 * avg_fta)) if (avg_fga + 0.44 * avg_fta) > 0 else 0.5
+        usage_rate = ((avg_fga + 0.44 * avg_fta + avg_turnovers) * (league_mpg * 5)) / (avg_minutes * (league_fga + avg_fta + league_tpg)) * 100
+        usage_rate = max(10, min(usage_rate, 40))
         
-        true_shooting = avg_points / (2 * (avg_fga + 0.44 * avg_fta)) if (avg_fga + 0.44 * avg_fta) > 0 else 0
         assist_rate = avg_assists / avg_fga if avg_fga > 0 else 0
         turnover_rate = avg_turnovers / (avg_fga + 0.44 * avg_fta + avg_turnovers) if (avg_fga + avg_fta + avg_turnovers) > 0 else 0
+        rebound_rate = avg_rebounds / avg_minutes * 48 if avg_minutes > 0 else 0
         
-        # 1. BOX COMPONENT - Coeficientes reales de LEBRON (más agresivos)
-        # LEBRON usa coeficientes más altos que BPM
+        # Box component usando coeficientes calibrados (similares a BPM pero ajustados)
         box_component = (
-            # Scoring (más peso que en BPM)
-            0.25 * (avg_points - league_ppg) +
-            # Rebounding 
-            0.18 * (avg_dreb - league_rpg * 0.75) +
-            0.15 * (avg_oreb - league_rpg * 0.25) +
-            # Playmaking (muy importante en LEBRON)
-            0.35 * (avg_assists - league_apg) +
-            # Defensive actions (peso alto)
-            0.28 * avg_steals +
-            0.32 * avg_blocks +
-            # Turnover penalty
-            -0.25 * avg_turnovers +
-            # Shooting efficiency (crítico)
-            0.45 * (true_shooting - 0.57) * 25 +
-            # Usage adjustment
-            0.08 * (usage_rate - 20) / 5
+            # Scoring above average (ajustado por eficiencia)
+            0.20 * (avg_points - league_ppg) * (true_shooting / 0.56) +
+            
+            # Rebounding (separado por tipo)
+            0.14 * (avg_oreb - league_rpg * 0.25) +
+            0.12 * (avg_dreb - league_rpg * 0.75) +
+            
+            # Playmaking
+            0.30 * (avg_assists - league_apg) +
+            
+            # Defensive stats
+            0.52 * (avg_steals - league_spg) +
+            0.58 * (avg_blocks - league_bpg) +
+            
+            # Turnovers penalty
+            -0.35 * (avg_turnovers - league_tpg) +
+            
+            # Usage adjustment (penalty for high usage)
+            -0.002 * max(0, usage_rate - 28) ** 1.5 +
+            
+            # Efficiency bonus
+            0.15 * (true_shooting - 0.56) * 20
         )
         
-        # 2. PLUS/MINUS COMPONENT - Más agresivo
-        # LEBRON usa el plus/minus más directamente
-        team_context_factor = min(max(avg_plusminus / 5, -1), 1)  # Normalizar entre -1 y 1
-        pm_adjusted = avg_plusminus * (1 - abs(team_context_factor) * 0.15)  # Ajuste mínimo
+        # 2. PLUS-MINUS COMPONENT - Regularizado
+        # Ajustar plus-minus por contexto de equipo y varianza
+        pm_per_minute = avg_plusminus / avg_minutes if avg_minutes > 0 else 0
+        pm_component_raw = pm_per_minute * 48
         
-        plus_minus_component = pm_adjusted / avg_minutes * 48 if avg_minutes > 0 else 0
+        # Ajuste por varianza (luck adjustment parcial)
+        pm_reliability = min(1.0, total_minutes / 1500)  # Más confiable con más minutos
+        pm_variance_penalty = min(0.2, pm_std / 15.0)  # Penalizar alta varianza
         
-        # 3. REGULARIZACIÓN BAYESIANA - Menos conservadora
-        # LEBRON da más peso al plus/minus más rápido
-        total_minutes = avg_minutes * games_played
-        minutes_weight = min(total_minutes / 1200, 0.75)  # Más peso al PM más rápido
-        box_weight = 1 - minutes_weight
+        plus_minus_component = pm_component_raw * pm_reliability * (1 - pm_variance_penalty)
         
-        # 4. LUCK ADJUSTMENT - Menos penalizante
-        # Basado en consistencia de rendimiento
-        consistency_factor = 1 / (1 + (points_variance or 1) / 25) if points_variance and points_variance > 0 else 1
-        pm_consistency = 1 / (1 + (plusminus_variance or 1) / 12) if plusminus_variance and plusminus_variance > 0 else 1
-        luck_adjustment = (consistency_factor + pm_consistency) / 2
-        luck_adjustment = max(0.85, min(1.15, luck_adjustment))
+        # 3. REGULARIZACIÓN BAYESIANA
+        # El peso entre box y plus-minus depende de la cantidad de datos
+        box_prior_strength = 200  # Minutos necesarios para confiar 50% en plus-minus
+        pm_weight = total_minutes / (total_minutes + box_prior_strength)
+        box_weight = 1 - pm_weight
         
-        # 5. CONTEXT ADJUSTMENT - Más agresivo para equipos exitosos
-        # LEBRON premia más a jugadores en equipos buenos
-        if avg_plusminus > 2:
-            context_adjustment = 1.15 + min(avg_plusminus / 15, 0.1)
-        elif avg_plusminus > 0:
-            context_adjustment = 1.05 + avg_plusminus / 20
+        # 4. LUCK ADJUSTMENT
+        # Basado en consistencia y sample size
+        consistency_score = 1 / (1 + points_std / 8.0) if points_std > 0 else 1
+        pm_consistency = 1 / (1 + pm_std / 10.0) if pm_std > 0 else 1
+        sample_size_factor = min(1.0, total_minutes / 1000)
+        
+        luck_adjustment = (consistency_score * 0.4 + pm_consistency * 0.4 + sample_size_factor * 0.2)
+        luck_adjustment = max(0.7, min(1.3, luck_adjustment))
+        
+        # 5. CONTEXT ADJUSTMENT
+        # Ajuste por rendimiento del equipo y situación
+        team_success_factor = 1.0
+        if avg_plusminus > 3:
+            team_success_factor = 1.1  # Bonus por estar en equipo exitoso
+        elif avg_plusminus < -3:
+            team_success_factor = 0.95  # Pequeña penalización
+        
+        context_adjustment = team_success_factor * (0.9 + 0.1 * min(games_played / 60, 1))
+        context_adjustment = max(0.85, min(1.15, context_adjustment))
+        
+        # 6. USAGE ADJUSTMENT
+        # LEBRON penaliza uso excesivo pero premia eficiencia con alto uso
+        optimal_usage = 24
+        usage_deviation = abs(usage_rate - optimal_usage)
+        
+        if usage_rate > 30:  # Alto uso
+            usage_adjustment = 1.0 - (usage_rate - 30) * 0.01 + (true_shooting - 0.55) * 0.8
+        elif usage_rate < 18:  # Bajo uso
+            usage_adjustment = 0.98
         else:
-            context_adjustment = 1.0 + max(avg_plusminus / 25, -0.15)
+            usage_adjustment = 1.0 + (5 - usage_deviation) * 0.005
         
-        context_adjustment = max(0.8, min(1.3, context_adjustment))
+        usage_adjustment = max(0.85, min(1.15, usage_adjustment))
         
-        # 6. USAGE ADJUSTMENT - Prima el uso balanceado
-        optimal_usage = 24  # Shai usa ~30%, que es alto pero no extremo
-        usage_diff = abs(usage_rate - optimal_usage)
-        if usage_rate > 28:  # Alto uso = prima si es eficiente
-            usage_adjustment = 1.05 + (true_shooting - 0.55) * 0.5
-        elif usage_rate < 18:  # Bajo uso = pequeña penalización
-            usage_adjustment = 0.95
-        else:
-            usage_adjustment = 1.0 + (24 - usage_diff) / 100
+        # 7. LEBRON SCORE FINAL
+        # Combinar box y plus-minus con pesos bayesianos
+        raw_impact = (box_component * box_weight + plus_minus_component * pm_weight)
         
-        usage_adjustment = max(0.9, min(1.2, usage_adjustment))
+        # Aplicar ajustes
+        lebron_score = raw_impact * luck_adjustment * context_adjustment * usage_adjustment
         
-        # LEBRON SCORE FINAL - Fórmula más agresiva
-        raw_box = box_component
-        raw_pm = plus_minus_component
+        # Escalar al rango típico de LEBRON (-10 a +10, con elite players en ±6-8)
+        lebron_score = max(-12, min(12, lebron_score))
         
-        # Weighted combination
-        base_impact = (raw_box * box_weight + raw_pm * minutes_weight)
-        
-        # Multiplicador base para escalar a rango LEBRON real
-        lebron_multiplier = 2.8  # Factor de escala para alcanzar valores reales
-        
-        # Score final con todos los ajustes
-        lebron_score = base_impact * lebron_multiplier * luck_adjustment * context_adjustment * usage_adjustment
-
-        # Asegurar que esté en rango realista (-15 a +15)
-        lebron_score = max(-15, min(15, lebron_score))  # <--- AJUSTE AQUÍ
-        
-        # Percentil basado en distribución real de LEBRON
-        from math import erf
-        z_score = (lebron_score - 1.5) / 3.5  # Media y std realistas
-        percentile_rank = 50 * (1 + erf(z_score / 1.414))
+        # 8. PERCENTILE RANK
+        # Distribución aproximada: media=0, std=2.5 para LEBRON
+        import math
+        z_score = lebron_score / 2.5
+        percentile_rank = 50 * (1 + math.erf(z_score / math.sqrt(2)))
         percentile_rank = max(1, min(99, percentile_rank))
         
         return LebronImpactScore(
             lebron_score=round(lebron_score, 2),
-            box_component=round(raw_box * lebron_multiplier, 2),
-            plus_minus_component=round(raw_pm * lebron_multiplier, 2),
+            box_component=round(box_component, 2),
+            plus_minus_component=round(plus_minus_component, 2),
             luck_adjustment=round(luck_adjustment, 3),
             context_adjustment=round(context_adjustment, 3),
             usage_adjustment=round(usage_adjustment, 3),

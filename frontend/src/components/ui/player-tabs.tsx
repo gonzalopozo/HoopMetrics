@@ -2178,12 +2178,11 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 justifyContent: "center"
                                             }}>
                                                 {(() => {
-                                                    // Score normalizado de -10 a +10 -> 0 a 1
-                                                    const scoreNormalized = Math.max(0, Math.min(1, (lebronImpact.lebron_score + 10) / 20));
-                                                    // Ángulo: 180° (izquierda) a 0° (derecha)
-                                                    const targetAngle = 180 - (scoreNormalized * 180);
-                                                    // Ángulo inicial para animación (empieza desde la IZQUIERDA - 180°)
-                                                    const startAngle = needleAnimated ? targetAngle : 180;
+                                                    // Clamp the LEBRON score between -10 (left) and +10 (right)
+                                                    const clampedScore = Math.max(-10, Math.min(10, lebronImpact.lebron_score));
+                                                    const scoreNormalized = (clampedScore + 10) / 20;
+                                                    const targetAngle = 266 + (scoreNormalized * 180);
+                                                    const needleAngle = needleAnimated ? targetAngle : 180;
 
                                                     return (
                                                         <div style={{
@@ -2203,7 +2202,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                                 background: `linear-gradient(to top, ${resolvedTheme === "dark" ? "#e2e8f0" : "#374151"}, ${resolvedTheme === "dark" ? "#94a3b8" : "#6b7280"})`,
                                                                 transformOrigin: "bottom center",
                                                                 borderRadius: "4px 4px 1px 1px",
-                                                                transform: `translateX(-50%) rotate(${startAngle}deg)`,
+                                                                transform: `translateX(-50%) rotate(${needleAngle}deg)`,
                                                                 zIndex: 1,
                                                                 filter: "url(#needleShadow)",
                                                                 transition: needleAnimated ? "transform 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)" : "none"
