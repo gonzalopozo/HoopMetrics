@@ -326,3 +326,38 @@ class PositionAverage(SQLModel):
     vorp: float
     box_plus_minus: float
     is_player_position: bool
+
+# ...existing code...
+
+class LebronImpactScore(SQLModel):
+    lebron_score: float  # -10 to +10 scale
+    box_component: float
+    plus_minus_component: float
+    luck_adjustment: float
+    context_adjustment: float
+    usage_adjustment: float
+    percentile_rank: float
+    games_played: int
+    minutes_per_game: float
+
+class PIPMImpact(SQLModel):
+    total_pipm: float
+    offensive_pimp: float
+    defensive_pimp: float
+    box_prior_weight: float
+    plus_minus_weight: float
+    stability_factor: float
+    minutes_confidence: float
+    games_played: int
+    usage_rate: float
+
+class RaptorWAR(SQLModel):
+    total_war: float
+    offensive_war: float
+    defensive_war: float
+    market_value_millions: float
+    positional_versatility: float
+    age_adjustment: float
+    injury_risk_factor: float
+    games_played: int
+    win_shares_comparison: float

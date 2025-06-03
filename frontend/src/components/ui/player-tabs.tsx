@@ -3,39 +3,39 @@
 import { useState, useEffect, useMemo } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { 
-    Trophy, 
-    BarChart3, 
-    Lock, 
-    TrendingUp, 
-    Target, 
+import {
+    Trophy,
+    BarChart3,
+    Lock,
+    TrendingUp,
+    Target,
     Activity,
     Clock
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTheme } from "next-themes"
 import axios from "axios"
-import { 
-    ChartConfig, 
-    ChartContainer, 
-    ChartLegend, 
+import {
+    ChartConfig,
+    ChartContainer,
+    ChartLegend,
     ChartLegendContent,
     ChartTooltip,
-    ChartTooltipContent 
+    ChartTooltipContent
 } from "@/components/ui/chart"
-import { 
-    LineChart, 
-    Line, 
-    XAxis, 
-    YAxis, 
-    ResponsiveContainer, 
-    PieChart as RePieChart, 
-    Pie, 
-    RadarChart as ReRadarChart, 
-    Radar, 
-    PolarAngleAxis, 
-    PolarGrid, 
-    PolarRadiusAxis, 
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    ResponsiveContainer,
+    PieChart as RePieChart,
+    Pie,
+    RadarChart as ReRadarChart,
+    Radar,
+    PolarAngleAxis,
+    PolarGrid,
+    PolarRadiusAxis,
     Tooltip
 } from "recharts"
 import { BarChart as ReBarChart, Bar, CartesianGrid, LabelList, Tooltip as BarTooltip, ReferenceLine } from "recharts";
@@ -172,6 +172,22 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         is_player_position: boolean;
     }[]>([]);
 
+    // Add this state for LEBRON impact data
+    const [lebronImpact, setLebronImpact] = useState<{
+        lebron_score: number;
+        box_component: number;
+        plus_minus_component: number;
+        luck_adjustment: number;
+        context_adjustment: number;
+        usage_adjustment: number;
+        percentile_rank: number;
+        games_played: number;
+        minutes_per_game: number;
+    } | null>(null);
+
+    // Añadir este estado para controlar la animación
+    const [needleAnimated, setNeedleAnimated] = useState(false);
+
     const isPremium = userRole === "premium" || userRole === "ultimate"
     const isUltimate = userRole === "ultimate"
     const { resolvedTheme } = useTheme()
@@ -256,7 +272,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         }
         if (isPremium) fetchMinutesProgression();
     }, [player.id, isPremium]);
-    
+
     useEffect(() => {
         async function fetchParticipationRates() {
             try {
@@ -314,6 +330,41 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         }
         if (isUltimate) fetchPositionAverages();
     }, [player.id, isUltimate]);
+
+    // Fetch LEBRON impact data
+    useEffect(() => {
+        async function fetchLebronImpact() {
+            try {
+                const res = await axios.get<{
+                    lebron_score: number;
+                    box_component: number;
+                    plus_minus_component: number;
+                    luck_adjustment: number;
+                    context_adjustment: number;
+                    usage_adjustment: number;
+                    percentile_rank: number;
+                    games_played: number;
+                    minutes_per_game: number;
+                }>(`${process.env.NEXT_PUBLIC_API_URL}/players/${player.id}/advanced/lebron-impact`);
+                setLebronImpact(res.data);
+            } catch (e) {
+                console.error("Error fetching LEBRON impact:", e);
+                setLebronImpact(null);
+            }
+        }
+        if (isUltimate) fetchLebronImpact();
+    }, [player.id, isUltimate]);
+
+    // Añadir este useEffect para activar la animación cuando se entra a Ultimate
+    useEffect(() => {
+        if (isUltimate && lebronImpact && !needleAnimated) {
+            // Pequeño delay para que se vea la animación
+            const timer = setTimeout(() => {
+                setNeedleAnimated(true);
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [isUltimate, lebronImpact, needleAnimated]);
 
     const areaChartConfig: ChartConfig = {
         minutes: {
@@ -601,7 +652,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
 
     const scatterData = useMemo(() => {
         const data = [];
-        
+
         // Añadir promedios por posición
         positionAverages.forEach(pos => {
             data.push({
@@ -617,7 +668,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 is_player_position: pos.is_player_position
             });
         });
-        
+
         // Añadir datos del jugador
         if (advancedImpactMatrix) {
             data.push({
@@ -633,7 +684,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 is_player_position: false
             });
         }
-        
+
         return data;
     }, [positionAverages, advancedImpactMatrix, player.name]);
 
@@ -677,7 +728,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         if (data.is_player) {
             return resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(214, 80%, 55%)"; // Color principal para el jugador
         }
-        
+
         // Colores diferentes para cada posición
         const positionColors = {
             'PG': resolvedTheme === "dark" ? "hsl(270, 70%, 60%)" : "hsl(270, 70%, 50%)", // Púrpura
@@ -686,9 +737,24 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             'PF': resolvedTheme === "dark" ? "hsl(45, 70%, 60%)" : "hsl(45, 70%, 50%)",   // Amarillo
             'C': resolvedTheme === "dark" ? "hsl(15, 70%, 60%)" : "hsl(15, 70%, 50%)",    // Naranja
         };
-        
+
         return positionColors[data.position as keyof typeof positionColors] || "hsl(0, 0%, 50%)";
     };
+
+    // Add the gauge chart data processing
+    const gaugeData = lebronImpact ? [
+        {
+            name: "LEBRON Score",
+            value: lebronImpact.lebron_score,
+            fill: (() => {
+                const score = lebronImpact.lebron_score;
+                if (score >= 6) return resolvedTheme === "dark" ? "hsl(120, 70%, 60%)" : "hsl(120, 70%, 50%)"; // Elite - Green
+                if (score >= 2) return resolvedTheme === "dark" ? "hsl(43, 70%, 60%)" : "hsl(43, 70%, 50%)"; // Good - Yellow
+                if (score >= -2) return resolvedTheme === "dark" ? "hsl(30, 70%, 60%)" : "hsl(30, 70%, 50%)"; // Average - Orange
+                return resolvedTheme === "dark" ? "hsl(0, 70%, 60%)" : "hsl(0, 70%, 50%)"; // Poor - Red
+            })()
+        }
+    ] : [];
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -1847,7 +1913,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 type="number"
                                                 dataKey="win_shares"
                                                 name="Win Shares"
-                                                domain={[-0.5, 1.5]} // Dominio fijo de 0 a 4
+                                                domain={[-0.5, 3.5]} // Dominio fijo de 0 a 4
                                                 tick={{
                                                     fontSize: 12,
                                                     fill: resolvedTheme === "dark" ? "#e2e8f0" : "#475569"
@@ -1860,7 +1926,8 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                     stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
                                                     strokeWidth: 1
                                                 }}
-                                                ticks={[-0.5, 0, 0.5, 1, 1.5]} // Intervalos fijos de 0.5 en 0.5
+                                                ticks={[-0.5, 0.5, 1.5, 2.5, 3.5]} // Intervalos fijos de 0.5 en 0.5
+
                                                 tickFormatter={(value) => value.toFixed(1)}
                                                 label={{
                                                     value: 'Win Shares',
@@ -1876,7 +1943,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 type="number"
                                                 dataKey="vorp"
                                                 name="VORP"
-                                                domain={[0, 4]} // Dominio fijo de -2 a 4
+                                                domain={[-0.5, 6.5]} // Dominio fijo de -2 a 4
                                                 tick={{
                                                     fontSize: 12,
                                                     fill: resolvedTheme === "dark" ? "#e2e8f0" : "#475569"
@@ -1889,7 +1956,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                     stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
                                                     strokeWidth: 1
                                                 }}
-                                                ticks={[0, 1, 2, 3, 4]} // Intervalos fijos de 1 en 1
+                                                ticks={[-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5]} // Intervalos fijos de 1 en 1
                                                 tickFormatter={(value) => value.toFixed(2)}
                                                 label={{
                                                     value: 'VORP',
@@ -1966,10 +2033,10 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                     {advancedImpactMatrix && positionAverages.length ? (() => {
                                                         const playerPosition = positionAverages.find(p => p.is_player_position);
                                                         if (!playerPosition) return "-";
-                                                        
+
                                                         const playerWS = advancedImpactMatrix.win_shares;
                                                         const avgWS = playerPosition.win_shares;
-                                                        
+
                                                         return playerWS > avgWS ? "Above Average" : playerWS > avgWS - 1 ? "Average" : "Below Average";
                                                     })() : "-"}
                                                 </p>
@@ -1984,7 +2051,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                         const playerVORP = advancedImpactMatrix.vorp;
                                                         let bestMatch = "";
                                                         let smallestDiff = Infinity;
-                                                        
+
                                                         positionAverages.forEach(pos => {
                                                             const diff = Math.abs(playerVORP - pos.vorp);
                                                             if (diff < smallestDiff) {
@@ -1992,7 +2059,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                                 bestMatch = pos.position;
                                                             }
                                                         });
-                                                        
+
                                                         return bestMatch || "-";
                                                     })() : "-"}
                                                 </p>
@@ -2005,11 +2072,267 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 <p className="font-bold">
                                                     {advancedImpactMatrix ? (
                                                         advancedImpactMatrix.vorp > 4 ? "Elite" :
-                                                        advancedImpactMatrix.vorp > 2 ? "All-Star" :
-                                                        advancedImpactMatrix.vorp > 0 ? "Starter" : "Bench"
+                                                            advancedImpactMatrix.vorp > 2 ? "All-Star" :
+                                                                advancedImpactMatrix.vorp > 0 ? "Starter" : "Bench"
                                                     ) : "-"}
                                                 </p>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardFooter>
+                        </Card>
+
+                        {/* LEBRON Impact Score */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>LEBRON Impact Score</CardTitle>
+                                <CardDescription>Luck-adjusted player impact evaluation (-10 to +10 scale)</CardDescription>
+                            </CardHeader>
+                            <CardContent className="relative">
+                                <div style={{ width: "100%", height: 300, position: "relative" }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <RePieChart>
+                                            <defs>
+                                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                    <stop offset="0%" stopColor="hsl(0, 70%, 50%)" />
+                                                    <stop offset="20%" stopColor="hsl(30, 70%, 50%)" />
+                                                    <stop offset="60%" stopColor="hsl(43, 70%, 50%)" />
+                                                    <stop offset="100%" stopColor="hsl(120, 70%, 50%)" />
+                                                </linearGradient>
+
+                                                {/* Gradiente metálico para la aguja */}
+                                                <linearGradient id="needleMetallic" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                    <stop offset="0%" stopColor={resolvedTheme === "dark" ? "#e2e8f0" : "#475569"} />
+                                                    <stop offset="30%" stopColor={resolvedTheme === "dark" ? "#ffffff" : "#1e293b"} />
+                                                    <stop offset="70%" stopColor={resolvedTheme === "dark" ? "#cbd5e1" : "#374151"} />
+                                                    <stop offset="100%" stopColor={resolvedTheme === "dark" ? "#94a3b8" : "#6b7280"} />
+                                                </linearGradient>
+
+                                                {/* Sombra para la aguja */}
+                                                <filter id="needleShadow">
+                                                    <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.3" />
+                                                </filter>
+                                            </defs>
+
+                                            {/* Gauge background with segments */}
+                                            <Pie
+                                                data={[
+                                                    { value: 8, name: "Poor (-10 to -2)", fill: "hsl(0, 70%, 50%)" },
+                                                    { value: 4, name: "Average (-2 to 2)", fill: "hsl(30, 70%, 50%)" },
+                                                    { value: 4, name: "Good (2 to 6)", fill: "hsl(43, 70%, 50%)" },
+                                                    { value: 4, name: "Elite (6 to 10)", fill: "hsl(120, 70%, 50%)" }
+                                                ]}
+                                                dataKey="value"
+                                                cx="50%"
+                                                cy="80%"
+                                                startAngle={180}
+                                                endAngle={0}
+                                                innerRadius={80}
+                                                outerRadius={120}
+                                                stroke={resolvedTheme === "dark" ? "#1e293b" : "#f8fafc"}
+                                                strokeWidth={2}
+                                                isAnimationActive={false}
+                                            />
+
+                                            {/* Tooltip restaurado */}
+                                            <Tooltip content={({ active, payload }) => {
+                                                if (active && lebronImpact) {
+                                                    return (
+                                                        <div className="rounded-lg border bg-card p-3 shadow-md">
+                                                            <p className="font-medium text-sm">LEBRON Score</p>
+                                                            <p className="text-lg font-bold text-primary">
+                                                                {lebronImpact.lebron_score.toFixed(2)}
+                                                            </p>
+                                                            <div className="space-y-1 mt-2 text-xs">
+                                                                <p>Box Component: {lebronImpact.box_component.toFixed(2)}</p>
+                                                                <p>Plus/Minus: {lebronImpact.plus_minus_component.toFixed(2)}</p>
+                                                                <p>Percentile: {lebronImpact.percentile_rank.toFixed(1)}%</p>
+                                                                <p>Luck Adj: {lebronImpact.luck_adjustment.toFixed(3)}</p>
+                                                                <p>Context Adj: {lebronImpact.context_adjustment.toFixed(3)}</p>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                }
+                                                return null;
+                                            }} />
+                                        </RePieChart>
+                                    </ResponsiveContainer>
+
+                                    {lebronImpact && (
+                                        <div style={{
+                                            position: "absolute",
+                                            top: "0",
+                                            left: "0",
+                                            width: "100%",
+                                            height: "100%",
+                                            pointerEvents: "none",
+                                            zIndex: 10
+                                        }}>
+                                            <div style={{
+                                                position: "relative",
+                                                width: "100%",
+                                                height: "100%",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center"
+                                            }}>
+                                                {(() => {
+                                                    // Score normalizado de -10 a +10 -> 0 a 1
+                                                    const scoreNormalized = Math.max(0, Math.min(1, (lebronImpact.lebron_score + 10) / 20));
+                                                    // Ángulo: 180° (izquierda) a 0° (derecha)
+                                                    const targetAngle = 180 - (scoreNormalized * 180);
+                                                    // Ángulo inicial para animación (empieza desde la IZQUIERDA - 180°)
+                                                    const startAngle = needleAnimated ? targetAngle : 180;
+
+                                                    return (
+                                                        <div style={{
+                                                            position: "absolute",
+                                                            bottom: "20%", // Centro del semicírculo
+                                                            left: "50%",
+                                                            transform: "translateX(-50%)",
+                                                            transformOrigin: "center bottom"
+                                                        }}>
+                                                            {/* CUERPO DE LA AGUJA - Más grueso en la base (MUCHO MÁS LARGO) */}
+                                                            <div style={{
+                                                                position: "absolute",
+                                                                bottom: "0px",
+                                                                left: "50%",
+                                                                width: "8px",
+                                                                height: "95px", // Aumentado de 75px a 95px
+                                                                background: `linear-gradient(to top, ${resolvedTheme === "dark" ? "#e2e8f0" : "#374151"}, ${resolvedTheme === "dark" ? "#94a3b8" : "#6b7280"})`,
+                                                                transformOrigin: "bottom center",
+                                                                borderRadius: "4px 4px 1px 1px",
+                                                                transform: `translateX(-50%) rotate(${startAngle}deg)`,
+                                                                zIndex: 1,
+                                                                filter: "url(#needleShadow)",
+                                                                transition: needleAnimated ? "transform 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)" : "none"
+                                                            }} />
+
+                                                            {/* CÍRCULO BASE - Estilo metálico (LIGERAMENTE MÁS GRANDE) */}
+                                                            <div style={{
+                                                                position: "absolute",
+                                                                bottom: "-14px", // Ajustado para el tamaño mayor
+                                                                left: "50%",
+                                                                transform: "translateX(-50%)",
+                                                                width: "28px", // Aumentado de 24px a 28px
+                                                                height: "28px", // Aumentado de 24px a 28px
+                                                                background: `radial-gradient(circle at 30% 30%, ${resolvedTheme === "dark" ? "#ffffff" : "#1e293b"}, ${resolvedTheme === "dark" ? "#94a3b8" : "#6b7280"})`,
+                                                                borderRadius: "50%",
+                                                                zIndex: 4,
+                                                                border: `2px solid ${resolvedTheme === "dark" ? "#64748b" : "#e2e8f0"}`,
+                                                                boxShadow: `0 4px 8px rgba(0, 0, 0, 0.2), inset 0 2px 4px rgba(255, 255, 255, 0.1)`
+                                                            }} />
+
+                                                            {/* CÍRCULO INTERIOR - Efecto de profundidad (LIGERAMENTE MÁS GRANDE) */}
+                                                            <div style={{
+                                                                position: "absolute",
+                                                                bottom: "-10px", // Ajustado para el tamaño mayor
+                                                                left: "50%",
+                                                                transform: "translateX(-50%)",
+                                                                width: "20px", // Aumentado de 16px a 20px
+                                                                height: "20px", // Aumentado de 16px a 20px
+                                                                background: `radial-gradient(circle at 40% 40%, ${resolvedTheme === "dark" ? "#f1f5f9" : "#0f172a"}, ${resolvedTheme === "dark" ? "#64748b" : "#475569"})`,
+                                                                borderRadius: "50%",
+                                                                zIndex: 5,
+                                                                boxShadow: `inset 0 2px 4px rgba(0, 0, 0, 0.3)`
+                                                            }} />
+
+                                                            {/* PUNTO CENTRAL (LIGERAMENTE MÁS GRANDE) */}
+                                                            <div style={{
+                                                                position: "absolute",
+                                                                bottom: "-6px", // Ajustado para el tamaño mayor
+                                                                left: "50%",
+                                                                transform: "translateX(-50%)",
+                                                                width: "12px", // Aumentado de 8px a 12px
+                                                                height: "12px", // Aumentado de 8px a 12px
+                                                                background: resolvedTheme === "dark" ? "#ef4444" : "#dc2626",
+                                                                borderRadius: "50%",
+                                                                zIndex: 6,
+                                                                boxShadow: `0 0 6px ${resolvedTheme === "dark" ? "#ef4444" : "#dc2626"}`
+                                                            }} />
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Indicadores de zona */}
+                                    <div className="absolute top-4 left-4 text-xs">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "hsl(0, 70%, 50%)" }}></div>
+                                            <span className="text-muted-foreground">Poor</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "hsl(30, 70%, 50%)" }}></div>
+                                            <span className="text-muted-foreground">Average</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "hsl(43, 70%, 50%)" }}></div>
+                                            <span className="text-muted-foreground">Good</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "hsl(120, 70%, 50%)" }}></div>
+                                            <span className="text-muted-foreground">Elite</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="border-t pt-4">
+                                <div className="w-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="font-semibold text-sm">
+                                            Impact Analysis
+                                        </h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            Advanced metric evaluation
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <Activity className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Box Component</p>
+                                                <p className="font-bold">
+                                                    {lebronImpact ? lebronImpact.box_component.toFixed(1) : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Plus/Minus</p>
+                                                <p className="font-bold">
+                                                    {lebronImpact ? lebronImpact.plus_minus_component.toFixed(1) : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Target className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Percentile</p>
+                                                <p className="font-bold">
+                                                    {lebronImpact ? `${lebronImpact.percentile_rank.toFixed(0)}%` : "-"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 text-xs text-muted-foreground">
+                                        <p>
+                                            <strong>LEBRON</strong> (Luck-adjusted player Estimate using Box prior Regularized ON-off)
+                                            combines box score statistics with team impact metrics, adjusting for luck, context, and usage rate.
+                                            Uses Bayesian regularization to weight box score vs plus/minus based on sample size.
+                                        </p>
+                                        <div className="flex justify-between mt-2 text-xs">
+                                            <span>Games: {lebronImpact ? lebronImpact.games_played : "-"}</span>
+                                            <span>Minutes/Game: {lebronImpact ? lebronImpact.minutes_per_game.toFixed(1) : "-"}</span>
+                                            <span>Luck Adj: {lebronImpact ? lebronImpact.luck_adjustment.toFixed(3) : "-"}</span>
+                                        </div>
+                                        <div className="flex justify-between mt-1 text-xs">
+                                            <span>Context Adj: {lebronImpact ? lebronImpact.context_adjustment.toFixed(3) : "-"}</span>
+                                            <span>Usage Adj: {lebronImpact ? lebronImpact.usage_adjustment.toFixed(3) : "-"}</span>
+                                            <span>Percentile: {lebronImpact ? `${lebronImpact.percentile_rank.toFixed(0)}%` : "-"}</span>
                                         </div>
                                     </div>
                                 </div>
