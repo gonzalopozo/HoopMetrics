@@ -1405,7 +1405,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                                 <XAxis
                                                     type="number"
                                                     domain={[0, 100]}
-                                                    tickFormatter={v => `${v}%`}
+                                                    tickFormatter={v => `${Math.round(v)}%`}
                                                     axisLine={false}
                                                     tickLine={false}
                                                     tick={{ fontSize: 12, fill: "var(--foreground)" }}
