@@ -38,7 +38,9 @@ import {
     PolarGrid,
     PolarRadiusAxis,
     Tooltip,
-    Cell
+    Cell,
+    ComposedChart,
+    Legend
 } from "recharts"
 import { BarChart as ReBarChart, Bar, CartesianGrid, LabelList, Tooltip as BarTooltip, ReferenceLine } from "recharts";
 import { AreaChart as ReAreaChart, Area, Tooltip as AreaTooltip } from "recharts";
@@ -47,7 +49,6 @@ import {
     ScatterChart,
     Scatter,
 } from "recharts";
-
 
 // Añadir este import para el tooltip personalizado
 import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
@@ -188,7 +189,9 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         minutes_per_game: number;
     } | null>(null);
 
-    // Añadir este estado junto con los otros estados
+    // Añadir este estado junto con los otros estados de Ultimate
+
+    // Añadir este estado junto con los otros estados de Ultimate
     const [pipmpImpact, setPipmpImpact] = useState<{
         total_pipm: number;
         offensive_pimp: number;
@@ -218,6 +221,19 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
 
     // Añadir este estado para controlar la animación
     const [needleAnimated, setNeedleAnimated] = useState(false);
+
+    // Añadir este estado junto con los otros estados de Ultimate
+    const [raptorWar, setRaptorWar] = useState<{
+        total_war: number;
+        offensive_war: number;
+        defensive_war: number;
+        market_value_millions: number;
+        positional_versatility: number;
+        age_adjustment: number;
+        injury_risk_factor: number;
+        games_played: number;
+        win_shares_comparison: number;
+    } | null>(null);
 
     const isPremium = userRole === "premium" || userRole === "ultimate"
     const isUltimate = userRole === "ultimate"
@@ -446,6 +462,30 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             return () => clearTimeout(timer);
         }
     }, [isUltimate, lebronImpact, needleAnimated]);
+
+    // Fetch RAPTOR WAR data
+    useEffect(() => {
+        async function fetchRaptorWar() {
+            try {
+                const res = await axios.get<{
+                    total_war: number;
+                    offensive_war: number;
+                    defensive_war: number;
+                    market_value_millions: number;
+                    positional_versatility: number;
+                    age_adjustment: number;
+                    injury_risk_factor: number;
+                    games_played: number;
+                    win_shares_comparison: number;
+                }>(`${process.env.NEXT_PUBLIC_API_URL}/players/${player.id}/advanced/raptor-war`);
+                setRaptorWar(res.data);
+            } catch (e) {
+                console.error("Error fetching RAPTOR WAR data:", e);
+                setRaptorWar(null);
+            }
+        }
+        if (isUltimate) fetchRaptorWar();
+    }, [player.id, isUltimate]);
 
     const areaChartConfig: ChartConfig = {
         minutes: {
@@ -1743,147 +1783,29 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                         <div className="flex items-center gap-2">
                                             <BarChart3 className="h-4 w-4 text-primary" />
                                             <div>
-                                                <p className="text-xs text-muted-foreground">Usage Rate</p>
+                                                <p className="text-xs text-muted-foreground">Lowest Stat</p>
                                                 <p className="font-bold">
                                                     {barCompareData.length
                                                         ? (() => {
-                                                            const min = barCompareData.find(d => d.name === 'MIN')?.value || 0;
+                                                            const fgm = barCompareData.find(d => d.name === 'FGM')?.value || 0;
                                                             const fga = barCompareData.find(d => d.name === 'FGA')?.value || 0;
+                                                            const tpm = barCompareData.find(d => d.name === '3PM')?.value || 0;
                                                             const tpa = barCompareData.find(d => d.name === '3PA')?.value || 0;
+                                                            const ftm = barCompareData.find(d => d.name === 'FTM')?.value || 0;
                                                             const fta = barCompareData.find(d => d.name === 'FTA')?.value || 0;
 
-                                                            if (!min) return "-";
-                                                            // Shots attempted per minute
-                                                            const shotsPerMin = ((fga + tpa + fta) / min).toFixed(1);
-                                                            return `${shotsPerMin} per min`;
-                                                        })()
-                                                        : "-"}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardFooter>
-                        </Card>
-                        <Card>
-                            <CardHeader className="items-center pb-0">
-                                <CardTitle>Minutes Progression</CardTitle>
-                                <CardDescription>
-                                    Evolution of minutes played per game throughout the season
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex-1 pb-0">
-                                <ChartContainer
-                                    config={areaChartConfig}
-                                    className="mx-auto aspect-video h-full w-full flex items-center justify-center"
-                                >
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <ReAreaChart
-                                            data={minutesProgression}
-                                            margin={{ top: 16, right: 16, left: 16, bottom: 16 }}
-                                        >
-                                            {/* Reemplaza CartesianGrid con ReferenceLines individuales cada 12 minutos */}
-                                            {yTicksMinutes.map(tick => (
-                                                <ReferenceLine
-                                                    key={tick}
-                                                    y={tick}
-                                                    stroke={resolvedTheme === 'dark' ? "rgba(255, 76, 76, 0.18)" : "rgba(66, 115, 255, 0.18)"}
-                                                    strokeDasharray="3 3"
-                                                    ifOverflow="extendDomain"
-                                                />
-                                            ))}
-                                            <XAxis
-                                                dataKey="date"
-                                                tick={false}
-                                                axisLine={false}
-                                                tickLine={false}
-                                                width={0}
-                                            />
-                                            <YAxis
-                                                dataKey="minutes"
-                                                tick={false}
-                                                axisLine={false}
-                                                tickLine={false}
-                                                ticks={yTicksMinutes}
-                                                width={0}
-                                                domain={[yMinMinutes, yMaxMinutes]}
-                                            />
-                                            <AreaTooltip content={<MinutesAreaTooltip />} />
-                                            <Area
-                                                dataKey="minutes"
-                                                type="monotone"
-                                                fill={resolvedTheme === "dark"
-                                                    ? "rgba(255, 76, 76, 0.18)"
-                                                    : "rgba(66, 115, 255, 0.18)"
-                                                }
-                                                fillOpacity={1}
-                                                stroke={resolvedTheme === "dark"
-                                                    ? "hsl(0, 80%, 60%)"
-                                                    : "hsl(214, 80%, 55%)"
-                                                }
-                                                strokeWidth={1.5}
-                                                dot={{
-                                                    fill: resolvedTheme === 'dark' ? "hsl(0 80% 45%)" : "hsl(214 80% 45%)",
-                                                    r: 3
-                                                }}
-                                                activeDot={{
-                                                    r: 5,
-                                                    fill: resolvedTheme === 'dark' ? "hsl(0 80% 60%)" : "hsl(214 80% 60%)",
-                                                    stroke: "var(--background)",
-                                                    strokeWidth: 1.5
-                                                }}
-                                            />
-                                        </ReAreaChart>
-                                    </ResponsiveContainer>
-                                </ChartContainer>
-                            </CardContent>
-                            <CardFooter className="border-t pt-4">
-                                <div className="w-full">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h3 className="font-semibold text-sm">
-                                            {`${player.name || "Player"}'s Minutes Trend`}
-                                        </h3>
-                                        <span className="text-xs text-muted-foreground">
-                                            {minutesProgression.length} games analyzed
-                                        </span>
-                                    </div>
-                                    <div className="grid grid-cols-3 gap-4">
-                                        <div className="flex items-center gap-2">
-                                            <TrendingUp className="h-4 w-4 text-primary" />
-                                            <div>
-                                                <p className="text-xs text-muted-foreground">Avg. Minutes</p>
-                                                <p className="font-bold">
-                                                    {minutesProgression.length
-                                                        ? (
-                                                            minutesProgression.reduce((sum, d) => sum + d.minutes, 0) /
-                                                            minutesProgression.length
-                                                        ).toFixed(1)
-                                                        : "-"}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Trophy className="h-4 w-4 text-primary" />
-                                            <div>
-                                                <p className="text-xs text-muted-foreground">Season High</p>
-                                                <p className="font-bold">
-                                                    {minutesProgression.length
-                                                        ? Math.max(...minutesProgression.map(d => d.minutes)).toFixed(1)
-                                                        : "-"}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Target className="h-4 w-4 text-primary" />
-                                            <div>
-                                                <p className="text-xs text-muted-foreground">Consistency</p>
-                                                <p className="font-bold">
-                                                    {minutesProgression.length
-                                                        ? (() => {
-                                                            const avg = minutesProgression.reduce((sum, d) => sum + d.minutes, 0) / minutesProgression.length;
-                                                            const variance = minutesProgression.reduce((sum, d) => sum + Math.pow(d.minutes - avg, 2), 0) / minutesProgression.length;
-                                                            const stdDev = Math.sqrt(variance);
-                                                            return Math.max(0, 100 - (stdDev / avg * 100)).toFixed(0) + "%";
+                                                            const stats = [
+                                                                { label: "FGM", value: fgm },
+                                                                { label: "FGA", value: fga },
+                                                                { label: "3PM", value: tpm },
+                                                                { label: "3PA", value: tpa },
+                                                                { label: "FTM", value: ftm },
+                                                                { label: "FTA", value: fta },
+                                                            ].filter(s => s.value > 0);
+
+                                                            if (!stats.length) return "-";
+                                                            const min = stats.reduce((a, b) => (a.value < b.value ? a : b));
+                                                            return `${min.label} (${min.value})`;
                                                         })()
                                                         : "-"}
                                                 </p>
@@ -2298,7 +2220,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             />
 
                                             {/* Tooltip restaurado */}
-                                            <Tooltip content={({ active, payload }) => {
+                                            <Tooltip content={({ active, payload, label }) => {
                                                 if (active && lebronImpact) {
                                                     return (
                                                         <div className="rounded-lg border bg-card p-3 shadow-md">
@@ -2500,6 +2422,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                             </CardFooter>
                         </Card>
 
+                        {/* PIPM Impact Analysis */}
                         <Card>
                             <CardHeader>
                                 <CardTitle>
@@ -2648,7 +2571,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                     </ResponsiveContainer>
                                 </div>
                             </CardContent>
-                            {/* Añadir leyenda como en el primer gráfico */}
+                             {/* Añadir leyenda como en el primer gráfico */}
                             <div className="px-6 pb-4">
                                 <div className="flex flex-wrap justify-center gap-4 text-xs">
                                     <div className="flex items-center gap-2">
@@ -2714,6 +2637,259 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 <p className="text-xs text-muted-foreground">Defensive</p>
                                                 <p className="font-bold">{pipmpImpact?.defensive_pimp?.toFixed(2) || "N/A"}</p>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardFooter>
+                        </Card>
+
+                        {/* RAPTOR WAR Analysis */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    <BarChart3 className="h-5 w-5 text-primary inline mr-2" />
+                                    RAPTOR WAR Analysis
+                                </CardTitle>
+                                <CardDescription>
+                                    Wins Above Replacement and market value assessment
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div style={{ width: "100%", height: 400 }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        {raptorWar ? (
+                                            <ComposedChart
+                                                data={[
+                                                    {
+                                                        category: "Offensive",
+                                                        war: raptorWar.offensive_war,
+                                                        marketValue: raptorWar.market_value_millions * 0.4,
+                                                        adjustment: raptorWar.age_adjustment
+                                                    },
+                                                    {
+                                                        category: "Defensive", 
+                                                        war: raptorWar.defensive_war,
+                                                        marketValue: raptorWar.market_value_millions * 0.3,
+                                                        adjustment: raptorWar.positional_versatility
+                                                    },
+                                                    {
+                                                        category: "Total",
+                                                        war: raptorWar.total_war,
+                                                        marketValue: raptorWar.market_value_millions,
+                                                        adjustment: raptorWar.injury_risk_factor
+                                                    }
+                                                ]}
+                                                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                                            >
+                                                <CartesianGrid
+                                                    strokeDasharray="3 3"
+                                                    stroke={resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"}
+                                                    horizontal={true}
+                                                    vertical={false}
+                                                />
+                                                <XAxis
+                                                    dataKey="category"
+                                                    tick={{
+                                                        fontSize: 12,
+                                                        fill: resolvedTheme === "dark" ? "#e2e8f0" : "#475569"
+                                                    }}
+                                                    axisLine={{
+                                                        stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                                                        strokeWidth: 1
+                                                    }}
+                                                    tickLine={{
+                                                        stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                                                        strokeWidth: 1
+                                                    }}
+                                                />
+                                                <YAxis
+                                                    yAxisId="war"
+                                                    orientation="left"
+                                                    domain={[-2, 8]}
+                                                    tick={{
+                                                        fontSize: 12,
+                                                        fill: resolvedTheme === "dark" ? "#e2e8f0" : "#475569"
+                                                    }}
+                                                    axisLine={{
+                                                        stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                                                        strokeWidth: 1
+                                                    }}
+                                                    tickLine={{
+                                                        stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                                                        strokeWidth: 1
+                                                    }}
+                                                    label={{
+                                                        value: 'WAR',
+                                                        angle: -90,
+                                                        position: 'insideLeft',
+                                                        style: {
+                                                            textAnchor: 'middle',
+                                                            fill: resolvedTheme === "dark" ? "#94a3b8" : "#64748b"
+                                                        }
+                                                    }}
+                                                />
+                                                <YAxis
+                                                    yAxisId="market"
+                                                    orientation="right"
+                                                    domain={[0, 50]}
+                                                    tick={{
+                                                        fontSize: 12,
+                                                        fill: resolvedTheme === "dark" ? "#e2e8f0" : "#475569"
+                                                    }}
+                                                    axisLine={{
+                                                        stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                                                        strokeWidth: 1
+                                                    }}
+                                                    tickLine={{
+                                                        stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                                                        strokeWidth: 1
+                                                    }}
+                                                    label={{
+                                                        value: 'Market Value ($M)',
+                                                        angle: 90,
+                                                        position: 'insideRight',
+                                                        style: {
+                                                            textAnchor: 'middle',
+                                                            fill: resolvedTheme === "dark" ? "#94a3b8" : "#64748b"
+                                                        }
+                                                    }}
+                                                />
+                                                <Tooltip
+                                                    content={({ active, payload, label }) => {
+                                                        if (active && payload && payload.length) {
+                                                            return (
+                                                                <div className="rounded-lg border bg-card p-3 shadow-md">
+                                                                    <p className="font-medium text-sm mb-2">{label}</p>
+                                                                    <div className="space-y-1">
+                                                                        <p className="text-xs">
+                                                                            <span className="text-muted-foreground">WAR:</span>
+                                                                            <span className="font-bold ml-2">{typeof payload[0]?.value === "number" ? payload[0].value.toFixed(2) : (payload[0]?.value ?? "N/A")}</span>
+                                                                        </p>
+                                                                        <p className="text-xs">
+                                                                            <span className="text-muted-foreground">Market Value:</span>
+                                                                            <span className="font-bold ml-2">${typeof payload[1]?.value === "number" ? payload[1].value.toFixed(1) : "N/A"}M</span>
+                                                                        </p>
+                                                                        <p className="text-xs">
+                                                                            <span className="text-muted-foreground">Factor:</span>
+                                                                            <span className="font-bold ml-2">{typeof payload[2]?.value === "number" ? payload[2].value.toFixed(3) : "N/A"}</span>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        }
+                                                        return null;
+                                                    }}
+                                                />
+                                                <Legend 
+                                                    content={({ payload }) => (
+                                                        <div className="flex justify-center gap-6 mt-4">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(214, 80%, 55%)" }}></div>
+                                                                <span className="text-xs">WAR</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-3 h-3" style={{ backgroundColor: resolvedTheme === "dark" ? "hsl(120, 70%, 60%)" : "hsl(120, 70%, 50%)" }}></div>
+                                                                <span className="text-xs">Market Value</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-3 h-3" style={{ backgroundColor: resolvedTheme === "dark" ? "hsl(43, 70%, 60%)" : "hsl(43, 70%, 50%)" }}></div>
+                                                                <span className="text-xs">Adjustment Factor</span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                />
+
+                                                {/* Línea para WAR */}
+                                                <Line
+                                                    yAxisId="war"
+                                                    type="monotone"
+                                                    dataKey="war"
+                                                    stroke={resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(214, 80%, 55%)"}
+                                                    strokeWidth={3}
+                                                    dot={{
+                                                        fill: resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(214, 80%, 55%)",
+                                                        strokeWidth: 2,
+                                                        r: 6
+                                                    }}
+                                                    activeDot={{
+                                                        r: 8,
+                                                        fill: resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(214, 80%, 55%)"
+                                                    }}
+                                                />
+
+                                                {/* Barras para Market Value */}
+                                                <Bar
+                                                    yAxisId="market"
+                                                    dataKey="marketValue"
+                                                    fill={resolvedTheme === "dark" ? "hsl(120, 70%, 60%)" : "hsl(120, 70%, 50%)"}
+                                                    opacity={0.7}
+                                                    radius={[4, 4, 0, 0]}
+                                                />
+
+                                                {/* Línea para Adjustment Factor */}
+                                                <Line
+                                                    yAxisId="market"
+                                                    type="monotone"
+                                                    dataKey="adjustment"
+                                                    stroke={resolvedTheme === "dark" ? "hsl(43, 70%, 60%)" : "hsl(43, 70%, 50%)"}
+                                                    strokeWidth={2}
+                                                    strokeDasharray="5 5"
+                                                    dot={{
+                                                        fill: resolvedTheme === "dark" ? "hsl(43, 70%, 60%)" : "hsl(43, 70%, 50%)",
+                                                        strokeWidth: 2,
+                                                        r: 4
+                                                    }}
+                                                />
+                                            </ComposedChart>
+                                        ) : (
+                                            <div className="flex items-center justify-center h-full">
+                                                <p className="text-muted-foreground">Loading RAPTOR WAR data...</p>
+                                            </div>
+                                        )}
+                                    </ResponsiveContainer>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="border-t pt-4">
+                                <div className="w-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="font-semibold text-sm">RAPTOR WAR Breakdown</h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            {raptorWar?.games_played} games • {raptorWar?.win_shares_comparison?.toFixed(1)} WS equiv.
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <Activity className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Total WAR</p>
+                                                <p className="font-bold">{raptorWar?.total_war?.toFixed(2) || "N/A"}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Market Value</p>
+                                                <p className="font-bold">${raptorWar?.market_value_millions?.toFixed(1) || "N/A"}M</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Target className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Versatility</p>
+                                                <p className="font-bold">{raptorWar?.positional_versatility?.toFixed(3) || "N/A"}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 text-xs text-muted-foreground">
+                                        <p>
+                                            <strong>RAPTOR WAR</strong> (Robust Algorithm using Player Tracking and On/off Ratings) 
+                                            combines box score statistics with estimated on-off impact, adjusted for age, position, 
+                                            and injury risk. Market value represents estimated worth based on projected wins contribution.
+                                        </p>
+                                        <div className="flex justify-between mt-2 text-xs">
+                                            <span>Age Adj: {raptorWar?.age_adjustment?.toFixed(3) || "-"}</span>
+                                            <span>Injury Risk: {raptorWar?.injury_risk_factor?.toFixed(3) || "-"}</span>
+                                            <span>Off WAR: {raptorWar?.offensive_war?.toFixed(2) || "-"} | Def WAR: {raptorWar?.defensive_war?.toFixed(2) || "-"}</span>
                                         </div>
                                     </div>
                                 </div>

@@ -1231,7 +1231,7 @@ async def player_pimp_position_averages(id: int, session: AsyncSession = Depends
 @router.get("/{id}/advanced/raptor-war", response_model=RaptorWAR)
 async def player_raptor_war(id: int, session: AsyncSession = Depends(get_db)):
     """
-    RAPTOR-style Wins Above Replacement con market value y ajustes posicionales/edad
+    RAPTOR-style Wins Above Replacement corregido con metodología más precisa
     """
     try:
         # Query combinando player data y stats
@@ -1251,8 +1251,10 @@ async def player_raptor_war(id: int, session: AsyncSession = Depends(get_db)):
             func.avg(MatchStatistic.three_points_attempted).label("avg_3pa"),
             func.avg(MatchStatistic.free_throws_made).label("avg_ftm"),
             func.avg(MatchStatistic.free_throws_attempted).label("avg_fta"),
-            func.avg(MatchStatistic.plusminus).label("avg_plusminus"),
-            func.count(MatchStatistic.id).label("games_played")
+            func.avg(MatchStatistic.off_rebounds).label("avg_oreb"),
+            func.avg(MatchStatistic.def_rebounds).label("avg_dreb"),
+            func.count(MatchStatistic.id).label("games_played"),
+            func.sum(MatchStatistic.minutes_played).label("total_minutes")
         ).join(
             Player, MatchStatistic.player_id == Player.id
         ).where(
@@ -1290,8 +1292,10 @@ async def player_raptor_war(id: int, session: AsyncSession = Depends(get_db)):
         avg_3pa = float(row.avg_3pa or 0)
         avg_ftm = float(row.avg_ftm or 0)
         avg_fta = float(row.avg_fta or 0)
-        avg_plusminus = float(row.avg_plusminus or 0)
-        games_played = int(row.games_played)
+        avg_oreb = float(row.avg_oreb or 0) if row.avg_oreb else avg_rebounds * 0.25
+        avg_dreb = float(row.avg_dreb or 0) if row.avg_dreb else avg_rebounds * 0.75
+        games_played_real = int(row.games_played)
+        total_minutes = float(row.total_minutes or 0)
         position = row.position
         
         if avg_minutes <= 0:
@@ -1299,79 +1303,165 @@ async def player_raptor_war(id: int, session: AsyncSession = Depends(get_db)):
                 total_war=0.0, offensive_war=0.0, defensive_war=0.0,
                 market_value_millions=0.0, positional_versatility=0.0,
                 age_adjustment=1.0, injury_risk_factor=1.0,
-                games_played=games_played, win_shares_comparison=0.0
+                games_played=games_played_real, win_shares_comparison=0.0
             )
         
-        # Replacement level por posición
+        # Obtener promedios de liga para contexto
+        league_stmt = select(
+            func.avg(MatchStatistic.points).label("league_ppg"),
+            func.avg(MatchStatistic.rebounds).label("league_rpg"),
+            func.avg(MatchStatistic.assists).label("league_apg"),
+            func.avg(MatchStatistic.steals).label("league_spg"),
+            func.avg(MatchStatistic.blocks).label("league_bpg"),
+            func.avg(MatchStatistic.turnovers).label("league_tpg")
+        )
+        league_result = await session.execute(league_stmt)
+        league_row = league_result.first()
+        
+        league_ppg = float(league_row.league_ppg or 22.0)
+        league_rpg = float(league_row.league_rpg or 10.2)
+        league_apg = float(league_row.league_apg or 5.5)
+        league_spg = float(league_row.league_spg or 1.3)
+        league_bpg = float(league_row.league_bpg or 1.0)
+        league_tpg = float(league_row.league_tpg or 3.2)
+        
+        # USAR 82 PARA CÁLCULOS
+        games_for_calc = 82
+        
+        # Métricas avanzadas corregidas
+        true_shooting = avg_points / (2 * (avg_fga + 0.44 * avg_fta)) if (avg_fga + 0.44 * avg_fta) > 0 else 0.5
+        effective_fg = (avg_fgm + 0.5 * avg_3pm) / avg_fga if avg_fga > 0 else 0.5
+        usage_rate = 100 * ((avg_fga + 0.44 * avg_fta + avg_turnovers) * 40) / (avg_minutes * 200) if avg_minutes > 0 else 20
+        
+        # RAPTOR Box Score Component (coeficientes más realistas)
+        offensive_box = (
+            # Scoring efficiency
+            0.18 * (avg_points - league_ppg) * (true_shooting / 0.56) +
+            # Playmaking
+            0.35 * (avg_assists - league_apg) +
+            # Offensive rebounding
+            0.4 * (avg_oreb - league_rpg * 0.25) +
+            # Three-point shooting
+            0.08 * avg_3pm +
+            # Turnover penalty
+            -0.45 * (avg_turnovers - league_tpg) +
+            # Free throw rate
+            0.12 * (avg_fta / avg_fga if avg_fga > 0 else 0)
+        )
+        
+        defensive_box = (
+            # Defensive rebounding
+            0.22 * (avg_dreb - league_rpg * 0.75) +
+            # Steals
+            0.7 * (avg_steals - league_spg) +
+            # Blocks
+            0.8 * (avg_blocks - league_bpg) +
+            # Usage penalty for defense
+            -0.008 * max(0, usage_rate - 25)
+        )
+        
+        # Replacement level por posición (más preciso)
         replacement_levels = {
-            'PG': -1.5, 'SG': -1.8, 'SF': -1.6, 'PF': -1.7, 'C': -1.4,
-            'G': -1.6, 'F': -1.6, 'G-F': -1.5, 'F-C': -1.5, 'C-F': -1.5, 'F-G': -1.7
+            'PG': -2.0, 'SG': -2.2, 'SF': -2.1, 'PF': -2.3, 'C': -1.9,
+            'G': -2.1, 'F': -2.2, 'G-F': -2.0, 'F-C': -2.1, 'C-F': -2.2, 'F-G': -2.1
         }
-        replacement_level = replacement_levels.get(position, -1.6)
+        replacement_level = replacement_levels.get(position, -2.1)
         
-        # Box Score component (similar a BPM)
-        true_shooting = avg_points / (2 * (avg_fga + 0.44 * avg_fta)) if (avg_fga + 0.44 * avg_fta) > 0 else 0
-        
-        box_score_rating = (
-            (avg_points - 15) * 0.35 +
-            avg_rebounds * 0.7 +
-            avg_assists * 1.3 +
-            avg_steals * 1.8 +
-            avg_blocks * 1.4 -
-            avg_turnovers * 1.2 +
-            (true_shooting - 0.53) * 18
-        ) / avg_minutes * 48
-        
-        # Componente ofensivo/defensivo
-        offensive_rating = (
-            (avg_points - 12) * 0.5 +
-            avg_assists * 1.5 +
-            (true_shooting - 0.53) * 25 -
-            avg_turnovers * 1.5
-        ) / avg_minutes * 48
-        
-        defensive_rating = (
-            avg_rebounds * 0.6 +
-            avg_steals * 2.2 +
-            avg_blocks * 1.8 -
-            (avg_fga / avg_minutes * 48 - 15) * 0.1  # Penalty for high shot volume affecting defense
-        ) / avg_minutes * 48
-        
-        # Ajuste de edad (peak around 27-28)
-        if age <= 22:
-            age_adjustment = 0.85 + (age - 19) * 0.05
-        elif age <= 28:
-            age_adjustment = 1.0
-        elif age <= 32:
-            age_adjustment = 1.0 - (age - 28) * 0.08
+        # Ajuste de edad (curva más realista)
+        if age <= 21:
+            age_adjustment = 0.75 + (age - 19) * 0.08
+        elif age <= 27:
+            age_adjustment = 0.91 + (27 - age) * 0.015
+        elif age <= 30:
+            age_adjustment = 1.0 - (age - 27) * 0.06
         else:
-            age_adjustment = 0.68 - (age - 32) * 0.05
+            age_adjustment = 0.82 - (age - 30) * 0.04
         
-        age_adjustment = max(0.3, min(1.2, age_adjustment))
+        age_adjustment = max(0.3, min(1.1, age_adjustment))
         
-        # Factor de riesgo de lesiones (basado en minutos y edad)
-        minutes_load = avg_minutes * games_played
-        injury_risk_factor = 1.0 + (age - 25) * 0.02 + max(0, minutes_load - 2500) / 1000 * 0.1
-        injury_risk_factor = max(1.0, min(2.0, injury_risk_factor))
+        # Aplicar ajuste de edad a los componentes
+        offensive_box_adjusted = offensive_box * age_adjustment
+        defensive_box_adjusted = defensive_box * age_adjustment
         
-        # Versatilidad posicional (basada en estadísticas balanceadas)
-        stat_balance = 1 - (abs(avg_points - 15) + abs(avg_rebounds - 7) + abs(avg_assists - 5)) / 50
-        positional_versatility = max(0, min(1, stat_balance))
+        # WAR Calculation CORREGIDO
+        # Rating total por 100 posesiones
+        total_rating = offensive_box_adjusted + defensive_box_adjusted
         
-        # WAR calculation
-        total_rating = (box_score_rating + avg_plusminus/avg_minutes*48) / 2 * age_adjustment
-        offensive_war = max(0, (offensive_rating - replacement_level * 0.6) * (avg_minutes * games_played) / 2400)
-        defensive_war = max(0, (defensive_rating - replacement_level * 0.4) * (avg_minutes * games_played) / 2400)
-        total_war = offensive_war + defensive_war
+        # Convertir a WAR usando minutos totales
+        # Fórmula: (Rating - Replacement) * (MinutosTotales / MinutosPorJuego) / PartidosEnTemporada
+        minutes_per_game = 48  # Minutos por partido
+        team_possessions_per_game = 100  # Posesiones aproximadas
         
-        # Market value estimation (very rough)
-        base_value = max(0, total_war * 8)  # $8M per WAR
-        market_value_millions = base_value / injury_risk_factor * (1 + positional_versatility * 0.2)
-        market_value_millions = max(0.5, min(50, market_value_millions))
+        # WAR = (Player Rating - Replacement) * (Player Minutes / Total Team Minutes) * Team Games * (1 win per 10 points of rating)
+        player_minute_share = (avg_minutes * games_for_calc) / (minutes_per_game * games_for_calc)
         
-        # Win Shares comparison (convert our WAR to WS scale)
-        win_shares_comparison = total_war * 1.2  # Rough conversion
+        total_war = (total_rating - replacement_level) * player_minute_share * games_for_calc / 100
         
+        # Separar en componentes ofensivo/defensivo
+        offensive_war = (offensive_box_adjusted - replacement_level * 0.55) * player_minute_share * games_for_calc / 100
+        defensive_war = (defensive_box_adjusted - replacement_level * 0.45) * player_minute_share * games_for_calc / 100
+        
+        # WAR puede ser negativo (jugadores por debajo del replacement level)
+        total_war = max(-5, min(15, total_war))
+        offensive_war = max(-3, min(10, offensive_war))
+        defensive_war = max(-3, min(8, defensive_war))
+        
+        # Factor de riesgo de lesiones más sofisticado
+        load_factor = (avg_minutes * games_played_real) / (35 * 82)  # Compared to heavy starter
+        age_injury_risk = 1.0 + max(0, age - 30) * 0.05
+        injury_risk_factor = 1.0 + load_factor * 0.3 + (age_injury_risk - 1.0)
+        injury_risk_factor = max(1.0, min(2.5, injury_risk_factor))
+        
+        # Versatilidad posicional mejorada
+        # Basada en balance de estadísticas y true shooting
+        balance_score = 1 - abs(avg_points/league_ppg - 1) * 0.3 - abs(avg_rebounds/league_rpg - 1) * 0.2 - abs(avg_assists/league_apg - 1) * 0.3
+        shooting_versatility = min(1, true_shooting / 0.5)  # Reward good shooting
+        positional_versatility = max(0, min(1, (balance_score + shooting_versatility) / 2))
+        
+        # Market value más realista
+        # Base en WAR, ajustado por edad, injury risk y posición
+        position_multipliers = {
+            'PG': 1.15, 'SG': 1.05, 'SF': 1.1, 'PF': 1.0, 'C': 0.95,
+            'G': 1.1, 'F': 1.05, 'G-F': 1.1, 'F-C': 0.95, 'C-F': 0.95, 'F-G': 1.05
+        }
+        position_multiplier = position_multipliers.get(position, 1.0)
+
+        # Market value formula CORREGIDA - valores más realistas para NBA actual
+        # WAR de 0+ = jugador útil, WAR de 2+ = starter sólido, WAR de 5+ = All-Star
+        if total_war <= 0:
+            base_value = max(0.5, total_war * 8 + 15)  # Jugadores replacement: $7-15M
+        elif total_war <= 2:
+            base_value = 15 + (total_war * 12)  # Jugadores útiles: $15-39M
+        elif total_war <= 5:
+            base_value = 39 + ((total_war - 2) * 15)  # Starters sólidos: $39-84M
+        else:
+            base_value = 84 + ((total_war - 5) * 20)  # Superstars: $84M+
+
+        # Ajustes por edad más agresivos
+        if age <= 25:
+            age_value_adjustment = age_adjustment * 1.4  # Premium por juventud
+        elif age <= 28:
+            age_value_adjustment = age_adjustment * 1.2  # Edad ideal
+        elif age <= 31:
+            age_value_adjustment = age_adjustment * 1.0  # Edad madura
+        else:
+            age_value_adjustment = age_adjustment * 0.7  # Declive por edad
+
+        # Bonus por versatilidad más significativo
+        versatility_bonus = 1 + (positional_versatility * 0.25)  # Hasta 25% bonus
+
+        # Penalización por injury risk más suave
+        injury_penalty = max(0.7, 1 / (injury_risk_factor ** 0.5))  # Penalización más suave
+
+        # Cálculo final
+        market_value_millions = (base_value * position_multiplier * age_value_adjustment * versatility_bonus * injury_penalty)
+
+        # Límites más realistas para contratos NBA actuales
+        market_value_millions = max(1.0, min(60, market_value_millions))  # $1M - $60M rango
+
+        # Win Shares comparison más preciso
+        win_shares_comparison = total_war * 1.1  # RAPTOR WAR más alineado con WS
+
         return RaptorWAR(
             total_war=round(total_war, 2),
             offensive_war=round(offensive_war, 2),
@@ -1380,10 +1470,10 @@ async def player_raptor_war(id: int, session: AsyncSession = Depends(get_db)):
             positional_versatility=round(positional_versatility, 3),
             age_adjustment=round(age_adjustment, 3),
             injury_risk_factor=round(injury_risk_factor, 3),
-            games_played=games_played,
+            games_played=games_played_real,
             win_shares_comparison=round(win_shares_comparison, 2)
         )
-        
+
     except Exception as e:
         print(f"Error in player_raptor_war: {str(e)}")
         raise
