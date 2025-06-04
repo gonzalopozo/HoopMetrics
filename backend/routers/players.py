@@ -1651,8 +1651,7 @@ async def player_pace_impact_analysis(id: int, session: AsyncSession = Depends(g
 @router.get("/{id}/advanced/fatigue-performance-curve", response_model=FatiguePerformanceCurve)
 async def player_fatigue_performance_curve(id: int, session: AsyncSession = Depends(get_db)):
     """
-    Fatigue Resistance Index - Analiza cómo el rendimiento del jugador 
-    se ve afectado por la fatiga y carga de minutos
+    Fatigue Resistance Index - CORREGIDO para mayor precisión
     """
     try:
         # Query con datos ordenados por fecha para análisis temporal
@@ -1666,10 +1665,6 @@ async def player_fatigue_performance_curve(id: int, session: AsyncSession = Depe
             MatchStatistic.minutes_played,
             MatchStatistic.field_goals_made,
             MatchStatistic.field_goals_attempted,
-            MatchStatistic.three_points_made,
-            MatchStatistic.three_points_attempted,
-            MatchStatistic.free_throws_made,
-            MatchStatistic.free_throws_attempted,
             MatchStatistic.plusminus,
             Match.date
         ).join(
@@ -1702,81 +1697,94 @@ async def player_fatigue_performance_curve(id: int, session: AsyncSession = Depe
             fga = float(game.field_goals_attempted or 0)
             pm = float(game.plusminus or 0)
             
-            # Calcular game score como métrica de rendimiento
+            # MÉTRICA DE RENDIMIENTO MEJORADA
+            # Usar Game Score estándar NBA
             game_score = points + (0.4 * fgm) - (0.7 * fga) + (0.7 * rebounds) + (0.7 * assists) + steals + (0.7 * blocks) - (0.4 * turnovers)
             
-            # Eficiencia del juego
-            efficiency = pm / minutes if minutes > 0 else 0
+            # Eficiencia por minuto más robusta
+            efficiency = game_score / minutes if minutes > 0 else 0
             
             games_data.append({
                 'minutes': minutes,
                 'game_score': game_score,
                 'efficiency': efficiency,
+                'plus_minus': pm,
                 'date': game.date,
                 'game_index': i
             })
         
-        # Calcular promedios básicos
         total_games = len(games_data)
         avg_minutes = sum(g['minutes'] for g in games_data) / total_games
         avg_game_score = sum(g['game_score'] for g in games_data) / total_games
         avg_efficiency = sum(g['efficiency'] for g in games_data) / total_games
         
-        # 1. PEAK PERFORMANCE MINUTES
-        # Analizar rendimiento por rangos de minutos
+        # 1. PEAK PERFORMANCE MINUTES - CORREGIDO
+        # Buckets más precisos y análisis más sofisticado
         minute_buckets = {
-            'low': [],      # < 25 min
-            'medium': [],   # 25-35 min
-            'high': [],     # 35-42 min
-            'extreme': []   # > 42 min
+            'very_low': [],    # < 20 min
+            'low': [],         # 20-28 min
+            'medium': [],      # 28-36 min
+            'high': [],        # 36-42 min
+            'very_high': []    # > 42 min
         }
         
         for game in games_data:
             minutes = game['minutes']
-            score = game['game_score']
+            efficiency = game['efficiency']
             
-            if minutes < 25:
-                minute_buckets['low'].append(score)
-            elif minutes < 35:
-                minute_buckets['medium'].append(score)
+            if minutes < 20:
+                minute_buckets['very_low'].append(efficiency)
+            elif minutes < 28:
+                minute_buckets['low'].append(efficiency)
+            elif minutes < 36:
+                minute_buckets['medium'].append(efficiency)
             elif minutes < 42:
-                minute_buckets['high'].append(score)
+                minute_buckets['high'].append(efficiency)
             else:
-                minute_buckets['extreme'].append(score)
+                minute_buckets['very_high'].append(efficiency)
         
-        # Calcular promedios por bucket
+        # Calcular promedios con mínimo de datos
         bucket_averages = {}
-        for bucket, scores in minute_buckets.items():
-            if scores:
-                bucket_averages[bucket] = sum(scores) / len(scores)
-            else:
-                bucket_averages[bucket] = 0
+        for bucket, efficiencies in minute_buckets.items():
+            if len(efficiencies) >= 3:  # Mínimo 3 juegos
+                bucket_averages[bucket] = sum(efficiencies) / len(efficiencies)
         
-        # Encontrar el rango óptimo
-        best_bucket = max(bucket_averages, key=bucket_averages.get)
-        peak_performance_minutes = {
-            'low': 22.0,
-            'medium': 30.0,
-            'high': 38.0,
-            'extreme': 45.0
-        }.get(best_bucket, 32.0)
+        # Encontrar rango óptimo
+        if bucket_averages:
+            best_bucket = max(bucket_averages, key=bucket_averages.get)
+            peak_performance_minutes = {
+                'very_low': 18.0,
+                'low': 24.0,
+                'medium': 32.0,
+                'high': 39.0,
+                'very_high': 45.0
+            }.get(best_bucket, 32.0)
+        else:
+            peak_performance_minutes = 32.0
         
-        # 2. ENDURANCE RATING
-        # Comparar rendimiento en juegos de muchos minutos vs pocos
-        high_minute_games = [g for g in games_data if g['minutes'] > avg_minutes + 5]
-        low_minute_games = [g for g in games_data if g['minutes'] < avg_minutes - 5]
+        # 2. ENDURANCE RATING - MEJORADO
+        # Usar quartiles para comparación más robusta
+        sorted_by_minutes = sorted(games_data, key=lambda x: x['minutes'])
+        q1_index = len(sorted_by_minutes) // 4
+        q3_index = 3 * len(sorted_by_minutes) // 4
         
-        if high_minute_games and low_minute_games:
-            high_avg = sum(g['game_score'] for g in high_minute_games) / len(high_minute_games)
-            low_avg = sum(g['game_score'] for g in low_minute_games) / len(low_minute_games)
+        low_minute_games = sorted_by_minutes[:q1_index]
+        high_minute_games = sorted_by_minutes[q3_index:]
+        
+        if len(low_minute_games) >= 3 and len(high_minute_games) >= 3:
+            low_avg_eff = sum(g['efficiency'] for g in low_minute_games) / len(low_minute_games)
+            high_avg_eff = sum(g['efficiency'] for g in high_minute_games) / len(high_minute_games)
             
-            endurance_ratio = high_avg / low_avg if low_avg > 0 else 1.0
-            endurance_rating = min(100, max(0, endurance_ratio * 50))
+            if low_avg_eff > 0:
+                endurance_ratio = high_avg_eff / low_avg_eff
+                endurance_rating = min(100, max(0, 50 + (endurance_ratio - 1) * 80))
+            else:
+                endurance_rating = 50.0
         else:
             endurance_rating = 50.0
         
-        # 3. BACK-TO-BACK EFFICIENCY
-        # Simular back-to-back usando games consecutivos
+        # 3. BACK-TO-BACK EFFICIENCY - CORREGIDO
+        # Usar diferencias de 1 día exacto para B2B reales
         b2b_performance = []
         regular_performance = []
         
@@ -1784,105 +1792,110 @@ async def player_fatigue_performance_curve(id: int, session: AsyncSession = Depe
             current_game = games_data[i]
             prev_game = games_data[i-1]
             
-            # Si los juegos están cerca en fecha (simulando B2B)
             days_diff = (current_game['date'] - prev_game['date']).days
             
-            if days_diff <= 2:  # Simular back-to-back o juegos muy seguidos
+            if days_diff == 1:  # B2B real (1 día de diferencia)
                 b2b_performance.append(current_game['efficiency'])
-            elif days_diff >= 3:  # Juegos con descanso
+            elif days_diff >= 2:  # Juegos con al menos 1 día de descanso
                 regular_performance.append(current_game['efficiency'])
         
-        if b2b_performance and regular_performance:
+        if len(b2b_performance) >= 3 and len(regular_performance) >= 5:
             b2b_avg = sum(b2b_performance) / len(b2b_performance)
             regular_avg = sum(regular_performance) / len(regular_performance)
-            back_to_back_efficiency = b2b_avg / regular_avg if regular_avg != 0 else 1.0
+            back_to_back_efficiency = b2b_avg / regular_avg if regular_avg > 0 else 1.0
         else:
-            back_to_back_efficiency = 1.0
+            back_to_back_efficiency = 0.95  # Penalización ligera por defecto
         
-        back_to_back_efficiency = max(0.5, min(1.5, back_to_back_efficiency))
+        back_to_back_efficiency = max(0.6, min(1.2, back_to_back_efficiency))
         
-        # 4. FOURTH QUARTER DROPOFF
-        # Aproximar usando decline en performance en últimos 20% de games
-        last_20_percent = games_data[-max(1, int(total_games * 0.2)):]
-        first_80_percent = games_data[:int(total_games * 0.8)]
+        # 4. FOURTH QUARTER DROPOFF - CORREGIDO
+        # Analizar decline en últimos minutos usando efficiency
+        # Aproximar usando rendimiento en juegos de alta carga vs baja carga
+        high_load_games = [g for g in games_data if g['minutes'] > avg_minutes + 6]
+        normal_load_games = [g for g in games_data if abs(g['minutes'] - avg_minutes) <= 3]
         
-        if last_20_percent and first_80_percent:
-            late_avg = sum(g['game_score'] for g in last_20_percent) / len(last_20_percent)
-            early_avg = sum(g['game_score'] for g in first_80_percent) / len(first_80_percent)
+        if len(high_load_games) >= 3 and len(normal_load_games) >= 5:
+            high_load_avg = sum(g['efficiency'] for g in high_load_games) / len(high_load_games)
+            normal_load_avg = sum(g['efficiency'] for g in normal_load_games) / len(normal_load_games)
             
-            fourth_quarter_dropoff = max(0, (early_avg - late_avg) / early_avg if early_avg > 0 else 0)
+            # Calcular dropoff como porcentaje de decline
+            fourth_quarter_dropoff = max(0, (normal_load_avg - high_load_avg) / normal_load_avg if normal_load_avg > 0 else 0)
         else:
-            fourth_quarter_dropoff = 0.0
+            fourth_quarter_dropoff = 0.05  # 5% decline por defecto
         
-        fourth_quarter_dropoff = min(0.5, fourth_quarter_dropoff)
+        fourth_quarter_dropoff = min(0.4, fourth_quarter_dropoff)
         
-        # 5. REST DAY BOOST
-        # Analizar performance después de gaps de 3+ días
+        # 5. REST DAY BOOST - MEJORADO
+        # Analizar performance después de 2+ días de descanso
         rest_boost_games = []
         for i in range(1, len(games_data)):
             days_diff = (games_data[i]['date'] - games_data[i-1]['date']).days
-            if days_diff >= 3:
+            if days_diff >= 3:  # 2+ días de descanso
                 rest_boost_games.append(games_data[i]['efficiency'])
         
-        if rest_boost_games and regular_performance:
+        if len(rest_boost_games) >= 3 and len(regular_performance) >= 5:
             rest_avg = sum(rest_boost_games) / len(rest_boost_games)
             regular_avg = sum(regular_performance) / len(regular_performance)
-            rest_day_boost = rest_avg / regular_avg if regular_avg != 0 else 1.0
+            rest_day_boost = rest_avg / regular_avg if regular_avg > 0 else 1.0
         else:
-            rest_day_boost = 1.0
+            rest_day_boost = 1.05  # 5% boost por defecto
         
-        rest_day_boost = max(0.8, min(1.4, rest_day_boost))
+        rest_day_boost = max(0.9, min(1.3, rest_day_boost))
         
-        # 6. LOAD THRESHOLD
-        # Minutos donde performance comienza a declinar
+        # 6. LOAD THRESHOLD - CORREGIDO
+        # Usar buckets de 3 minutos y análisis de tendencia
         performance_by_minutes = {}
         for game in games_data:
-            minute_bracket = int(game['minutes'] // 5) * 5  # Group by 5-minute brackets
-            if minute_bracket not in performance_by_minutes:
-                performance_by_minutes[minute_bracket] = []
-            performance_by_minutes[minute_bracket].append(game['game_score'])
+            if game['minutes'] >= 15:  # Solo contar juegos significativos
+                minute_bracket = int(game['minutes'] // 3) * 3  # Buckets de 3 minutos
+                if minute_bracket not in performance_by_minutes:
+                    performance_by_minutes[minute_bracket] = []
+                performance_by_minutes[minute_bracket].append(game['efficiency'])
         
-        # Calcular promedio por bracket
+        # Calcular promedios por bracket con suficientes datos
         bracket_averages = {}
-        for bracket, scores in performance_by_minutes.items():
-            if len(scores) >= 2:  # Solo considerar brackets con suficientes datos
-                bracket_averages[bracket] = sum(scores) / len(scores)
+        for bracket, efficiencies in performance_by_minutes.items():
+            if len(efficiencies) >= 2:
+                bracket_averages[bracket] = sum(efficiencies) / len(efficiencies)
         
-        # Encontrar el punto donde performance empieza a declinar
-        load_threshold = 35.0  # Default
-        if len(bracket_averages) >= 3:
+        # Encontrar load threshold más preciso
+        load_threshold = 36.0  # Default más realista
+        if len(bracket_averages) >= 4:
             sorted_brackets = sorted(bracket_averages.items())
-            peak_performance = max(bracket_averages.values())
+            max_performance = max(bracket_averages.values())
             
-            for bracket, avg_score in sorted_brackets:
-                if avg_score < peak_performance * 0.95:  # 5% decline
+            # Buscar primer punto donde efficiency cae 8% del máximo
+            for bracket, avg_eff in sorted_brackets:
+                if avg_eff < max_performance * 0.92 and bracket >= 30:
                     load_threshold = float(bracket)
                     break
         
-        # 7. RECOVERY FACTOR
-        # Qué tan rápido se recupera después de juegos de muchos minutos
+        # 7. RECOVERY FACTOR - MEJORADO
+        # Analizar recovery después de juegos de alta carga
         recovery_games = []
         for i in range(1, len(games_data)):
-            if games_data[i-1]['minutes'] > avg_minutes + 8:  # Juego anterior de muchos minutos
-                recovery_games.append(games_data[i]['efficiency'])
+            if games_data[i-1]['minutes'] > avg_minutes + 10:  # Juego previo de alta carga
+                days_between = (games_data[i]['date'] - games_data[i-1]['date']).days
+                if days_between >= 1:  # Al menos 1 día de descanso
+                    recovery_games.append(games_data[i]['efficiency'])
         
-        if recovery_games:
+        if len(recovery_games) >= 3:
             recovery_avg = sum(recovery_games) / len(recovery_games)
-            recovery_factor = recovery_avg / avg_efficiency if avg_efficiency != 0 else 1.0
+            recovery_factor = recovery_avg / avg_efficiency if avg_efficiency > 0 else 1.0
         else:
-            recovery_factor = 1.0
+            recovery_factor = 0.95  # Ligera penalización por defecto
         
-        recovery_factor = max(0.6, min(1.3, recovery_factor))
+        recovery_factor = max(0.7, min(1.2, recovery_factor))
         
-        # 8. FATIGUE RESISTANCE FINAL
-        # Combinar factores en score 0-100
-        endurance_component = (endurance_rating / 100) * 30
-        b2b_component = (back_to_back_efficiency - 0.5) * 40
-        dropoff_component = (1 - fourth_quarter_dropoff) * 20
-        recovery_component = (recovery_factor - 0.6) / 0.7 * 10
+        # 8. FATIGUE RESISTANCE FINAL - FÓRMULA MEJORADA
+        # Pesos más balanceados y escala más realista
+        endurance_component = (endurance_rating / 100) * 25  # 25% del score
+        b2b_component = (back_to_back_efficiency - 0.6) / 0.6 * 25  # 25% del score
+        dropoff_component = (1 - fourth_quarter_dropoff / 0.4) * 25  # 25% del score (inverso)
+        recovery_component = (recovery_factor - 0.7) / 0.5 * 25  # 25% del score
         
         fatigue_resistance = endurance_component + b2b_component + dropoff_component + recovery_component
-        fatigue_resistance = max(0, min(100, fatigue_resistance))
+        fatigue_resistance = max(20, min(95, fatigue_resistance))  # Rango más realista
         
         return FatiguePerformanceCurve(
             fatigue_resistance=round(fatigue_resistance, 1),
