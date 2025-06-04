@@ -398,3 +398,63 @@ class FatiguePerformanceCurve(SQLModel):
     recovery_factor: float          # How quickly bounces back
     games_played: int
     average_minutes: float
+
+class TeamAdvancedEfficiency(SQLModel):
+    offensive_efficiency: float      # Puntos por 100 posesiones
+    defensive_efficiency: float      # Puntos permitidos por 100 posesiones
+    pace_factor: float              # Velocidad de juego vs liga
+    strength_of_schedule: float     # Dificultad promedio de oponentes
+    clutch_factor: float            # Rendimiento en últimos 5 min
+    consistency_index: float        # Desviación estándar del net rating
+    taer_score: float              # Team Advanced Efficiency Rating (0-100)
+
+class TeamLineupImpactMatrix(SQLModel):
+    best_lineup_plus_minus: float      # Mejor combinación de 5 jugadores
+    worst_lineup_plus_minus: float     # Peor combinación de 5 jugadores
+    synergy_score: float               # Química entre jugadores clave
+    position_flexibility: float       # Versatilidad posicional del equipo
+    chemistry_rating: float           # Correlación tiempo jugado vs eficiencia
+    load_balance_index: float         # Distribución de minutos
+    injury_risk_factor: float         # Dependencia de jugadores clave
+    top_lineup_minutes: float         # Minutos de la mejor combinación
+    depth_factor: float               # Contribución del banquillo
+
+class TeamMomentumResilience(SQLModel):
+    lead_protection_rate: float       # % victorias cuando van ganando 10+
+    comeback_frequency: float         # % victorias tras ir perdiendo 10+
+    streak_resilience: float          # Respuesta tras rachas adversas 0-8+
+    pressure_performance: float       # Rendimiento en partidos "must-win"
+    fourth_quarter_factor: float      # Diferencial de rendimiento último cuarto
+    psychological_edge: float         # Diferencia home/away más allá de ventaja local
+    tmpri_score: float                # Team Momentum & Psychological Resilience (0-100)
+    close_game_record: float          # Win% en partidos decididos por ≤5 puntos
+
+class TeamTacticalAdaptability(SQLModel):
+    pace_adaptability: float          # Variación de ritmo vs equipos rápidos/lentos
+    size_adjustment: float            # Rendimiento vs equipos grandes/pequeños
+    style_counter_effect: float       # Efectividad contra diferentes estilos
+    strategic_variety_index: float    # Variedad en patrones de tiro/asistencias
+    anti_meta_performance: float      # Rendimiento vs tendencias dominantes
+    coaching_intelligence: float      # Ajustes detectables entre tiempos
+    ttaq_score: float                 # Team Tactical Adaptability Quotient (0-100)
+    opponent_fg_influence: float      # Impacto en % de tiro rival
+
+class TeamClutchDNAProfile(SQLModel):
+    multi_scenario_clutch: float      # Rendimiento en 8 situaciones diferentes
+    pressure_shooting: float          # FG% bajo presión vs normal
+    decision_making_pressure: float   # TO rate en clutch vs regular
+    star_player_factor: float         # Dependencia de estrellas en clutch
+    collective_clutch_iq: float       # Distribución de responsabilidades
+    pressure_defense: float           # Defensive rating en situaciones clutch
+    clutch_dna_score: float          # Métrica compuesta "gen clutch" (0-100)
+    overtime_performance: float       # Rendimiento en tiempo extra
+
+class TeamPredictivePerformance(SQLModel):
+    regression_to_mean: float         # Sostenibilidad del rendimiento actual
+    fatigue_accumulation: float       # Impacto de schedule density
+    injury_risk_projection: float     # Probabilidad de lesiones clave
+    momentum_decay_rate: float        # Cómo se desvanece momentum actual
+    matchup_advantage_forecast: float # Proyección vs próximos 10 oponentes
+    peak_performance_window: int      # Juegos hasta momento óptimo
+    tppa_projected_winrate: float     # Proyección Win% próximos 20 partidos
+    schedule_difficulty_next: float   # Dificultad próximos partidos (0-100)
