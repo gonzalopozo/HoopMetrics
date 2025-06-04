@@ -374,3 +374,27 @@ class PIPMPositionAverage(SQLModel):
     usage_rate: float
     minutes_per_game: float
     is_player_position: bool
+
+class PaceImpactAnalysis(SQLModel):
+    pace_impact_rating: float       # -10 to +10
+    possessions_per_48: float       # Estimated team pace with player
+    efficiency_on_court: float      # Team efficiency when player plays
+    tempo_control_factor: float     # Player's influence on game pace
+    transition_efficiency: float    # Fast break vs half-court splits
+    usage_pace_balance: float       # Balance between usage and pace
+    fourth_quarter_pace: float      # Late game tempo impact
+    pace_consistency: float         # Game-to-game pace variance
+    games_played: int
+    minutes_per_game: float
+
+class FatiguePerformanceCurve(SQLModel):
+    fatigue_resistance: float       # 0-100 scale
+    peak_performance_minutes: float # Optimal minutes per game
+    endurance_rating: float         # Performance in high-minute games
+    back_to_back_efficiency: float  # B2B games vs regular
+    fourth_quarter_dropoff: float   # Performance decline late game
+    rest_day_boost: float           # Performance after rest
+    load_threshold: float           # Minutes where performance drops
+    recovery_factor: float          # How quickly bounces back
+    games_played: int
+    average_minutes: float

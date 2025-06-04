@@ -190,8 +190,6 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     } | null>(null);
 
     // Añadir este estado junto con los otros estados de Ultimate
-
-    // Añadir este estado junto con los otros estados de Ultimate
     const [pipmpImpact, setPipmpImpact] = useState<{
         total_pipm: number;
         offensive_pimp: number;
@@ -233,6 +231,20 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         injury_risk_factor: number;
         games_played: number;
         win_shares_comparison: number;
+    } | null>(null);
+
+    // Añadir este estado junto con los otros estados de Ultimate
+    const [paceImpactAnalysis, setPaceImpactAnalysis] = useState<{
+        pace_impact_rating: number;
+        possessions_per_48: number;
+        efficiency_on_court: number;
+        tempo_control_factor: number;
+        transition_efficiency: number;
+        usage_pace_balance: number;
+        fourth_quarter_pace: number;
+        pace_consistency: number;
+        games_played: number;
+        minutes_per_game: number;
     } | null>(null);
 
     const isPremium = userRole === "premium" || userRole === "ultimate"
@@ -485,6 +497,31 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             }
         }
         if (isUltimate) fetchRaptorWar();
+    }, [player.id, isUltimate]);
+
+    // Fetch Pace Impact Analysis data
+    useEffect(() => {
+        async function fetchPaceImpactAnalysis() {
+            try {
+                const res = await axios.get<{
+                    pace_impact_rating: number;
+                    possessions_per_48: number;
+                    efficiency_on_court: number;
+                    tempo_control_factor: number;
+                    transition_efficiency: number;
+                    usage_pace_balance: number;
+                    fourth_quarter_pace: number;
+                    pace_consistency: number;
+                    games_played: number;
+                    minutes_per_game: number;
+                }>(`${process.env.NEXT_PUBLIC_API_URL}/players/${player.id}/advanced/pace-impact-analysis`);
+                setPaceImpactAnalysis(res.data);
+            } catch (e) {
+                console.error("Error fetching pace impact analysis:", e);
+                setPaceImpactAnalysis(null);
+            }
+        }
+        if (isUltimate) fetchPaceImpactAnalysis();
     }, [player.id, isUltimate]);
 
     const areaChartConfig: ChartConfig = {
@@ -2065,10 +2102,13 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                         <circle
                                                             cx={cx}
                                                             cy={cy}
-                                                            r={6} // Aumentado de 6 a 8
+                                                            r={6}
                                                             fill={getPositionColor(payload)}
-                                                            stroke="none"
-                                                            strokeWidth={0}
+                                                            stroke={payload?.is_player_position
+                                                                ? (resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(0, 80%, 50%)")
+                                                                : "none"
+                                                            }
+                                                            strokeWidth={payload?.is_player_position ? 3 : 0}
                                                             opacity={0.8}
                                                         />
                                                     );
@@ -2098,11 +2138,46 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                     </ResponsiveContainer>
                                 </div>
                             </CardContent>
+                            <div className="px-6 pb-4">
+                                <div className="flex flex-wrap justify-center gap-4 text-xs">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "hsl(270, 70%, 50%)" }}></div>
+                                        <span>Point Guard</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "hsl(195, 70%, 50%)" }}></div>
+                                        <span>Shooting Guard</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "hsl(120, 70%, 50%)" }}></div>
+                                        <span>Small Forward</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "hsl(45, 70%, 50%)" }}></div>
+                                        <span>Power Forward</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "hsl(15, 70%, 50%)" }}></div>
+                                        <span>Center</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(214, 80%, 55%)" }}></div>
+                                        <span>Current Player</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full border-2" style={{
+                                            backgroundColor: resolvedTheme === "dark" ? "#0f172a" : "#f8fafc",
+                                            borderColor: resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(0, 80%, 50%)"
+                                        }}></div>
+                                        <span>Player's Position Average</span>
+                                    </div>
+                                </div>
+                            </div>
                             <CardFooter className="border-t pt-4">
                                 <div className="w-full">
                                     <div className="flex items-center justify-between mb-2">
                                         <h3 className="font-semibold text-sm">
-                                            Position Comparison Analysis
+                                            {`${player.name || "Player"}'s Position Comparison Analysis`}
                                         </h3>
                                         <span className="text-xs text-muted-foreground">
                                             vs League Averages
@@ -2532,8 +2607,8 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                                 cy={cy}
                                                                 r={6}
                                                                 fill={getPositionColor(payload)}
-                                                                stroke={payload?.is_player_position ? 
-                                                                    (resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(0, 80%, 50%)") : 
+                                                                stroke={payload?.is_player_position ?
+                                                                    (resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(0, 80%, 50%)") :
                                                                     "none"
                                                                 }
                                                                 strokeWidth={payload?.is_player_position ? 3 : 0}
@@ -2571,7 +2646,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                     </ResponsiveContainer>
                                 </div>
                             </CardContent>
-                             {/* Añadir leyenda como en el primer gráfico */}
+                            {/* Añadir leyenda como en el primer gráfico */}
                             <div className="px-6 pb-4">
                                 <div className="flex flex-wrap justify-center gap-4 text-xs">
                                     <div className="flex items-center gap-2">
@@ -2599,9 +2674,9 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                         <span>Current Player</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <div className="w-3 h-3 rounded-full border-2" style={{ 
-                                            backgroundColor: resolvedTheme === "dark" ? "#0f172a" : "#f8fafc", 
-                                            borderColor: resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(0, 80%, 50%)" 
+                                        <div className="w-3 h-3 rounded-full border-2" style={{
+                                            backgroundColor: resolvedTheme === "dark" ? "#0f172a" : "#f8fafc",
+                                            borderColor: resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(0, 80%, 50%)"
                                         }}></div>
                                         <span>Player's Position Average</span>
                                     </div>
@@ -2667,7 +2742,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                         adjustment: raptorWar.age_adjustment
                                                     },
                                                     {
-                                                        category: "Defensive", 
+                                                        category: "Defensive",
                                                         war: raptorWar.defensive_war,
                                                         marketValue: raptorWar.market_value_millions * 0.3,
                                                         adjustment: raptorWar.positional_versatility
@@ -2705,7 +2780,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 <YAxis
                                                     yAxisId="war"
                                                     orientation="left"
-                                                    domain={[-2, 8]}
+                                                    domain={[-0.5, 4.0]} // Cambiado a rango fijo
                                                     tick={{
                                                         fontSize: 12,
                                                         fill: resolvedTheme === "dark" ? "#e2e8f0" : "#475569"
@@ -2780,7 +2855,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                         return null;
                                                     }}
                                                 />
-                                                <Legend 
+                                                <Legend
                                                     content={({ payload }) => (
                                                         <div className="flex justify-center gap-6 mt-4">
                                                             <div className="flex items-center gap-2">
@@ -2882,8 +2957,8 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                     </div>
                                     <div className="mt-4 text-xs text-muted-foreground">
                                         <p>
-                                            <strong>RAPTOR WAR</strong> (Robust Algorithm using Player Tracking and On/off Ratings) 
-                                            combines box score statistics with estimated on-off impact, adjusted for age, position, 
+                                            <strong>RAPTOR WAR</strong> (Robust Algorithm using Player Tracking and On/off Ratings)
+                                            combines box score statistics with estimated on-off impact, adjusted for age, position,
                                             and injury risk. Market value represents estimated worth based on projected wins contribution.
                                         </p>
                                         <div className="flex justify-between mt-2 text-xs">
@@ -2896,7 +2971,157 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                             </CardFooter>
                         </Card>
 
-                        {/* ...rest of existing cards... */}
+                        {/* Pace Impact Analysis - Quinto gráfico */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    <Activity className="h-5 w-5 text-primary inline mr-2" />
+                                    Pace Impact Analysis
+                                </CardTitle>
+                                <CardDescription>
+                                    Player influence on game tempo and team efficiency
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div style={{ width: "100%", height: 300 }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        {paceImpactData.length > 0 ? (
+                                            <ComposedChart
+                                                data={paceImpactData}
+                                                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                            >
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis 
+                                                    dataKey="game" 
+                                                    tick={{ fontSize: 12 }}
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                />
+                                                <YAxis 
+                                                    yAxisId="left"
+                                                    tick={{ fontSize: 12 }}
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                    domain={[80, 120]}
+                                                />
+                                                <YAxis 
+                                                    yAxisId="right"
+                                                    orientation="right"
+                                                    tick={{ fontSize: 12 }}
+                                                    axisLine={false}
+                                                    tickLine={false}
+                                                    domain={[80, 130]}
+                                                />
+                                                <Tooltip content={<PaceImpactTooltip />} />
+                                                
+                                                {/* Área para el efecto de pace */}
+                                                <Area
+                                                    yAxisId="left"
+                                                    type="monotone"
+                                                    dataKey="paceEffect"
+                                                    fill={resolvedTheme === 'dark' ? "hsl(214, 80%, 40%)" : "hsl(214, 80%, 80%)"}
+                                                    stroke={resolvedTheme === 'dark' ? "hsl(214, 80%, 60%)" : "hsl(214, 80%, 50%)"}
+                                                    strokeWidth={2}
+                                                    fillOpacity={0.3}
+                                                />
+                                                
+                                                {/* Línea para la eficiencia del equipo */}
+                                                <Line
+                                                    yAxisId="right"
+                                                    type="monotone"
+                                                    dataKey="teamEfficiency"
+                                                    stroke={resolvedTheme === 'dark' ? "hsl(0, 80%, 60%)" : "hsl(214, 80%, 60%)"}
+                                                    strokeWidth={3}
+                                                    dot={{
+                                                        fill: resolvedTheme === 'dark' ? "hsl(0, 80%, 60%)" : "hsl(214, 80%, 60%)",
+                                                        stroke: "var(--background)",
+                                                        strokeWidth: 2,
+                                                        r: 4
+                                                    }}
+                                                />
+                                            </ComposedChart>
+                                        ) : (
+                                            <div className="flex items-center justify-center h-full">
+                                                <p className="text-muted-foreground">Loading pace impact data...</p>
+                                            </div>
+                                        )}
+                                    </ResponsiveContainer>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="border-t pt-4">
+                                <div className="w-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="font-semibold text-sm">
+                                            {`${player.name || "Player"}'s Pace Control Profile`}
+                                        </h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            {paceImpactAnalysis ? `${paceImpactAnalysis.games_played} games analyzed` : "Loading..."}
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <Activity className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Pace Impact Rating</p>
+                                                <p className="font-bold">
+                                                    {paceImpactAnalysis ? 
+                                                        (() => {
+                                                            const rating = paceImpactAnalysis.pace_impact_rating;
+                                                            if (rating >= 6) return `Elite (+${rating.toFixed(1)})`;
+                                                            if (rating >= 2) return `Good (+${rating.toFixed(1)})`;
+                                                            if (rating >= -2) return `Average (${rating.toFixed(1)})`;
+                                                            return `Poor (${rating.toFixed(1)})`;
+                                                        })()
+                                                        : "N/A"
+                                                    }
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Tempo Control</p>
+                                                <p className="font-bold">
+                                                    {paceImpactAnalysis ? 
+                                                        (() => {
+                                                            const tempo = paceImpactAnalysis.tempo_control_factor;
+                                                            if (tempo >= 1.5) return "Elite";
+                                                            if (tempo >= 1.2) return "Good";
+                                                            if (tempo >= 0.8) return "Average";
+                                                            return "Poor";
+                                                        })()
+                                                        : "N/A"
+                                                    }
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <BarChart3 className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Consistency</p>
+                                                <p className="font-bold">
+                                                    {paceImpactAnalysis ? 
+                                                        `${(paceImpactAnalysis.pace_consistency * 100).toFixed(0)}%`
+                                                        : "N/A"
+                                                    }
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 text-xs text-muted-foreground">
+                                        <p>
+                                            <strong>Pace Impact Rating</strong> measures how the player influences game tempo and team efficiency.
+                                            The area shows estimated possessions per 48 minutes when the player is on court, while the line represents team efficiency rating.
+                                        </p>
+                                        <div className="flex justify-between mt-2 text-xs">
+                                            <span>Possessions/48: {paceImpactAnalysis ? paceImpactAnalysis.possessions_per_48.toFixed(1) : "-"}</span>
+                                            <span>4th Quarter Pace: {paceImpactAnalysis ? paceImpactAnalysis.fourth_quarter_pace.toFixed(1) : "-"}</span>
+                                            <span>Usage Balance: {paceImpactAnalysis ? paceImpactAnalysis.usage_pace_balance.toFixed(2) : "-"}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardFooter>
+                        </Card>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center py-16">

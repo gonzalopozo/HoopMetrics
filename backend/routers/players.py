@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlmodel import desc, func, select
 from typing import List
 from sqlmodel.ext.asyncio.session import AsyncSession
-from ..models import Match, PointsProgression, PointsTypeDistribution, PlayerBarChartData, PlayerBarChartData, MinutesProgression, ParticipationRate, PositionAverage, LebronImpactScore, PIPMImpact, RaptorWAR,  MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, PlayerSkillProfile, AdvancedImpactMatrix, PIPMPositionAverage
+from ..models import Match, PointsProgression, PointsTypeDistribution, PlayerBarChartData, PlayerBarChartData, MinutesProgression, ParticipationRate, PositionAverage, LebronImpactScore, PIPMImpact, RaptorWAR,  MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, PlayerSkillProfile, AdvancedImpactMatrix, PIPMPositionAverage, PaceImpactAnalysis, FatiguePerformanceCurve
 from typing import List
 from sqlalchemy import func, cast, Integer, Float
 import statistics
@@ -1476,4 +1476,427 @@ async def player_raptor_war(id: int, session: AsyncSession = Depends(get_db)):
 
     except Exception as e:
         print(f"Error in player_raptor_war: {str(e)}")
+        raise
+
+@router.get("/{id}/advanced/pace-impact-analysis", response_model=PaceImpactAnalysis)
+async def player_pace_impact_analysis(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Pace Impact Rating - Analiza cómo el jugador influye en el ritmo del juego
+    y la eficiencia del equipo usando datos de minutos, plus/minus y estadísticas
+    """
+    try:
+        # Query principal con datos necesarios
+        stmt = select(
+            func.avg(MatchStatistic.points).label("avg_points"),
+            func.avg(MatchStatistic.rebounds).label("avg_rebounds"),
+            func.avg(MatchStatistic.assists).label("avg_assists"),
+            func.avg(MatchStatistic.steals).label("avg_steals"),
+            func.avg(MatchStatistic.blocks).label("avg_blocks"),
+            func.avg(MatchStatistic.turnovers).label("avg_turnovers"),
+            func.avg(MatchStatistic.minutes_played).label("avg_minutes"),
+            func.avg(MatchStatistic.field_goals_made).label("avg_fgm"),
+            func.avg(MatchStatistic.field_goals_attempted).label("avg_fga"),
+            func.avg(MatchStatistic.three_points_made).label("avg_3pm"),
+            func.avg(MatchStatistic.three_points_attempted).label("avg_3pa"),
+            func.avg(MatchStatistic.free_throws_made).label("avg_ftm"),
+            func.avg(MatchStatistic.free_throws_attempted).label("avg_fta"),
+            func.avg(MatchStatistic.plusminus).label("avg_plusminus"),
+            func.count(MatchStatistic.id).label("games_played"),
+            func.stddev(MatchStatistic.plusminus).label("pm_variance"),
+            func.stddev(MatchStatistic.points).label("points_variance"),
+            func.sum(MatchStatistic.minutes_played).label("total_minutes")
+        ).where(MatchStatistic.player_id == id)
+        
+        result = await session.execute(stmt)
+        row = result.first()
+        
+        if not row or not row.games_played:
+            return PaceImpactAnalysis(
+                pace_impact_rating=0.0, possessions_per_48=100.0, efficiency_on_court=100.0,
+                tempo_control_factor=1.0, transition_efficiency=1.0, usage_pace_balance=1.0,
+                fourth_quarter_pace=100.0, pace_consistency=0.5, games_played=0, minutes_per_game=0.0
+            )
+        
+        # Convertir valores
+        avg_points = float(row.avg_points or 0)
+        avg_rebounds = float(row.avg_rebounds or 0)
+        avg_assists = float(row.avg_assists or 0)
+        avg_steals = float(row.avg_steals or 0)
+        avg_blocks = float(row.avg_blocks or 0)
+        avg_turnovers = float(row.avg_turnovers or 0)
+        avg_minutes = float(row.avg_minutes or 0)
+        avg_fgm = float(row.avg_fgm or 0)
+        avg_fga = float(row.avg_fga or 0)
+        avg_3pm = float(row.avg_3pm or 0)
+        avg_3pa = float(row.avg_3pa or 0)
+        avg_ftm = float(row.avg_ftm or 0)
+        avg_fta = float(row.avg_fta or 0)
+        avg_plusminus = float(row.avg_plusminus or 0)
+        games_played_real = int(row.games_played)
+        pm_variance = float(row.pm_variance or 8.0)
+        points_variance = float(row.points_variance or 5.0)
+        total_minutes = float(row.total_minutes or 0)
+        
+        if avg_minutes <= 0:
+            return PaceImpactAnalysis(
+                pace_impact_rating=0.0, possessions_per_48=100.0, efficiency_on_court=100.0,
+                tempo_control_factor=1.0, transition_efficiency=1.0, usage_pace_balance=1.0,
+                fourth_quarter_pace=100.0, pace_consistency=0.5, games_played=games_played_real, minutes_per_game=0.0
+            )
+        
+        # Obtener promedios de liga para contexto
+        league_stmt = select(
+            func.avg(MatchStatistic.points).label("league_ppg"),
+            func.avg(MatchStatistic.rebounds).label("league_rpg"),
+            func.avg(MatchStatistic.assists).label("league_apg"),
+            func.avg(MatchStatistic.turnovers).label("league_tpg"),
+            func.avg(MatchStatistic.minutes_played).label("league_mpg"),
+            func.avg(MatchStatistic.plusminus).label("league_pm")
+        )
+        league_result = await session.execute(league_stmt)
+        league_row = league_result.first()
+        
+        league_ppg = float(league_row.league_ppg or 22.0)
+        league_rpg = float(league_row.league_rpg or 10.2)
+        league_apg = float(league_row.league_apg or 5.5)
+        league_tpg = float(league_row.league_tpg or 3.2)
+        league_mpg = float(league_row.league_mpg or 28.0)
+        league_pm = float(league_row.league_pm or 0.0)
+        
+        # 1. PACE ESTIMATION
+        # Estimar pace basado en acciones por minuto del jugador
+        actions_per_minute = (avg_fga + avg_fta + avg_turnovers + avg_assists) / avg_minutes if avg_minutes > 0 else 1.0
+        league_actions_per_minute = 1.8  # Aproximación
+        
+        # Pace impact basado en ratio de acciones
+        pace_multiplier = actions_per_minute / league_actions_per_minute
+        base_pace = 100  # Posesiones por juego de liga
+        
+        possessions_per_48 = base_pace * pace_multiplier
+        possessions_per_48 = max(85, min(115, possessions_per_48))  # Límites realistas
+        
+        # 2. EFFICIENCY ON COURT
+        # Usar plus/minus como proxy de eficiencia del equipo
+        pm_per_48 = (avg_plusminus / avg_minutes) * 48 if avg_minutes > 0 else 0
+        
+        # Convertir a efficiency rating (100 = promedio)
+        efficiency_on_court = 100 + (pm_per_48 * 2)  # Scale PM to efficiency
+        efficiency_on_court = max(80, min(120, efficiency_on_court))
+        
+        # 3. TEMPO CONTROL FACTOR
+        # Basado en ratio asistencias/turnovers y control del juego
+        assist_to_turnover = avg_assists / max(avg_turnovers, 0.5)
+        usage_rate = 100 * ((avg_fga + 0.44 * avg_fta + avg_turnovers) * (league_mpg * 5)) / (avg_minutes * 200)
+        usage_rate = max(5, min(usage_rate, 45))
+        
+        # Jugadores con alto ratio A/TO y uso moderado controlan mejor el tempo
+        tempo_control_factor = (assist_to_turnover / 2.0) * (1 - abs(usage_rate - 25) / 25)
+        tempo_control_factor = max(0.3, min(2.0, tempo_control_factor))
+        
+        # 4. TRANSITION EFFICIENCY
+        # Proxy usando steals, rebounds y assists (indicadores de transición)
+        transition_stats = avg_steals + (avg_rebounds * 0.3) + (avg_assists * 0.4)
+        league_transition = 1.3 + (10.2 * 0.3) + (5.5 * 0.4)  # League averages
+        
+        transition_efficiency = transition_stats / league_transition
+        transition_efficiency = max(0.5, min(2.0, transition_efficiency))
+        
+        # 5. USAGE-PACE BALANCE
+        # Balance entre uso individual y pace del equipo
+        optimal_usage_for_pace = 22  # Usage rate óptimo para pace
+        usage_deviation = abs(usage_rate - optimal_usage_for_pace)
+        
+        usage_pace_balance = 1.0 - (usage_deviation / 30)  # Penalizar desviación
+        usage_pace_balance = max(0.4, min(1.0, usage_pace_balance))
+        
+        # 6. FOURTH QUARTER PACE
+        # Aproximar usando consistencia en performance (menos varianza = mejor late game)
+        consistency_factor = max(0.5, 1 - (points_variance / 10))
+        
+        fourth_quarter_pace = possessions_per_48 * consistency_factor
+        fourth_quarter_pace = max(80, min(110, fourth_quarter_pace))
+        
+        # 7. PACE CONSISTENCY
+        # Basado en varianza de plus/minus (más consistente = menos varianza)
+        max_variance = 15.0
+        pace_consistency = max(0.0, 1.0 - (pm_variance / max_variance))
+        pace_consistency = max(0.1, min(1.0, pace_consistency))
+        
+        # 8. PACE IMPACT RATING FINAL
+        # Combinar factores en rating -10 a +10
+        pace_deviation = (possessions_per_48 - base_pace) / 10  # Scale to impact
+        efficiency_bonus = (efficiency_on_court - 100) / 20
+        control_bonus = (tempo_control_factor - 1.0) * 3
+        
+        pace_impact_rating = pace_deviation + efficiency_bonus + control_bonus
+        pace_impact_rating = max(-10, min(10, pace_impact_rating))
+        
+        return PaceImpactAnalysis(
+            pace_impact_rating=round(pace_impact_rating, 2),
+            possessions_per_48=round(possessions_per_48, 1),
+            efficiency_on_court=round(efficiency_on_court, 1),
+            tempo_control_factor=round(tempo_control_factor, 2),
+            transition_efficiency=round(transition_efficiency, 2),
+            usage_pace_balance=round(usage_pace_balance, 2),
+            fourth_quarter_pace=round(fourth_quarter_pace, 1),
+            pace_consistency=round(pace_consistency, 2),
+            games_played=games_played_real,
+            minutes_per_game=round(avg_minutes, 1)
+        )
+        
+    except Exception as e:
+        print(f"Error in player_pace_impact_analysis: {str(e)}")
+        raise
+
+@router.get("/{id}/advanced/fatigue-performance-curve", response_model=FatiguePerformanceCurve)
+async def player_fatigue_performance_curve(id: int, session: AsyncSession = Depends(get_db)):
+    """
+    Fatigue Resistance Index - Analiza cómo el rendimiento del jugador 
+    se ve afectado por la fatiga y carga de minutos
+    """
+    try:
+        # Query con datos ordenados por fecha para análisis temporal
+        stmt = select(
+            MatchStatistic.points,
+            MatchStatistic.rebounds,
+            MatchStatistic.assists,
+            MatchStatistic.steals,
+            MatchStatistic.blocks,
+            MatchStatistic.turnovers,
+            MatchStatistic.minutes_played,
+            MatchStatistic.field_goals_made,
+            MatchStatistic.field_goals_attempted,
+            MatchStatistic.three_points_made,
+            MatchStatistic.three_points_attempted,
+            MatchStatistic.free_throws_made,
+            MatchStatistic.free_throws_attempted,
+            MatchStatistic.plusminus,
+            Match.date
+        ).join(
+            Match, MatchStatistic.match_id == Match.id
+        ).where(
+            MatchStatistic.player_id == id
+        ).order_by(Match.date)
+        
+        result = await session.execute(stmt)
+        games = result.fetchall()
+        
+        if not games:
+            return FatiguePerformanceCurve(
+                fatigue_resistance=50.0, peak_performance_minutes=32.0, endurance_rating=50.0,
+                back_to_back_efficiency=1.0, fourth_quarter_dropoff=0.0, rest_day_boost=1.0,
+                load_threshold=35.0, recovery_factor=1.0, games_played=0, average_minutes=0.0
+            )
+        
+        # Convertir a listas para análisis
+        games_data = []
+        for i, game in enumerate(games):
+            points = float(game.points or 0)
+            rebounds = float(game.rebounds or 0)
+            assists = float(game.assists or 0)
+            steals = float(game.steals or 0)
+            blocks = float(game.blocks or 0)
+            turnovers = float(game.turnovers or 0)
+            minutes = float(game.minutes_played or 0)
+            fgm = float(game.field_goals_made or 0)
+            fga = float(game.field_goals_attempted or 0)
+            pm = float(game.plusminus or 0)
+            
+            # Calcular game score como métrica de rendimiento
+            game_score = points + (0.4 * fgm) - (0.7 * fga) + (0.7 * rebounds) + (0.7 * assists) + steals + (0.7 * blocks) - (0.4 * turnovers)
+            
+            # Eficiencia del juego
+            efficiency = pm / minutes if minutes > 0 else 0
+            
+            games_data.append({
+                'minutes': minutes,
+                'game_score': game_score,
+                'efficiency': efficiency,
+                'date': game.date,
+                'game_index': i
+            })
+        
+        # Calcular promedios básicos
+        total_games = len(games_data)
+        avg_minutes = sum(g['minutes'] for g in games_data) / total_games
+        avg_game_score = sum(g['game_score'] for g in games_data) / total_games
+        avg_efficiency = sum(g['efficiency'] for g in games_data) / total_games
+        
+        # 1. PEAK PERFORMANCE MINUTES
+        # Analizar rendimiento por rangos de minutos
+        minute_buckets = {
+            'low': [],      # < 25 min
+            'medium': [],   # 25-35 min
+            'high': [],     # 35-42 min
+            'extreme': []   # > 42 min
+        }
+        
+        for game in games_data:
+            minutes = game['minutes']
+            score = game['game_score']
+            
+            if minutes < 25:
+                minute_buckets['low'].append(score)
+            elif minutes < 35:
+                minute_buckets['medium'].append(score)
+            elif minutes < 42:
+                minute_buckets['high'].append(score)
+            else:
+                minute_buckets['extreme'].append(score)
+        
+        # Calcular promedios por bucket
+        bucket_averages = {}
+        for bucket, scores in minute_buckets.items():
+            if scores:
+                bucket_averages[bucket] = sum(scores) / len(scores)
+            else:
+                bucket_averages[bucket] = 0
+        
+        # Encontrar el rango óptimo
+        best_bucket = max(bucket_averages, key=bucket_averages.get)
+        peak_performance_minutes = {
+            'low': 22.0,
+            'medium': 30.0,
+            'high': 38.0,
+            'extreme': 45.0
+        }.get(best_bucket, 32.0)
+        
+        # 2. ENDURANCE RATING
+        # Comparar rendimiento en juegos de muchos minutos vs pocos
+        high_minute_games = [g for g in games_data if g['minutes'] > avg_minutes + 5]
+        low_minute_games = [g for g in games_data if g['minutes'] < avg_minutes - 5]
+        
+        if high_minute_games and low_minute_games:
+            high_avg = sum(g['game_score'] for g in high_minute_games) / len(high_minute_games)
+            low_avg = sum(g['game_score'] for g in low_minute_games) / len(low_minute_games)
+            
+            endurance_ratio = high_avg / low_avg if low_avg > 0 else 1.0
+            endurance_rating = min(100, max(0, endurance_ratio * 50))
+        else:
+            endurance_rating = 50.0
+        
+        # 3. BACK-TO-BACK EFFICIENCY
+        # Simular back-to-back usando games consecutivos
+        b2b_performance = []
+        regular_performance = []
+        
+        for i in range(1, len(games_data)):
+            current_game = games_data[i]
+            prev_game = games_data[i-1]
+            
+            # Si los juegos están cerca en fecha (simulando B2B)
+            days_diff = (current_game['date'] - prev_game['date']).days
+            
+            if days_diff <= 2:  # Simular back-to-back o juegos muy seguidos
+                b2b_performance.append(current_game['efficiency'])
+            elif days_diff >= 3:  # Juegos con descanso
+                regular_performance.append(current_game['efficiency'])
+        
+        if b2b_performance and regular_performance:
+            b2b_avg = sum(b2b_performance) / len(b2b_performance)
+            regular_avg = sum(regular_performance) / len(regular_performance)
+            back_to_back_efficiency = b2b_avg / regular_avg if regular_avg != 0 else 1.0
+        else:
+            back_to_back_efficiency = 1.0
+        
+        back_to_back_efficiency = max(0.5, min(1.5, back_to_back_efficiency))
+        
+        # 4. FOURTH QUARTER DROPOFF
+        # Aproximar usando decline en performance en últimos 20% de games
+        last_20_percent = games_data[-max(1, int(total_games * 0.2)):]
+        first_80_percent = games_data[:int(total_games * 0.8)]
+        
+        if last_20_percent and first_80_percent:
+            late_avg = sum(g['game_score'] for g in last_20_percent) / len(last_20_percent)
+            early_avg = sum(g['game_score'] for g in first_80_percent) / len(first_80_percent)
+            
+            fourth_quarter_dropoff = max(0, (early_avg - late_avg) / early_avg if early_avg > 0 else 0)
+        else:
+            fourth_quarter_dropoff = 0.0
+        
+        fourth_quarter_dropoff = min(0.5, fourth_quarter_dropoff)
+        
+        # 5. REST DAY BOOST
+        # Analizar performance después de gaps de 3+ días
+        rest_boost_games = []
+        for i in range(1, len(games_data)):
+            days_diff = (games_data[i]['date'] - games_data[i-1]['date']).days
+            if days_diff >= 3:
+                rest_boost_games.append(games_data[i]['efficiency'])
+        
+        if rest_boost_games and regular_performance:
+            rest_avg = sum(rest_boost_games) / len(rest_boost_games)
+            regular_avg = sum(regular_performance) / len(regular_performance)
+            rest_day_boost = rest_avg / regular_avg if regular_avg != 0 else 1.0
+        else:
+            rest_day_boost = 1.0
+        
+        rest_day_boost = max(0.8, min(1.4, rest_day_boost))
+        
+        # 6. LOAD THRESHOLD
+        # Minutos donde performance comienza a declinar
+        performance_by_minutes = {}
+        for game in games_data:
+            minute_bracket = int(game['minutes'] // 5) * 5  # Group by 5-minute brackets
+            if minute_bracket not in performance_by_minutes:
+                performance_by_minutes[minute_bracket] = []
+            performance_by_minutes[minute_bracket].append(game['game_score'])
+        
+        # Calcular promedio por bracket
+        bracket_averages = {}
+        for bracket, scores in performance_by_minutes.items():
+            if len(scores) >= 2:  # Solo considerar brackets con suficientes datos
+                bracket_averages[bracket] = sum(scores) / len(scores)
+        
+        # Encontrar el punto donde performance empieza a declinar
+        load_threshold = 35.0  # Default
+        if len(bracket_averages) >= 3:
+            sorted_brackets = sorted(bracket_averages.items())
+            peak_performance = max(bracket_averages.values())
+            
+            for bracket, avg_score in sorted_brackets:
+                if avg_score < peak_performance * 0.95:  # 5% decline
+                    load_threshold = float(bracket)
+                    break
+        
+        # 7. RECOVERY FACTOR
+        # Qué tan rápido se recupera después de juegos de muchos minutos
+        recovery_games = []
+        for i in range(1, len(games_data)):
+            if games_data[i-1]['minutes'] > avg_minutes + 8:  # Juego anterior de muchos minutos
+                recovery_games.append(games_data[i]['efficiency'])
+        
+        if recovery_games:
+            recovery_avg = sum(recovery_games) / len(recovery_games)
+            recovery_factor = recovery_avg / avg_efficiency if avg_efficiency != 0 else 1.0
+        else:
+            recovery_factor = 1.0
+        
+        recovery_factor = max(0.6, min(1.3, recovery_factor))
+        
+        # 8. FATIGUE RESISTANCE FINAL
+        # Combinar factores en score 0-100
+        endurance_component = (endurance_rating / 100) * 30
+        b2b_component = (back_to_back_efficiency - 0.5) * 40
+        dropoff_component = (1 - fourth_quarter_dropoff) * 20
+        recovery_component = (recovery_factor - 0.6) / 0.7 * 10
+        
+        fatigue_resistance = endurance_component + b2b_component + dropoff_component + recovery_component
+        fatigue_resistance = max(0, min(100, fatigue_resistance))
+        
+        return FatiguePerformanceCurve(
+            fatigue_resistance=round(fatigue_resistance, 1),
+            peak_performance_minutes=round(peak_performance_minutes, 1),
+            endurance_rating=round(endurance_rating, 1),
+            back_to_back_efficiency=round(back_to_back_efficiency, 2),
+            fourth_quarter_dropoff=round(fourth_quarter_dropoff, 3),
+            rest_day_boost=round(rest_day_boost, 2),
+            load_threshold=round(load_threshold, 1),
+            recovery_factor=round(recovery_factor, 2),
+            games_played=total_games,
+            average_minutes=round(avg_minutes, 1)
+        )
+        
+    except Exception as e:
+        print(f"Error in player_fatigue_performance_curve: {str(e)}")
         raise
