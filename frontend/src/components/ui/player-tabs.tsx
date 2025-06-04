@@ -10,7 +10,8 @@ import {
     TrendingUp,
     Target,
     Activity,
-    Clock
+    Clock,
+    Shield
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTheme } from "next-themes"
@@ -36,7 +37,8 @@ import {
     PolarAngleAxis,
     PolarGrid,
     PolarRadiusAxis,
-    Tooltip
+    Tooltip,
+    Cell
 } from "recharts"
 import { BarChart as ReBarChart, Bar, CartesianGrid, LabelList, Tooltip as BarTooltip, ReferenceLine } from "recharts";
 import { AreaChart as ReAreaChart, Area, Tooltip as AreaTooltip } from "recharts";
@@ -45,6 +47,7 @@ import {
     ScatterChart,
     Scatter,
 } from "recharts";
+
 
 // Añadir este import para el tooltip personalizado
 import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
@@ -184,6 +187,34 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         games_played: number;
         minutes_per_game: number;
     } | null>(null);
+
+    // Añadir este estado junto con los otros estados
+    const [pipmpImpact, setPipmpImpact] = useState<{
+        total_pipm: number;
+        offensive_pimp: number;
+        defensive_pimp: number;
+        box_prior_weight: number;
+        plus_minus_weight: number;
+        stability_factor: number;
+        minutes_confidence: number;
+        games_played: number;
+        usage_rate: number;
+    } | null>(null);
+
+    // Añadir este estado para los datos PIPM por posición
+    const [pipmpPositionAverages, setPipmpPositionAverages] = useState<{
+        position: string;
+        total_pipm: number;
+        offensive_pimp: number;
+        defensive_pimp: number;
+        box_prior_weight: number;
+        plus_minus_weight: number;
+        stability_factor: number;
+        minutes_confidence: number;
+        usage_rate: number;
+        minutes_per_game: number;
+        is_player_position: boolean;
+    }[]>([]);
 
     // Añadir este estado para controlar la animación
     const [needleAnimated, setNeedleAnimated] = useState(false);
@@ -353,6 +384,56 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             }
         }
         if (isUltimate) fetchLebronImpact();
+    }, [player.id, isUltimate]);
+
+    // Fetch PIPM impact data
+    useEffect(() => {
+        async function fetchPipmpImpact() {
+            try {
+                const res = await axios.get<{
+                    total_pipm: number;
+                    offensive_pimp: number;
+                    defensive_pimp: number;
+                    box_prior_weight: number;
+                    plus_minus_weight: number;
+                    stability_factor: number;
+                    minutes_confidence: number;
+                    games_played: number;
+                    usage_rate: number;
+                }>(`${process.env.NEXT_PUBLIC_API_URL}/players/${player.id}/advanced/pipm-impact`);
+                setPipmpImpact(res.data);
+            } catch (e) {
+                console.error("Error fetching PIPM impact:", e);
+                setPipmpImpact(null);
+            }
+        }
+        if (isUltimate) fetchPipmpImpact();
+    }, [player.id, isUltimate]);
+
+    // Añadir este useEffect para obtener los datos PIPM por posición
+    useEffect(() => {
+        async function fetchPipmpPositionAverages() {
+            try {
+                const res = await axios.get<{
+                    position: string;
+                    total_pipm: number;
+                    offensive_pimp: number;
+                    defensive_pimp: number;
+                    box_prior_weight: number;
+                    plus_minus_weight: number;
+                    stability_factor: number;
+                    minutes_confidence: number;
+                    usage_rate: number;
+                    minutes_per_game: number;
+                    is_player_position: boolean;
+                }[]>(`${process.env.NEXT_PUBLIC_API_URL}/players/${player.id}/advanced/pipm-position-averages`);
+                setPipmpPositionAverages(res.data);
+            } catch (e) {
+                console.error("Error fetching PIPM position averages:", e);
+                setPipmpPositionAverages([]);
+            }
+        }
+        if (isUltimate) fetchPipmpPositionAverages();
     }, [player.id, isUltimate]);
 
     // Añadir este useEffect para activar la animación cuando se entra a Ultimate
@@ -755,6 +836,87 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
             })()
         }
     ] : [];
+
+    const pipmpScatterData = useMemo(() => {
+        const data = [];
+
+        // Añadir promedios PIPM por posición
+        pipmpPositionAverages.forEach(pos => {
+            data.push({
+                name: `${pos.position} Average`,
+                position: pos.position,
+                offensive_pimp: pos.offensive_pimp,
+                defensive_pimp: pos.defensive_pimp,
+                total_pipm: pos.total_pipm,
+                usage_rate: pos.usage_rate,
+                minutes_per_game: pos.minutes_per_game,
+                box_prior_weight: pos.box_prior_weight,
+                plus_minus_weight: pos.plus_minus_weight,
+                stability_factor: pos.stability_factor,
+                minutes_confidence: pos.minutes_confidence,
+                is_player: false,
+                is_player_position: pos.is_player_position
+            });
+        });
+
+        // Añadir datos del jugador
+        if (pipmpImpact) {
+            data.push({
+                name: player.name || "Player",
+                position: "Player",
+                offensive_pimp: pipmpImpact.offensive_pimp,
+                defensive_pimp: pipmpImpact.defensive_pimp,
+                total_pipm: pipmpImpact.total_pipm,
+                usage_rate: pipmpImpact.usage_rate,
+                minutes_per_game: 0, // No tenemos esto en pipmpImpact
+                box_prior_weight: pipmpImpact.box_prior_weight,
+                plus_minus_weight: pipmpImpact.plus_minus_weight,
+                stability_factor: pipmpImpact.stability_factor,
+                minutes_confidence: pipmpImpact.minutes_confidence,
+                is_player: true,
+                is_player_position: false
+            });
+        }
+
+        return data;
+    }, [pipmpPositionAverages, pipmpImpact, player.name]);
+
+    // Tooltip del scatter plot PIPM (actualizar el existente)
+    const PipmpScatterTooltip = ({ active, payload }: any) => {
+        if (active && payload && payload.length) {
+            const data = payload[0].payload;
+            return (
+                <div className="rounded-lg border bg-card p-3 shadow-md">
+                    <p className="font-medium text-sm mb-2">{data.name}</p>
+                    <div className="space-y-1 text-xs">
+                        <div className="flex justify-between">
+                            <span className="text-muted-foreground">Total PIPM:</span>
+                            <span className="font-medium">{data.total_pipm?.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-muted-foreground">Offensive:</span>
+                            <span className="font-medium">{data.offensive_pimp?.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-muted-foreground">Defensive:</span>
+                            <span className="font-medium">{data.defensive_pimp?.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-muted-foreground">Usage Rate:</span>
+                            <span className="font-medium">{data.usage_rate?.toFixed(1)}%</span>
+                        </div>
+                        {data.stability_factor !== undefined && (
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">Stability:</span>
+                                <span className="font-medium">{data.stability_factor?.toFixed(3)}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+        return null;
+    };
 
     return (
         <Tabs defaultValue="overview" className="mb-8" onValueChange={setActiveTab}>
@@ -2337,6 +2499,226 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                 </div>
                             </CardFooter>
                         </Card>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    <BarChart3 className="h-5 w-5 text-primary inline mr-2" />
+                                    PIPM Impact Analysis
+                                </CardTitle>
+                                <CardDescription>
+                                    Offensive vs Defensive PIPM by position
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div style={{ width: "100%", height: 400 }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        {pipmpScatterData.length > 0 ? (
+                                            <ScatterChart
+                                                data={pipmpScatterData}
+                                                margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                                            >
+                                                <CartesianGrid
+                                                    strokeDasharray="3 3"
+                                                    stroke={resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"}
+                                                    horizontal={true}
+                                                    vertical={true}
+                                                />
+                                                <XAxis
+                                                    type="number"
+                                                    dataKey="offensive_pimp"
+                                                    name="Offensive PIMP"
+                                                    domain={['dataMin - 1', 'dataMax + 1']}
+                                                    tick={{
+                                                        fontSize: 12,
+                                                        fill: resolvedTheme === "dark" ? "#e2e8f0" : "#475569"
+                                                    }}
+                                                    axisLine={{
+                                                        stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                                                        strokeWidth: 1
+                                                    }}
+                                                    tickLine={{
+                                                        stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                                                        strokeWidth: 1
+                                                    }}
+                                                    tickFormatter={(value) => value.toFixed(1)}
+                                                    label={{
+                                                        value: 'Offensive PIMP',
+                                                        position: 'insideBottom',
+                                                        offset: -10,
+                                                        style: {
+                                                            textAnchor: 'middle',
+                                                            fill: resolvedTheme === "dark" ? "#94a3b8" : "#64748b"
+                                                        }
+                                                    }}
+                                                />
+                                                <YAxis
+                                                    type="number"
+                                                    dataKey="defensive_pimp"
+                                                    name="Defensive PIMP"
+                                                    domain={['dataMin - 1', 'dataMax + 1']}
+                                                    tick={{
+                                                        fontSize: 12,
+                                                        fill: resolvedTheme === "dark" ? "#e2e8f0" : "#475569"
+                                                    }}
+                                                    axisLine={{
+                                                        stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                                                        strokeWidth: 1
+                                                    }}
+                                                    tickLine={{
+                                                        stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                                                        strokeWidth: 1
+                                                    }}
+                                                    tickFormatter={(value) => value.toFixed(1)}
+                                                    label={{
+                                                        value: 'Defensive PIMP',
+                                                        angle: -90,
+                                                        position: 'insideLeft',
+                                                        style: {
+                                                            textAnchor: 'middle',
+                                                            fill: resolvedTheme === "dark" ? "#94a3b8" : "#64748b"
+                                                        }
+                                                    }}
+                                                />
+                                                <Tooltip content={<PipmpScatterTooltip />} />
+
+                                                {/* Líneas de referencia en 0 */}
+                                                <ReferenceLine
+                                                    x={0}
+                                                    stroke={resolvedTheme === 'dark' ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)"}
+                                                    strokeDasharray="2 2"
+                                                />
+                                                <ReferenceLine
+                                                    y={0}
+                                                    stroke={resolvedTheme === 'dark' ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)"}
+                                                    strokeDasharray="2 2"
+                                                />
+
+                                                {/* Scatter para promedios de posiciones (mismo estilo que el primer gráfico) */}
+                                                <Scatter
+                                                    dataKey="offensive_pimp"
+                                                    data={pipmpScatterData.filter(d => !d.is_player)}
+                                                    fill="#8884d8"
+                                                    shape={(props) => {
+                                                        const { cx, cy, payload } = props;
+                                                        return (
+                                                            <circle
+                                                                cx={cx}
+                                                                cy={cy}
+                                                                r={6}
+                                                                fill={getPositionColor(payload)}
+                                                                stroke={payload?.is_player_position ? 
+                                                                    (resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(0, 80%, 50%)") : 
+                                                                    "none"
+                                                                }
+                                                                strokeWidth={payload?.is_player_position ? 3 : 0}
+                                                                opacity={0.8}
+                                                            />
+                                                        );
+                                                    }}
+                                                />
+
+                                                {/* Scatter para el jugador (más grande y destacado, mismo estilo que el primer gráfico) */}
+                                                <Scatter
+                                                    dataKey="offensive_pimp"
+                                                    data={pipmpScatterData.filter(d => d.is_player)}
+                                                    fill="#8884d8"
+                                                    shape={(props) => {
+                                                        const { cx, cy, payload } = props;
+                                                        return (
+                                                            <circle
+                                                                cx={cx}
+                                                                cy={cy}
+                                                                r={12} // Aumentado de 10 a 12
+                                                                fill={getPositionColor(payload)}
+                                                                stroke="none"
+                                                                strokeWidth={0}
+                                                            />
+                                                        );
+                                                    }}
+                                                />
+                                            </ScatterChart>
+                                        ) : (
+                                            <div className="flex items-center justify-center h-full">
+                                                <p className="text-muted-foreground">Loading PIPM data...</p>
+                                            </div>
+                                        )}
+                                    </ResponsiveContainer>
+                                </div>
+                            </CardContent>
+                            {/* Añadir leyenda como en el primer gráfico */}
+                            <div className="px-6 pb-4">
+                                <div className="flex flex-wrap justify-center gap-4 text-xs">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "hsl(270, 70%, 50%)" }}></div>
+                                        <span>Point Guard</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "hsl(195, 70%, 50%)" }}></div>
+                                        <span>Shooting Guard</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "hsl(120, 70%, 50%)" }}></div>
+                                        <span>Small Forward</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "hsl(45, 70%, 50%)" }}></div>
+                                        <span>Power Forward</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "hsl(15, 70%, 50%)" }}></div>
+                                        <span>Center</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(214, 80%, 55%)" }}></div>
+                                        <span>Current Player</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full border-2" style={{ 
+                                            backgroundColor: resolvedTheme === "dark" ? "#0f172a" : "#f8fafc", 
+                                            borderColor: resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(0, 80%, 50%)" 
+                                        }}></div>
+                                        <span>Player's Position Average</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <CardFooter className="border-t pt-4">
+                                <div className="w-full">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="font-semibold text-sm">PIPM Breakdown</h3>
+                                        <span className="text-xs text-muted-foreground">
+                                            {pipmpImpact?.games_played} games • {pipmpImpact?.usage_rate?.toFixed(1)}% usage
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <Activity className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Total PIPM</p>
+                                                <p className="font-bold">{pipmpImpact?.total_pipm?.toFixed(2) || "N/A"}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Offensive</p>
+                                                <p className="font-bold">{pipmpImpact?.offensive_pimp?.toFixed(2) || "N/A"}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Shield className="h-4 w-4 text-primary" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">Defensive</p>
+                                                <p className="font-bold">{pipmpImpact?.defensive_pimp?.toFixed(2) || "N/A"}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardFooter>
+                        </Card>
+
+                        {/* ...rest of existing cards... */}
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center py-16">

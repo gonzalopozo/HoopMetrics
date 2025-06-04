@@ -361,3 +361,16 @@ class RaptorWAR(SQLModel):
     injury_risk_factor: float
     games_played: int
     win_shares_comparison: float
+
+class PIPMPositionAverage(SQLModel):
+    position: str
+    total_pipm: float
+    offensive_pimp: float
+    defensive_pimp: float
+    box_prior_weight: float
+    plus_minus_weight: float
+    stability_factor: float
+    minutes_confidence: float
+    usage_rate: float
+    minutes_per_game: float
+    is_player_position: bool
