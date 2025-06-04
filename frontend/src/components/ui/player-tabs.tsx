@@ -2528,7 +2528,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                     type="number"
                                                     dataKey="offensive_pimp"
                                                     name="Offensive PIMP"
-                                                    domain={['dataMin - 1', 'dataMax + 1']}
+                                                    domain={[-0.5, 2.0]} // Cambiado a rango fijo
                                                     tick={{
                                                         fontSize: 12,
                                                         fill: resolvedTheme === "dark" ? "#e2e8f0" : "#475569"
@@ -2541,6 +2541,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                         stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
                                                         strokeWidth: 1
                                                     }}
+                                                    ticks={[-0.5, 0.0, 0.5, 1.0, 1.5, 2.0]} // Intervalos de 0.5
                                                     tickFormatter={(value) => value.toFixed(1)}
                                                     label={{
                                                         value: 'Offensive PIMP',
@@ -2556,7 +2557,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                     type="number"
                                                     dataKey="defensive_pimp"
                                                     name="Defensive PIMP"
-                                                    domain={['dataMin - 1', 'dataMax + 1']}
+                                                    domain={[-0.5, 4.0]} // Cambiado a rango fijo
                                                     tick={{
                                                         fontSize: 12,
                                                         fill: resolvedTheme === "dark" ? "#e2e8f0" : "#475569"
@@ -2569,6 +2570,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                         stroke: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
                                                         strokeWidth: 1
                                                     }}
+                                                    ticks={[-0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]} // Intervalos de 0.5
                                                     tickFormatter={(value) => value.toFixed(1)}
                                                     label={{
                                                         value: 'Defensive PIMP',
