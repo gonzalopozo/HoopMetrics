@@ -409,15 +409,17 @@ class TeamAdvancedEfficiency(SQLModel):
     taer_score: float              # Team Advanced Efficiency Rating (0-100)
 
 class TeamLineupImpactMatrix(SQLModel):
-    best_lineup_plus_minus: float      # Mejor combinación de 5 jugadores
-    worst_lineup_plus_minus: float     # Peor combinación de 5 jugadores
-    synergy_score: float               # Química entre jugadores clave
-    position_flexibility: float       # Versatilidad posicional del equipo
-    chemistry_rating: float           # Correlación tiempo jugado vs eficiencia
-    load_balance_index: float         # Distribución de minutos
-    injury_risk_factor: float         # Dependencia de jugadores clave
-    top_lineup_minutes: float         # Minutos de la mejor combinación
-    depth_factor: float               # Contribución del banquillo
+    best_lineup_plus_minus: float
+    worst_lineup_plus_minus: float
+    synergy_score: float
+    position_flexibility: float
+    chemistry_rating: float
+    load_balance_index: float
+    injury_risk_factor: float
+    top_lineup_minutes: float
+    depth_factor: float
+    player_synergies: Optional[List[dict]] = None
+    position_flexibility_data: Optional[List[dict]] = None
 
 class TeamMomentumResilience(SQLModel):
     lead_protection_rate: float       # % victorias cuando van ganando 10+

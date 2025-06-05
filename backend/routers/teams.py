@@ -696,148 +696,276 @@ async def team_players_contribution(id: int, session: AsyncSession = Depends(get
 
 @router.get("/{id}/advanced/efficiency-rating", response_model=TeamAdvancedEfficiency)
 async def team_advanced_efficiency_rating(id: int, session: AsyncSession = Depends(get_db)):
-    """
-    Team Advanced Efficiency Rating: Métrica híbrida que combina eficiencia ofensiva/defensiva 
-    con factores contextuales como pace, strength of schedule y clutch performance.
-    """
     try:
-        # Obtener jugadores del equipo
-        players_query = select(Player.id).where(Player.current_team_id == id)
-        players_result = await session.execute(players_query)
-        player_ids = [pid for (pid,) in players_result.all()]
-        
-        if not player_ids:
-            return TeamAdvancedEfficiency(
-                offensive_efficiency=100.0, defensive_efficiency=100.0, pace_factor=1.0,
-                strength_of_schedule=50.0, clutch_factor=1.0, consistency_index=0.5, taer_score=50.0
-            )
+        # 1. Obtener TODOS los equipos y sus estadísticas completas
+        teams_query = select(Team.id)
+        teams_result = await session.execute(teams_query)
+        all_team_ids = [tid for (tid,) in teams_result.all()]
 
-        # Obtener partidos del equipo
-        team_matches_query = select(Match.id, Match.home_team_id, Match.away_team_id, 
-                                   Match.home_score, Match.away_score, Match.date).where(
-            ((Match.home_team_id == id) | (Match.away_team_id == id)) & 
-            (Match.home_score.is_not(None))
-        )
-        team_matches_result = await session.execute(team_matches_query)
-        matches = team_matches_result.all()
+        # 2. Obtener TODOS los partidos de la liga
+        matches_query = select(
+            Match.id, Match.home_team_id, Match.away_team_id, Match.home_score, Match.away_score, Match.date
+        ).where(Match.home_score.is_not(None))
+        matches_result = await session.execute(matches_query)
+        all_matches = matches_result.all()
         
-        if not matches:
-            return TeamAdvancedEfficiency(
-                offensive_efficiency=100.0, defensive_efficiency=100.0, pace_factor=1.0,
-                strength_of_schedule=50.0, clutch_factor=1.0, consistency_index=0.5, taer_score=50.0
-            )
+        if not all_matches:
+            raise HTTPException(status_code=404, detail="No matches found")
 
-        match_ids = [m.id for m in matches]
-        
-        # 1. OFFENSIVE/DEFENSIVE EFFICIENCY
-        # Calcular posesiones estimadas por partido (usando FGA + 0.44*FTA + TO como proxy)
-        possessions_query = select(
+        # 3. Obtener TODAS las estadísticas de TODOS los jugadores
+        stats_query = select(
             MatchStatistic.match_id,
-            func.sum(MatchStatistic.field_goals_attempted + 
-                    0.44 * func.coalesce(MatchStatistic.free_throws_attempted, 0) + 
-                    func.coalesce(MatchStatistic.turnovers, 0)).label("possessions"),
-            func.sum(MatchStatistic.points).label("points_scored")
-        ).where(
-            MatchStatistic.player_id.in_(player_ids),
-            MatchStatistic.match_id.in_(match_ids)
-        ).group_by(MatchStatistic.match_id)
+            MatchStatistic.player_id,
+            MatchStatistic.points,
+            MatchStatistic.field_goals_attempted,
+            MatchStatistic.field_goals_made,
+            MatchStatistic.three_points_attempted,
+            MatchStatistic.three_points_made,
+            MatchStatistic.free_throws_attempted,
+            MatchStatistic.free_throws_made,
+            MatchStatistic.turnovers,
+            MatchStatistic.rebounds,
+            MatchStatistic.assists,
+            MatchStatistic.steals,
+            MatchStatistic.blocks
+        )
+        stats_result = await session.execute(stats_query)
+        all_stats = stats_result.all()
+
+        # 4. Mapear jugadores a equipos
+        players_query = select(Player.id, Player.current_team_id)
+        players_result = await session.execute(players_query)
+        player_team_map = {pid: tid for pid, tid in players_result.all()}
+
+        # 5. Calcular estadísticas por equipo y partido
+        team_game_stats = {}
+        for match_id, player_id, points, fga, fgm, tpa, tpm, fta, ftm, tov, reb, ast, stl, blk in all_stats:
+            team_id = player_team_map.get(player_id)
+            if not team_id:
+                continue
+                
+            key = (team_id, match_id)
+            if key not in team_game_stats:
+                team_game_stats[key] = {
+                    'points': 0, 'fga': 0, 'fgm': 0, 'tpa': 0, 'tpm': 0,
+                    'fta': 0, 'ftm': 0, 'tov': 0, 'reb': 0, 'ast': 0, 'stl': 0, 'blk': 0
+                }
+            
+            team_game_stats[key]['points'] += points or 0
+            team_game_stats[key]['fga'] += fga or 0
+            team_game_stats[key]['fgm'] += fgm or 0
+            team_game_stats[key]['tpa'] += tpa or 0
+            team_game_stats[key]['tpm'] += tpm or 0
+            team_game_stats[key]['fta'] += fta or 0
+            team_game_stats[key]['ftm'] += ftm or 0
+            team_game_stats[key]['tov'] += tov or 0
+            team_game_stats[key]['reb'] += reb or 0
+            team_game_stats[key]['ast'] += ast or 0
+            team_game_stats[key]['stl'] += stl or 0
+            team_game_stats[key]['blk'] += blk or 0
+
+        # 6. Calcular métricas avanzadas por equipo
+        team_advanced_stats = {}
         
-        possessions_result = await session.execute(possessions_query)
-        possessions_data = possessions_result.all()
-        
-        # Calcular puntos permitidos por partido
-        points_allowed = []
-        for match in matches:
-            if match.home_team_id == id:
-                points_allowed.append(float(match.away_score))
+        for team_id in all_team_ids:
+            team_games = []
+            team_off_ratings = []
+            team_def_ratings = []
+            team_net_ratings = []
+            team_pace_values = []
+            team_ts_values = []
+            team_efg_values = []
+            team_tov_rates = []
+            team_reb_rates = []
+            
+            wins = 0
+            total_games = 0
+            clutch_wins = 0
+            clutch_games = 0
+            blowout_wins = 0
+            blowout_games = 0
+            
+            for match in all_matches:
+                if match.home_team_id == team_id or match.away_team_id == team_id:
+                    team_stats = team_game_stats.get((team_id, match.id), {})
+                    opp_id = match.away_team_id if match.home_team_id == team_id else match.home_team_id
+                    opp_stats = team_game_stats.get((opp_id, match.id), {})
+                    
+                    if not team_stats or not opp_stats:
+                        continue
+                    
+                    # Calcular posesiones (fórmula estándar NBA)
+                    team_poss = team_stats.get('fga', 0) + 0.44 * team_stats.get('fta', 0) + team_stats.get('tov', 0)
+                    opp_poss = opp_stats.get('fga', 0) + 0.44 * opp_stats.get('fta', 0) + opp_stats.get('tov', 0)
+                    
+                    if team_poss > 0 and opp_poss > 0:
+                        # Offensive/Defensive Rating (puntos por 100 posesiones)
+                        off_rating = (team_stats.get('points', 0) / team_poss) * 100
+                        def_rating = (opp_stats.get('points', 0) / opp_poss) * 100
+                        net_rating = off_rating - def_rating
+                        
+                        # Pace (posesiones por 48 minutos)
+                        pace = (team_poss + opp_poss) / 2
+                        
+                        # True Shooting %
+                        tsa = team_stats.get('fga', 0) + 0.44 * team_stats.get('fta', 0)
+                        ts_pct = team_stats.get('points', 0) / (2 * tsa) if tsa > 0 else 0
+                        
+                        # Effective FG%
+                        efg_pct = (team_stats.get('fgm', 0) + 0.5 * team_stats.get('tpm', 0)) / team_stats.get('fga', 1)
+                        
+                        # Turnover Rate
+                        tov_rate = team_stats.get('tov', 0) / team_poss if team_poss > 0 else 0
+                        
+                        # Rebound Rate (aproximado)
+                        total_reb = team_stats.get('reb', 0) + opp_stats.get('reb', 0)
+                        reb_rate = team_stats.get('reb', 0) / total_reb if total_reb > 0 else 0.5
+                        
+                        team_off_ratings.append(off_rating)
+                        team_def_ratings.append(def_rating)
+                        team_net_ratings.append(net_rating)
+                        team_pace_values.append(pace)
+                        team_ts_values.append(ts_pct)
+                        team_efg_values.append(efg_pct)
+                        team_tov_rates.append(tov_rate)
+                        team_reb_rates.append(reb_rate)
+                        
+                        # Win/Loss tracking
+                        is_home = match.home_team_id == team_id
+                        team_score = match.home_score if is_home else match.away_score
+                        opp_score = match.away_score if is_home else match.home_score
+                        margin = team_score - opp_score
+                        
+                        total_games += 1
+                        if margin > 0:
+                            wins += 1
+                        
+                        # Clutch games (≤5 points)
+                        if abs(margin) <= 5:
+                            clutch_games += 1
+                            if margin > 0:
+                                clutch_wins += 1
+                        
+                        # Blowout games (≥15 points)
+                        if abs(margin) >= 15:
+                            blowout_games += 1
+                            if margin > 0:
+                                blowout_wins += 1
+            
+            # Calcular promedios del equipo
+            if team_off_ratings:
+                team_advanced_stats[team_id] = {
+                    'off_rating': sum(team_off_ratings) / len(team_off_ratings),
+                    'def_rating': sum(team_def_ratings) / len(team_def_ratings),
+                    'net_rating': sum(team_net_ratings) / len(team_net_ratings),
+                    'pace': sum(team_pace_values) / len(team_pace_values),
+                    'ts_pct': sum(team_ts_values) / len(team_ts_values),
+                    'efg_pct': sum(team_efg_values) / len(team_efg_values),
+                    'tov_rate': sum(team_tov_rates) / len(team_tov_rates),
+                    'reb_rate': sum(team_reb_rates) / len(team_reb_rates),
+                    'win_pct': wins / total_games if total_games > 0 else 0,
+                    'clutch_pct': clutch_wins / clutch_games if clutch_games > 0 else 0.5,
+                    'blowout_pct': blowout_wins / blowout_games if blowout_games > 0 else 0.5,
+                    'games': total_games,
+                    'consistency': 1 - (sum((x - sum(team_net_ratings)/len(team_net_ratings))**2 for x in team_net_ratings) / len(team_net_ratings))**0.5 / 20
+                }
             else:
-                points_allowed.append(float(match.home_score))
+                team_advanced_stats[team_id] = {
+                    'off_rating': 100, 'def_rating': 100, 'net_rating': 0, 'pace': 100,
+                    'ts_pct': 0.55, 'efg_pct': 0.5, 'tov_rate': 0.15, 'reb_rate': 0.5,
+                    'win_pct': 0.5, 'clutch_pct': 0.5, 'blowout_pct': 0.5, 'games': 0, 'consistency': 0.5
+                }
+
+        # 7. Calcular strength of schedule
+        team_sos = {}
+        for team_id in all_team_ids:
+            opp_win_pcts = []
+            for match in all_matches:
+                if match.home_team_id == team_id:
+                    opp_id = match.away_team_id
+                elif match.away_team_id == team_id:
+                    opp_id = match.home_team_id
+                else:
+                    continue
+                
+                opp_win_pct = team_advanced_stats.get(opp_id, {}).get('win_pct', 0.5)
+                opp_win_pcts.append(opp_win_pct)
+            
+            team_sos[team_id] = sum(opp_win_pcts) / len(opp_win_pcts) if opp_win_pcts else 0.5
+
+        # 8. Calcular percentiles y z-scores REALES
+        def calculate_percentile_rank(value, all_values):
+            """Calcula el percentil real de un valor en una lista"""
+            sorted_values = sorted(all_values)
+            n = len(sorted_values)
+            
+            # Encontrar posición del valor
+            count_below = sum(1 for v in sorted_values if v < value)
+            count_equal = sum(1 for v in sorted_values if v == value)
+            
+            # Percentil = (count_below + 0.5 * count_equal) / n * 100
+            percentile = (count_below + 0.5 * count_equal) / n * 100
+            return percentile
+
+        # Obtener todas las métricas de la liga
+        all_off_ratings = [stats['off_rating'] for stats in team_advanced_stats.values()]
+        all_def_ratings = [stats['def_rating'] for stats in team_advanced_stats.values()]
+        all_net_ratings = [stats['net_rating'] for stats in team_advanced_stats.values()]
+        all_ts_pcts = [stats['ts_pct'] for stats in team_advanced_stats.values()]
+        all_tov_rates = [stats['tov_rate'] for stats in team_advanced_stats.values()]
+        all_reb_rates = [stats['reb_rate'] for stats in team_advanced_stats.values()]
+        all_sos = list(team_sos.values())
+
+        # 9. Calcular TAER Score para el equipo solicitado
+        team_stats = team_advanced_stats.get(id, {})
         
-        # Promedios de eficiencia - CONVERTIR A FLOAT
-        avg_possessions = float(sum(float(p.possessions or 0) for p in possessions_data) / len(possessions_data)) if possessions_data else 100.0
-        avg_points_scored = float(sum(float(p.points_scored or 0) for p in possessions_data) / len(possessions_data)) if possessions_data else 100.0
-        avg_points_allowed = float(sum(points_allowed) / len(points_allowed)) if points_allowed else 100.0
+        if team_stats.get('games', 0) == 0:
+            return TeamAdvancedEfficiency(
+                offensive_efficiency=100.0, defensive_efficiency=100.0, pace_factor=1.0,
+                strength_of_schedule=50.0, clutch_factor=0.5, consistency_index=0.5, taer_score=50.0
+            )
+
+        # Calcular percentiles para cada métrica
+        off_percentile = calculate_percentile_rank(team_stats['off_rating'], all_off_ratings)
+        def_percentile = calculate_percentile_rank(team_stats['def_rating'], all_def_ratings)  # Menor es mejor
+        def_percentile = 100 - def_percentile  # Invertir para que menor sea mejor
         
-        offensive_efficiency = (avg_points_scored / avg_possessions) * 100.0 if avg_possessions > 0 else 100.0
-        defensive_efficiency = (avg_points_allowed / avg_possessions) * 100.0 if avg_possessions > 0 else 100.0
+        net_percentile = calculate_percentile_rank(team_stats['net_rating'], all_net_ratings)
+        ts_percentile = calculate_percentile_rank(team_stats['ts_pct'], all_ts_pcts)
+        tov_percentile = calculate_percentile_rank(team_stats['tov_rate'], all_tov_rates)
+        tov_percentile = 100 - tov_percentile  # Invertir para que menor sea mejor
         
-        # 2. PACE FACTOR (estimado vs liga)
-        league_avg_pace = 100.0  # Aproximación
-        team_pace = avg_possessions
-        pace_factor = team_pace / league_avg_pace
-        
-        # 3. STRENGTH OF SCHEDULE
-        # Calcular win% de oponentes
-        opponent_teams = []
-        for match in matches:
-            opponent_id = match.away_team_id if match.home_team_id == id else match.home_team_id
-            opponent_teams.append(opponent_id)
-        
-        # Win% promedio de oponentes (simplificado)
-        opponent_records_query = select(
-            func.count(Match.id).filter(
-                ((Match.home_team_id.in_(opponent_teams)) & (Match.home_score > Match.away_score)) |
-                ((Match.away_team_id.in_(opponent_teams)) & (Match.away_score > Match.home_score))
-            ).label("wins"),
-            func.count(Match.id).filter(Match.home_score.is_not(None)).label("total_games")
-        ).where(
-            (Match.home_team_id.in_(opponent_teams)) | (Match.away_team_id.in_(opponent_teams))
+        reb_percentile = calculate_percentile_rank(team_stats['reb_rate'], all_reb_rates)
+        sos_percentile = calculate_percentile_rank(team_sos.get(id, 0.5), all_sos)
+
+        # 10. TAER Score final con pesos optimizados
+        taer_score = (
+            net_percentile * 0.35 +           # 35% - Net Rating (lo más importante)
+            off_percentile * 0.20 +           # 20% - Offensive efficiency
+            def_percentile * 0.20 +           # 20% - Defensive efficiency  
+            ts_percentile * 0.10 +            # 10% - Shooting efficiency
+            tov_percentile * 0.05 +           # 5% - Ball security
+            reb_percentile * 0.05 +           # 5% - Rebounding
+            sos_percentile * 0.05             # 5% - Strength of schedule
         )
-        
-        opponent_result = await session.execute(opponent_records_query)
-        opp_wins, opp_total = opponent_result.one()
-        strength_of_schedule = float(opp_wins) / float(opp_total) * 100.0 if opp_total > 0 else 50.0
-        
-        # 4. CLUTCH FACTOR (últimos 5 minutos - aproximado usando plus/minus)
-        clutch_query = select(
-            func.avg(MatchStatistic.plusminus).label("avg_clutch_pm")
-        ).where(
-            MatchStatistic.player_id.in_(player_ids),
-            MatchStatistic.match_id.in_(match_ids),
-            MatchStatistic.minutes_played >= 5  # Proxy para jugadores en momentos clutch
-        )
-        
-        clutch_result = await session.execute(clutch_query)
-        avg_clutch_pm = clutch_result.scalar()
-        avg_clutch_pm = float(avg_clutch_pm) if avg_clutch_pm is not None else 0.0
-        clutch_factor = 1.0 + (avg_clutch_pm / 10.0)  # Normalizar
-        clutch_factor = max(0.5, min(1.5, clutch_factor))
-        
-        # 5. CONSISTENCY INDEX (varianza del net rating)
-        net_ratings = []
-        for i, match in enumerate(matches):
-            if i < len(possessions_data):
-                points_scored = float(possessions_data[i].points_scored or 0)
-                points_allowed_game = points_allowed[i]
-                net_rating = points_scored - points_allowed_game
-                net_ratings.append(net_rating)
-        
-        if len(net_ratings) > 1:
-            mean_net = sum(net_ratings) / len(net_ratings)
-            variance = sum((x - mean_net) ** 2 for x in net_ratings) / len(net_ratings)
-            std_dev = variance ** 0.5
-            consistency_index = max(0.1, 1.0 - (std_dev / 20.0))  # Normalizar
-        else:
-            consistency_index = 0.5
-        
-        # 6. TAER SCORE FINAL
-        # Combinar todos los factores en una métrica 0-100
-        efficiency_component = ((120.0 - defensive_efficiency) / 120.0 * 30.0) + ((offensive_efficiency - 80.0) / 40.0 * 30.0)
-        pace_component = abs(1.0 - pace_factor) * 10.0  # Penalizar extremos
-        schedule_component = strength_of_schedule / 100.0 * 15.0
-        clutch_component = (clutch_factor - 0.5) * 20.0
-        consistency_component = consistency_index * 15.0
-        
-        taer_score = efficiency_component + (15.0 - pace_component) + schedule_component + clutch_component + consistency_component
-        taer_score = max(10.0, min(90.0, taer_score))
-        
+
+        # Aplicar bonificaciones/penalizaciones por contexto
+        clutch_bonus = (team_stats['clutch_pct'] - 0.5) * 10  # +/-5 puntos max
+        consistency_bonus = (team_stats['consistency'] - 0.5) * 6  # +/-3 puntos max
+        blowout_bonus = (team_stats['blowout_pct'] - 0.5) * 4  # +/-2 puntos max
+
+        taer_score += clutch_bonus + consistency_bonus + blowout_bonus
+
+        # Asegurar rango realista (15-95)
+        taer_score = max(15.0, min(95.0, taer_score))
+
         return TeamAdvancedEfficiency(
-            offensive_efficiency=round(offensive_efficiency, 1),
-            defensive_efficiency=round(defensive_efficiency, 1),
-            pace_factor=round(pace_factor, 2),
-            strength_of_schedule=round(strength_of_schedule, 1),
-            clutch_factor=round(clutch_factor, 2),
-            consistency_index=round(consistency_index, 2),
+            offensive_efficiency=round(team_stats['off_rating'], 1),
+            defensive_efficiency=round(team_stats['def_rating'], 1),
+            pace_factor=round(team_stats['pace'] / 100, 2),
+            strength_of_schedule=round(team_sos.get(id, 0.5) * 100, 1),
+            clutch_factor=round(team_stats['clutch_pct'], 2),
+            consistency_index=round(team_stats['consistency'], 2),
             taer_score=round(taer_score, 1)
         )
         
@@ -1032,8 +1160,9 @@ async def team_momentum_resilience_index(id: int, session: AsyncSession = Depend
         
         for match in matches:
             is_home = match.home_team_id == id
-            team_score = match.home_score if is_home else match.away_score
-            opponent_score = match.away_score if is_home else match.home_score
+            # CONVERTIR A FLOAT PARA EVITAR ERROR DE TIPOS
+            team_score = float(match.home_score if is_home else match.away_score)
+            opponent_score = float(match.away_score if is_home else match.home_score)
             
             # Win/Loss
             is_win = team_score > opponent_score
@@ -1072,8 +1201,9 @@ async def team_momentum_resilience_index(id: int, session: AsyncSession = Depend
         
         for i, match in enumerate(matches):
             is_home = match.home_team_id == id
-            team_score = match.home_score if is_home else match.away_score
-            opponent_score = match.away_score if is_home else match.home_score
+            # CONVERTIR A FLOAT
+            team_score = float(match.home_score if is_home else match.away_score)
+            opponent_score = float(match.away_score if is_home else match.home_score)
             is_win = team_score > opponent_score
             
             if not is_win:
@@ -1107,7 +1237,8 @@ async def team_momentum_resilience_index(id: int, session: AsyncSession = Depend
         
         fourth_quarter_result = await session.execute(fourth_quarter_query)
         avg_pm_close = fourth_quarter_result.scalar() or 0
-        fourth_quarter_factor = avg_pm_close
+        # CONVERTIR A FLOAT
+        fourth_quarter_factor = float(avg_pm_close)
         
         # 5. PSYCHOLOGICAL EDGE (Home vs Away)
         home_wins = 0
@@ -1118,11 +1249,13 @@ async def team_momentum_resilience_index(id: int, session: AsyncSession = Depend
         for match in matches:
             if match.home_team_id == id:
                 home_games += 1
-                if match.home_score > match.away_score:
+                # CONVERTIR A FLOAT
+                if float(match.home_score) > float(match.away_score):
                     home_wins += 1
             else:
                 away_games += 1
-                if match.away_score > match.home_score:
+                # CONVERTIR A FLOAT
+                if float(match.away_score) > float(match.home_score):
                     away_wins += 1
         
         home_win_pct = (home_wins / home_games) if home_games > 0 else 0.5
@@ -1400,21 +1533,21 @@ async def team_clutch_dna_profile(id: int, session: AsyncSession = Depends(get_d
         match_ids = [m.id for m in matches]
         
         # 1. MULTI-SCENARIO CLUTCH
-        # Analizar rendimiento en diferentes tipos de partidos clutch
+        # 1. MULTI-SCENARIO CLUTCH - CORREGIDO
         close_games = 0  # ≤5 puntos
         very_close_games = 0  # ≤3 puntos
         overtime_games = 0
-        late_lead_games = 0  # Ganando en el último momento
-        
+        late_lead_games = 0
+
         close_wins = 0
         very_close_wins = 0
         overtime_wins = 0
         late_lead_wins = 0
-        
+
         for match in matches:
             is_home = match.home_team_id == id
-            team_score = float(match.home_score if is_home else match.away_score)  # CONVERTIR A FLOAT
-            opponent_score = float(match.away_score if is_home else match.home_score)  # CONVERTIR A FLOAT
+            team_score = float(match.home_score if is_home else match.away_score)
+            opponent_score = float(match.away_score if is_home else match.home_score)
             margin = abs(team_score - opponent_score)
             is_win = team_score > opponent_score
             
@@ -1429,18 +1562,18 @@ async def team_clutch_dna_profile(id: int, session: AsyncSession = Depends(get_d
                     if is_win:
                         very_close_wins += 1
             
-            # Simular overtime (partidos muy reñidos como proxy)
-            if margin <= 1:
+            # Partidos tipo overtime: diferencia ≤ 2 puntos (más realista)
+            if margin <= 2:
                 overtime_games += 1
                 if is_win:
                     overtime_wins += 1
             
-            # Late lead situations (scoring >110 points as proxy for leading)
+            # Late lead situations: scoring >110 as proxy
             if team_score >= 110:
                 late_lead_games += 1
                 if is_win:
                     late_lead_wins += 1
-        
+
         # Calcular win% promedio en situaciones clutch
         clutch_scenarios = []
         if close_games > 0:
@@ -1451,141 +1584,305 @@ async def team_clutch_dna_profile(id: int, session: AsyncSession = Depends(get_d
             clutch_scenarios.append(overtime_wins / overtime_games)
         if late_lead_games > 0:
             clutch_scenarios.append(late_lead_wins / late_lead_games)
-        
+
         multi_scenario_clutch = (sum(clutch_scenarios) / len(clutch_scenarios) * 100.0) if clutch_scenarios else 50.0
+
         
-        # 2. PRESSURE SHOOTING
-        # Analizar FG% en situaciones de presión (partidos cerrados)
+        # 2. PRESSURE SHOOTING - CORREGIDO
         pressure_shooting_query = select(
             func.sum(MatchStatistic.field_goals_made).label("total_fgm"),
             func.sum(MatchStatistic.field_goals_attempted).label("total_fga")
         ).where(
             MatchStatistic.player_id.in_(player_ids),
             MatchStatistic.match_id.in_(match_ids),
-            MatchStatistic.field_goals_attempted > 5  # Suficientes intentos
+            MatchStatistic.field_goals_attempted > 5
         )
         
         pressure_result = await session.execute(pressure_shooting_query)
         total_fgm, total_fga = pressure_result.one()
         
-        # CONVERTIR A FLOAT Y CALCULAR PORCENTAJE
         total_fgm = float(total_fgm or 0)
         total_fga = float(total_fga or 1)
         
         team_fg_pct = total_fgm / total_fga if total_fga > 0 else 0.45
         pressure_shooting = (team_fg_pct - 0.45) * 100.0  # Diferencia vs league average
         
-        # 3. DECISION MAKING UNDER PRESSURE
-        # TO rate y A/TO ratio
+        # 3. DECISION MAKING UNDER PRESSURE - CORREGIDO
         decision_query = select(
             func.sum(MatchStatistic.turnovers).label("total_to"),
-            func.sum(MatchStatistic.assists).label("total_assists"),
-            func.sum(MatchStatistic.minutes_played).label("total_minutes")
+            func.sum(MatchStatistic.assists).label("total_assists")
         ).where(
             MatchStatistic.player_id.in_(player_ids),
             MatchStatistic.match_id.in_(match_ids),
-            MatchStatistic.minutes_played >= 10  # Jugadores significativos
+            MatchStatistic.minutes_played >= 10
         )
         
         decision_result = await session.execute(decision_query)
-        total_to, total_assists, total_minutes = decision_result.one()
+        total_to, total_assists = decision_result.one()
         
-        # CONVERTIR A FLOAT
         total_to = float(total_to or 1)
         total_assists = float(total_assists or 1)
-        total_minutes = float(total_minutes or 1)
         
         # Assist/TO ratio
         assist_to_ratio = total_assists / total_to if total_to > 0 else 1.0
         decision_making_pressure = min(3.0, max(0.5, assist_to_ratio))
         
-        # 4. STAR PLAYER FACTOR
-        # Dependencia de jugadores estrella en clutch
+        # 4. STAR PLAYER FACTOR - CORREGIDO COMPLETAMENTE
         star_query = select(
             MatchStatistic.player_id,
             func.avg(MatchStatistic.points).label("avg_points"),
-            func.avg(MatchStatistic.plusminus).label("avg_pm")
+            func.avg(MatchStatistic.minutes_played).label("avg_minutes"),
+            func.count(MatchStatistic.id).label("games_played")
         ).where(
             MatchStatistic.player_id.in_(player_ids),
             MatchStatistic.match_id.in_(match_ids),
-            MatchStatistic.minutes_played >= 20  # Jugadores principales
-        ).group_by(MatchStatistic.player_id).order_by(func.avg(MatchStatistic.points).desc()).limit(3)
-        
+            MatchStatistic.minutes_played >= 15  # Jugadores significativos
+        ).group_by(MatchStatistic.player_id).order_by(func.avg(MatchStatistic.points).desc()).limit(5)
+
         star_result = await session.execute(star_query)
         star_players = star_result.all()
-        
-        if star_players:
-            top_star_points = float(star_players[0].avg_points or 20)  # CONVERTIR A FLOAT
+
+        if len(star_players) >= 1:
+            # Calcular dependencia real basada en distribución de puntos
+            player_points = [float(p.avg_points or 0) for p in star_players]
+            total_team_points = sum(player_points)
             
-            # CORREGIR: Calcular puntos promedio del equipo por partido usando dos queries separadas
-            # Primera query: obtener puntos totales por partido
-            team_points_per_match_query = select(
-                MatchStatistic.match_id,
-                func.sum(MatchStatistic.points).label("match_points")
-            ).where(
-                MatchStatistic.player_id.in_(player_ids),
-                MatchStatistic.match_id.in_(match_ids)
-            ).group_by(MatchStatistic.match_id)
-            
-            team_points_per_match_result = await session.execute(team_points_per_match_query)
-            match_points_data = team_points_per_match_result.all()
-            
-            # Segunda query: calcular promedio manualmente
-            if match_points_data:
-                total_points_all_matches = sum(float(mp.match_points or 0) for mp in match_points_data)
-                team_avg_points = total_points_all_matches / len(match_points_data)
+            if total_team_points > 0:
+                # Calcular concentración del top scorer
+                top_scorer_pct = player_points[0] / total_team_points
+                
+                # Calcular distribución entre top 3
+                top_3_points = player_points[:3] if len(player_points) >= 3 else player_points
+                top_3_total = sum(top_3_points)
+                top_3_concentration = top_3_total / total_team_points if total_team_points > 0 else 0
+                
+                # Star Player Factor: MENOR concentración = MAYOR factor (mejor balance)
+                # Penalizar equipos que dependen mucho de 1 jugador
+                if top_scorer_pct > 0.45:  # >45% de puntos en 1 jugador = muy dependiente
+                    star_player_factor = 25.0
+                elif top_scorer_pct > 0.35:  # >35% = dependiente
+                    star_player_factor = 40.0
+                elif top_scorer_pct > 0.28:  # >28% = normal NBA
+                    star_player_factor = 60.0
+                elif top_scorer_pct > 0.22:  # >22% = buen balance
+                    star_player_factor = 75.0
+                else:  # <=22% = balance perfecto
+                    star_player_factor = 85.0
+                    
+                # Ajuste adicional por profundidad (top 3 vs resto)
+                if top_3_concentration < 0.65:  # Top 3 con <65% = excelente profundidad
+                    star_player_factor = min(85.0, star_player_factor + 10.0)
+                elif top_3_concentration > 0.80:  # Top 3 con >80% = poca profundidad
+                    star_player_factor = max(20.0, star_player_factor - 10.0)
             else:
-                team_avg_points = 100.0
-            
-            star_dependency = (top_star_points / team_avg_points * 100.0) if team_avg_points > 0 else 25.0
-            star_player_factor = max(20.0, min(80.0, 100.0 - star_dependency))  # Menos dependencia = mejor
+                star_player_factor = 50.0
         else:
-            star_player_factor = 50.0
+            star_player_factor = 30.0  # Sin jugadores significativos
         
-        # 5. COLLECTIVE CLUTCH IQ
-        # Distribución de responsabilidades en clutch
-        collective_factors = []
+        # Reemplaza la sección "5. COLLECTIVE CLUTCH IQ" con esto:
+
+        # 5. COLLECTIVE CLUTCH IQ - CORREGIDO COMPLETAMENTE
         if len(star_players) >= 2:
-            # Analizar distribución entre top players
-            points_distribution = [float(p.avg_points or 0) for p in star_players[:3]]  # CONVERTIR A FLOAT
-            total_points = sum(points_distribution)
-            if total_points > 0:
-                # Más equilibrio = mejor IQ colectivo
-                max_contribution = max(points_distribution)
-                balance_score = 100.0 - (max_contribution / total_points * 100.0 - 33.3)  # Desviación del 33.3% ideal
-                collective_factors.append(max(40.0, min(80.0, balance_score)))
+            # Obtener estadísticas más detalladas de los jugadores clave
+            collective_query = select(
+                MatchStatistic.player_id,
+                func.avg(MatchStatistic.points).label("avg_points"),
+                func.avg(MatchStatistic.assists).label("avg_assists"),
+                func.avg(MatchStatistic.turnovers).label("avg_turnovers"),
+                func.avg(MatchStatistic.minutes_played).label("avg_minutes")
+            ).where(
+                MatchStatistic.player_id.in_([p.player_id for p in star_players[:5]]),
+                MatchStatistic.match_id.in_(match_ids),
+                MatchStatistic.minutes_played >= 10
+            ).group_by(MatchStatistic.player_id)
+            
+            collective_result = await session.execute(collective_query)
+            collective_data = collective_result.all()
+            
+            if len(collective_data) >= 2:
+                # Factor 1: Balance en puntos (ya calculado arriba)
+                player_points = [float(p.avg_points or 0) for p in collective_data]
+                total_points = sum(player_points)
+                
+                # Calcular Gini coefficient para distribución de puntos
+                if total_points > 0 and len(player_points) > 1:
+                    sorted_points = sorted(player_points)
+                    n = len(sorted_points)
+                    cumsum = 0
+                    for i, points in enumerate(sorted_points):
+                        cumsum += (i + 1) * points
+                    gini = (2 * cumsum) / (n * total_points) - (n + 1) / n
+                    
+                    # Convertir Gini a score (0 = perfecta igualdad, 1 = máxima desigualdad)
+                    points_balance_score = (1 - gini) * 100
+                else:
+                    points_balance_score = 50.0
+                
+                # Factor 2: Balance en asistencias (chemistry)
+                assists_data = [float(p.avg_assists or 0) for p in collective_data]
+                total_assists = sum(assists_data)
+                
+                if total_assists > 0:
+                    # Mejor química = asistencias más distribuidas
+                    max_assists = max(assists_data)
+                    assists_concentration = max_assists / total_assists
+                    
+                    if assists_concentration < 0.35:  # Muy distribuido
+                        assists_balance_score = 85.0
+                    elif assists_concentration < 0.45:  # Bien distribuido
+                        assists_balance_score = 70.0
+                    elif assists_concentration < 0.55:  # Regular
+                        assists_balance_score = 55.0
+                    else:  # Muy concentrado
+                        assists_balance_score = 35.0
+                else:
+                    assists_balance_score = 50.0
+                
+                # Factor 3: Cuidado del balón (menos turnovers = mejor IQ)
+                turnovers_data = [float(p.avg_turnovers or 0) for p in collective_data]
+                points_data = [float(p.avg_points or 0) for p in collective_data]
+                
+                # Calcular TO rate promedio del grupo clave
+                total_possessions = sum(turnovers_data) + sum(points_data) * 0.44  # Aproximación
+                team_to_rate = sum(turnovers_data) / total_possessions if total_possessions > 0 else 0.15
+                
+                # NBA promedio ~14% TO rate
+                if team_to_rate < 0.12:  # Excelente cuidado
+                    ball_security_score = 85.0
+                elif team_to_rate < 0.14:  # Bueno
+                    ball_security_score = 70.0
+                elif team_to_rate < 0.16:  # Regular
+                    ball_security_score = 55.0
+                else:  # Malo
+                    ball_security_score = 35.0
+                
+                # Factor 4: Profundidad (minutos distribuidos)
+                minutes_data = [float(p.avg_minutes or 0) for p in collective_data]
+                if minutes_data:
+                    max_minutes = max(minutes_data)
+                    min_minutes = min(minutes_data)
+                    minutes_range = max_minutes - min_minutes
+                    
+                    # Menor rango = mejor distribución de carga
+                    if minutes_range < 8:  # Muy equilibrado
+                        depth_score = 80.0
+                    elif minutes_range < 12:  # Equilibrado
+                        depth_score = 65.0
+                    elif minutes_range < 16:  # Regular
+                        depth_score = 50.0
+                    else:  # Desbalanceado
+                        depth_score = 35.0
+                else:
+                    depth_score = 50.0
+                
+                # Combinación final con pesos
+                collective_clutch_iq = (
+                    points_balance_score * 0.35 +    # 35% - Balance de puntos
+                    assists_balance_score * 0.25 +   # 25% - Chemistry/distribución
+                    ball_security_score * 0.25 +     # 25% - Cuidado del balón
+                    depth_score * 0.15               # 15% - Profundidad
+                )
+                
+                # Asegurar rango realista
+                collective_clutch_iq = max(25.0, min(85.0, collective_clutch_iq))
+            else:
+                collective_clutch_iq = 40.0
+        else:
+            collective_clutch_iq = 35.0  # Pocos jugadores clave
         
-        collective_clutch_iq = collective_factors[0] if collective_factors else 50.0
-        
-        # 6. PRESSURE DEFENSE
-        # Defensive rating estimado en situaciones clutch
-        # Usar puntos permitidos como proxy
+        # 6. PRESSURE DEFENSE - CORREGIDO
+        # 6. PRESSURE DEFENSE - CORREGIDO COMPLETAMENTE
         total_points_allowed = 0.0
         defensive_games = 0
-        
+
         for match in matches:
             is_home = match.home_team_id == id
-            opponent_score = float(match.away_score if is_home else match.home_score)  # CONVERTIR A FLOAT
+            opponent_score = float(match.away_score if is_home else match.home_score)
             total_points_allowed += opponent_score
             defensive_games += 1
-        
+
         avg_points_allowed = total_points_allowed / defensive_games if defensive_games > 0 else 110.0
-        pressure_defense = max(90.0, min(120.0, 120.0 - (avg_points_allowed - 100.0)))  # Inverted scale
+
+        # La NBA moderna tiene rangos de 108-118 típicamente
+        if avg_points_allowed <= 108:  # Defensa élite
+            pressure_defense = 90.0
+        elif avg_points_allowed <= 111:  # Defensa muy buena  
+            pressure_defense = 75.0
+        elif avg_points_allowed <= 114:  # Defensa buena
+            pressure_defense = 65.0
+        elif avg_points_allowed <= 117:  # Defensa promedio
+            pressure_defense = 50.0
+        elif avg_points_allowed <= 120:  # Defensa mala
+            pressure_defense = 35.0
+        elif avg_points_allowed <= 123:  # Defensa muy mala
+            pressure_defense = 25.0
+        else:  # Defensa terrible
+            pressure_defense = 15.0
+
+        # Garantizar rango más alto
+        pressure_defense = max(20.0, min(90.0, pressure_defense))
+
+        # 7. OVERTIME PERFORMANCE - CORREGIDO COMPLETAMENTE
+        if overtime_games > 0:
+            overtime_win_rate = (overtime_wins / overtime_games)
+            overtime_performance = overtime_win_rate * 100.0
+            # Asegurar rango realista (ningún equipo tiene 0% o 100% perfecto)
+            overtime_performance = max(15.0, min(85.0, overtime_performance))
+        else:
+            # Sin partidos clutch = rendimiento neutro-bajo
+            overtime_performance = 40.0
         
-        # 7. OVERTIME PERFORMANCE
-        overtime_performance = (overtime_wins / overtime_games * 100.0) if overtime_games > 0 else 50.0
-        
-        # 8. CLUTCH DNA SCORE FINAL
-        clutch_core = (multi_scenario_clutch * 0.25 + 
-                      (50.0 + pressure_shooting) * 0.15 +  # Normalize pressure shooting
-                      decision_making_pressure * 10.0 +   # Scale to 0-30
-                      star_player_factor * 0.15 + 
-                      collective_clutch_iq * 0.15 + 
-                      pressure_defense * 0.15 +
-                      overtime_performance * 0.10)
-        
-        clutch_dna_score = max(25.0, min(85.0, clutch_core))
-        
+        # 8. CLUTCH DNA SCORE FINAL - COMPLETAMENTE REDISEÑADO Y CORREGIDO
+
+        # COMPONENTE 1: Core Clutch Performance (30% peso)
+        core_clutch_raw = multi_scenario_clutch  # Ya está 0-100
+
+        # COMPONENTE 2: Shooting Under Pressure (25% peso) - CORREGIDO
+        # pressure_shooting viene como diferencia (-20 a +20), normalizar correctamente
+        shooting_clutch = max(20.0, min(80.0, 50.0 + (pressure_shooting * 1.5)))
+
+        # COMPONENTE 3: Decision Making (20% peso) - CORREGIDO
+        # decision_making_pressure viene como ratio (0.5-3.0), normalizar a 0-100
+        decision_clutch = max(20.0, min(80.0, (decision_making_pressure / 3.0) * 100))
+
+        # COMPONENTE 4: Star Factor (15% peso) - Ya viene 0-100
+        star_clutch = star_player_factor
+
+        # COMPONENTE 5: Collective IQ (10% peso) - Ya viene 0-100  
+        collective_clutch = collective_clutch_iq
+
+        # CALCULAR SCORE BASE CON PESOS CORREGIDOS
+        clutch_score_base = (
+            core_clutch_raw * 0.30 +        # Situaciones clutch
+            shooting_clutch * 0.25 +        # Shooting bajo presión
+            decision_clutch * 0.20 +        # Toma de decisiones
+            star_clutch * 0.15 +            # Factor estrella
+            collective_clutch * 0.10        # IQ colectivo
+        )
+
+        # BONIFICACIONES/PENALIZACIONES MÁS SUAVES
+        # Defense bonus/penalty - MÁS SUAVE
+        defense_modifier = (pressure_defense - 50) / 50 * 8  # ±8 puntos (antes ±15)
+
+        # Overtime bonus/penalty - MÁS SUAVE
+        overtime_modifier = (overtime_performance - 50) / 50 * 5  # ±5 puntos (antes ±10)
+
+        # ELIMINAR penalty por ser promedio (era demasiado duro)
+        # consistency_penalty = 0  # ELIMINADO
+
+        # SCORE FINAL CON RANGO MÁS GENEROSO
+        clutch_dna_score = clutch_score_base + defense_modifier + overtime_modifier
+
+        # RANGO FINAL: 15-85 (más generoso que 5-95)
+        clutch_dna_score = max(15.0, min(85.0, clutch_dna_score))
+
+        # CURVA MÁS SUAVE (eliminar amplificación agresiva)
+        # Los equipos buenos suben un poco, los malos bajan un poco
+        if clutch_dna_score >= 70:
+            clutch_dna_score = min(85, clutch_dna_score * 1.05)  # Boost suave
+        elif clutch_dna_score <= 35:
+            clutch_dna_score = max(15, clutch_dna_score * 0.95)  # Penalty suave
+
         return TeamClutchDNAProfile(
             multi_scenario_clutch=round(multi_scenario_clutch, 1),
             pressure_shooting=round(pressure_shooting, 1),
