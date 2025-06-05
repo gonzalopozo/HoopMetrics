@@ -25,8 +25,8 @@ export function Sidebar() {
 
     const userLinks: Link[] = [
         // TODO: añadir rutas de perfil
-        { name: "Favorites", href: '/null', icon: Star },
-        { name: "Alerts", href: '/null', icon: Bell },
+        { name: "Favorites", href: '/favorites', icon: Star },
+        { name: "Alerts", href: '/alerts', icon: Bell },
     ]
 
     return (

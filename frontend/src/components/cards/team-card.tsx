@@ -5,9 +5,11 @@ import Link from "next/link"
 import { ArrowRight, BarChart2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Team } from "@/types"
+import { TeamFavoriteWrapper } from "@/components/client-wrappers/team-favorite-wrapper"
 
 export function TeamCard({ id, name, logo, record, win_percentage, stats }: Team) {
     const [isHovered, setIsHovered] = useState(false)
+    const teamId = parseInt(id)
 
     return (
         <div
@@ -17,6 +19,14 @@ export function TeamCard({ id, name, logo, record, win_percentage, stats }: Team
         >
             {/* Team Logo Section */}
             <div className="relative flex h-40 w-full items-center justify-center bg-accent/30 p-4">
+                {/* Favorite Star - positioned in top right */}
+                <div className="absolute top-2 right-2 z-10">
+                    <TeamFavoriteWrapper
+                        teamId={teamId}
+                        className="bg-background/80 rounded-full p-1 shadow-sm"
+                        size="sm"
+                    />
+                </div>
                 {logo}
             </div>
 

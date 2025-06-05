@@ -4,7 +4,8 @@ import Link from "next/link"
 import { Calendar, Ruler, Weight, Trophy, TrendingUp, Activity, BarChart3, ArrowLeft } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
-import PlayerTabs from "@/components/ui/player-tabs"  // We'll create this client component
+import PlayerTabs from "@/components/ui/player-tabs"
+import { PlayerFavoriteWrapper } from "@/components/client-wrappers/player-favorite-wrapper"
 import axios from "axios"
 
 // Define the params type explicitly
@@ -144,6 +145,13 @@ export default async function PlayerDetailPage({
 
             {/* Hero Section */}
             <div className="relative mb-8 overflow-hidden rounded-xl bg-gradient-to-r from-primary/20 via-primary/10 to-background border border-border">
+                {/* Favorite Star */}
+                <PlayerFavoriteWrapper
+                    playerId={player.id}
+                    className="absolute top-4 right-4 z-10 bg-black/50 rounded-full"
+                    size="lg"
+                />
+
                 <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-primary/5 to-transparent" />
 
                 <div className="flex flex-col md:flex-row items-center p-6 md:p-8">

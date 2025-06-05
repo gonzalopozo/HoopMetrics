@@ -6,9 +6,11 @@ import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Player } from "@/types"
 import Link from "next/link"
+import { PlayerFavoriteWrapper } from "@/components/client-wrappers/player-favorite-wrapper"
 
 export function PlayerCard({ id, name, position, team, image, stats }: Player) {
     const [isHovered, setIsHovered] = useState(false)
+    const playerId = parseInt(id)
 
     return (
         <div
@@ -18,6 +20,15 @@ export function PlayerCard({ id, name, position, team, image, stats }: Player) {
         >
             {/* Player Image with Overlay */}
             <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted">
+                {/* Favorite Star - positioned in top right */}
+                <div className="absolute top-2 right-2 z-20">
+                    <PlayerFavoriteWrapper
+                        playerId={playerId}
+                        className="bg-black/60 rounded-full p-1"
+                        size="sm"
+                    />
+                </div>
+
                 <Image
                     src={image || "/placeholder.svg"}
                     alt={name}
@@ -85,7 +96,7 @@ export function PlayerCard({ id, name, position, team, image, stats }: Player) {
                         className="mt-6 flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-300 hover:bg-primary/90 hover:shadow-primary/30 hover:translate-y-[-2px] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-black/50 active:translate-y-0 active:shadow-primary/10 w-full max-w-[180px]"
                         href={`/players/${id}`}
                         key={id}
->
+                    >
                         <span>Player Details</span>
                         <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </Link>

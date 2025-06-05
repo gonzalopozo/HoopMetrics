@@ -1,7 +1,7 @@
 from sqlmodel import Field, SQLModel, Relationship
 from sqlalchemy import Column
 from sqlalchemy.types import Enum as PgEnum
-from typing import List, Optional
+from typing import Dict, List, Optional
 from datetime import date, datetime
 from enum import Enum  # <-- Añade esto
 from typing_extensions import TypedDict
@@ -173,6 +173,9 @@ class User(UserBase, table=True):
             PgEnum(UserRole, name="user_role", create_type=False)
         )
     )
+    
+    favorite_players: List["UserFavoritePlayer"] = Relationship(back_populates="user")
+    favorite_teams: List["UserFavoriteTeam"] = Relationship(back_populates="user")
 
 class TeamRecord(TypedDict):
     wins: int
@@ -460,3 +463,58 @@ class TeamPredictivePerformance(SQLModel):
     peak_performance_window: int      # Juegos hasta momento óptimo
     tppa_projected_winrate: float     # Proyección Win% próximos 20 partidos
     schedule_difficulty_next: float   # Dificultad próximos partidos (0-100)
+
+# Modelos para favoritos
+class UserFavoritePlayer(SQLModel, table=True):
+    __tablename__ = "user_favorite_players"
+    
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="users.id")
+    player_id: int = Field(foreign_key="players.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    # Relaciones
+    user: Optional[User] = Relationship(back_populates="favorite_players")
+    player: Optional[Player] = Relationship()
+
+class UserFavoriteTeam(SQLModel, table=True):
+    __tablename__ = "user_favorite_teams"
+    
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="users.id")
+    team_id: int = Field(foreign_key="teams.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    # Relaciones
+    user: Optional[User] = Relationship(back_populates="favorite_teams")
+    team: Optional[Team] = Relationship()
+
+# Modelos de respuesta para favoritos
+class FavoritePlayerResponse(SQLModel):
+    id: int
+    name: str
+    position: Optional[str] = None
+    team: Optional[TeamRead] = None
+    url_pic: Optional[str] = None
+    average_stats: Optional[StatRead] = None
+
+class FavoriteTeamResponse(SQLModel):
+    id: int
+    full_name: str
+    abbreviation: str
+    conference: Optional[str] = None
+    division: Optional[str] = None
+    stats: Optional[Dict] = None
+
+class UserFavoritesResponse(SQLModel):
+    players: List[FavoritePlayerResponse]
+    teams: List[FavoriteTeamResponse]
+    limits: Dict[str, int]  # Para indicar los límites según el rol
+
+# Requests para añadir/quitar favoritos
+class AddFavoriteRequest(SQLModel):
+    item_id: int  # player_id o team_id
+
+class FavoriteStatusResponse(SQLModel):
+    is_favorite: bool
+    message: str

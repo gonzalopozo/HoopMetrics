@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-query'
 import useInfiniteScroll from 'react-infinite-scroll-hook'
 import { PlayerCard } from '@/components/cards/player-card'
-import { PlayersLoading } from '../loading/players-loading'
+import { PlayersLoading } from '@/components/loading/players-loading'
 
 interface ApiPlayer {
     id: number

@@ -13,6 +13,7 @@ import {
 import { cn, getNBALogo } from "@/lib/utils"
 import { TeamDetails } from "@/types"
 import TeamTabs from "@/components/ui/team-tabs"
+import { TeamFavoriteWrapper } from "@/components/client-wrappers/team-favorite-wrapper"
 import axios from "axios"
 
 type TeamParams = {
@@ -36,7 +37,6 @@ async function fetchTeam(id: string): Promise<TeamDetails | null> {
     }
 }
 
-
 export default async function TeamDetailPage({ params, searchParams }: TeamPageProps) {
     console.log(searchParams);
 
@@ -50,7 +50,7 @@ export default async function TeamDetailPage({ params, searchParams }: TeamPageP
             <div className="container mx-auto py-8 px-4">
                 <div className="flex flex-col items-center justify-center py-20">
                     <h1 className="text-2xl font-bold mb-4">Team not found</h1>
-                    <p className="text-muted-foreground mb-6">${`The team you're looking for doesn't exist or has been removed.`}</p>
+                    <p className="text-muted-foreground mb-6">{`The team you're looking for doesn't exist or has been removed.`}</p>
                     <Link href="/teams" className="flex items-center gap-2 text-primary hover:underline">
                         <ArrowLeft className="h-4 w-4" />
                         Back to Teams
@@ -72,6 +72,13 @@ export default async function TeamDetailPage({ params, searchParams }: TeamPageP
 
             {/* Team Hero Section */}
             <div className="relative mb-8 overflow-hidden rounded-xl border border-border bg-gradient-to-r from-primary/10 via-background to-background">
+                {/* Favorite Star */}
+                <TeamFavoriteWrapper
+                    teamId={team.id}
+                    className="absolute top-4 right-4 z-10 bg-black/50 rounded-full"
+                    size="lg"
+                />
+
                 <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-10 pointer-events-none">
                     <Image
                         src={team.logo || "/placeholder.svg"}

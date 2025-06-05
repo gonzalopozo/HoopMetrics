@@ -1,14 +1,14 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import desc, func, select
 from typing import List
 from sqlmodel.ext.asyncio.session import AsyncSession
-from ..models import Match, PointsProgression, PointsTypeDistribution, PlayerBarChartData, PlayerBarChartData, MinutesProgression, ParticipationRate, PositionAverage, LebronImpactScore, PIPMImpact, RaptorWAR,  MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, PlayerSkillProfile, AdvancedImpactMatrix, PIPMPositionAverage, PaceImpactAnalysis, FatiguePerformanceCurve
+from ..models import Match, PointsProgression, PointsTypeDistribution, PlayerBarChartData, PlayerBarChartData, MinutesProgression, ParticipationRate, PositionAverage, LebronImpactScore, PIPMImpact, RaptorWAR,  MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, PlayerSkillProfile, AdvancedImpactMatrix, PIPMPositionAverage, PaceImpactAnalysis, FatiguePerformanceCurve, User
 from typing import List
 from sqlalchemy import func, cast, Integer, Float
 import statistics
 from collections import Counter
 
-from ..deps import get_db
+from ..deps import get_current_user, get_db
 
 router = APIRouter(
     prefix="/players",
@@ -167,6 +167,23 @@ async def read_players_by_id(id: int, session: AsyncSession = Depends(get_db)):
         print(f"Error in read_players: {str(e)}")
         # Re-raise it so FastAPI can handle it appropriately
         raise
+
+@router.get("/{id}/favorite-status", response_model=dict)
+async def get_player_favorite_status(
+    id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Obtiene el estado de favorito de un jugador para el usuario actual"""
+    try:
+        from ..crud_favorites import is_player_favorite
+        is_favorite = await is_player_favorite(db, current_user.id, id)
+        return {"is_favorite": is_favorite}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error checking favorite status: {str(e)}"
+        )
 
 @router.get("/{id}/basicstats/pointsprogression", response_model=List[PointsProgression])
 async def read_players_basic_stats(id: int, session: AsyncSession = Depends(get_db)):

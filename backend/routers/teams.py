@@ -1,13 +1,13 @@
 from operator import itemgetter
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import func, select
 from typing import List, Dict, Any, Optional as OptionalType
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy import literal, case
 from datetime import datetime, date
 
-from ..deps import get_db
-from ..models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats, TeamPointsProgression, TeamPointsVsOpponent, TeamPointsTypeDistribution, TeamRadarProfile, TeamShootingVolume, PlayerContribution, TeamAdvancedEfficiency, TeamLineupImpactMatrix, TeamMomentumResilience, TeamTacticalAdaptability, TeamClutchDNAProfile, TeamPredictivePerformance
+from ..deps import get_current_user, get_db
+from ..models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats, TeamPointsProgression, TeamPointsVsOpponent, TeamPointsTypeDistribution, TeamRadarProfile, TeamShootingVolume, PlayerContribution, TeamAdvancedEfficiency, TeamLineupImpactMatrix, TeamMomentumResilience, TeamTacticalAdaptability, TeamClutchDNAProfile, TeamPredictivePerformance, User
 
 router = APIRouter(
     prefix="/teams",
@@ -448,6 +448,24 @@ async def read_team(id: int, session: AsyncSession = Depends(get_db)):
     except Exception as e:
         print(f"Error in read_team: {str(e)}")
         raise
+
+# Añadir este endpoint
+@router.get("/{id}/favorite-status", response_model=dict)
+async def get_team_favorite_status(
+    id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Obtiene el estado de favorito de un equipo para el usuario actual"""
+    try:
+        from ..crud_favorites import is_team_favorite
+        is_favorite = await is_team_favorite(db, current_user.id, id)
+        return {"is_favorite": is_favorite}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error checking favorite status: {str(e)}"
+        )
 
 @router.get("/{id}/basicstats/pointsprogression", response_model=List[TeamPointsProgression])
 async def team_points_progression(id: int, session: AsyncSession = Depends(get_db)):
