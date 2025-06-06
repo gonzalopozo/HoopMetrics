@@ -8,7 +8,7 @@ import traceback
 from .models import UserRole
 from .deps import get_db, require_role
 from .config import get_settings
-from .routers import home, debug, players, auth, teams, favorites
+from .routers import home, debug, players, auth, teams, favorites, profile
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 # Configure logging
@@ -24,6 +24,7 @@ app.include_router(players.router)
 app.include_router(auth.router)
 app.include_router(teams.router)
 app.include_router(favorites.router)
+app.include_router(profile.router)
 
 app.add_middleware(
     CORSMiddleware,

@@ -13,9 +13,12 @@ export function PlayerFavoriteWrapper({ playerId, className, size = 'lg' }: Play
     const {
         isPlayerFavorite,
         addPlayerToFavorites,
-        removePlayerFromFavorites
+        removePlayerFromFavorites,
+        initialLoadComplete,
+        updateTrigger // ✅ Usar trigger para forzar re-renders
     } = useFavorites()
 
+    // ✅ Usar updateTrigger como dependencia implícita
     const isFavorite = isPlayerFavorite(playerId)
 
     const handleFavoriteToggle = async () => {
@@ -32,6 +35,8 @@ export function PlayerFavoriteWrapper({ playerId, className, size = 'lg' }: Play
                 isFavorite={isFavorite}
                 onToggle={handleFavoriteToggle}
                 size={size}
+                isLoading={!initialLoadComplete}
+                key={`${playerId}-${updateTrigger}`} // ✅ Force re-render con key
             />
         </div>
     )

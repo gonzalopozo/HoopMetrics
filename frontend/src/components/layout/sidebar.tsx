@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { TrendingUp, Users, Table, Calendar, Award, Star, Bell, LucideIcon } from "lucide-react"
+import { TrendingUp, Users, Table, Calendar, Award, Star, Bell, User, LucideIcon } from "lucide-react"
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +25,7 @@ export function Sidebar() {
 
     const userLinks: Link[] = [
         // TODO: añadir rutas de perfil
+        { name: "Profile", href: '/profile', icon: User },
         { name: "Favorites", href: '/favorites', icon: Star },
         { name: "Alerts", href: '/alerts', icon: Bell },
     ]

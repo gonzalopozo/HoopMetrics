@@ -13,7 +13,9 @@ export function TeamFavoriteWrapper({ teamId, className, size = 'lg' }: TeamFavo
     const {
         isTeamFavorite,
         addTeamToFavorites,
-        removeTeamFromFavorites
+        removeTeamFromFavorites,
+        initialLoadComplete,
+        updateTrigger // ✅ Usar trigger
     } = useFavorites()
 
     const isFavorite = isTeamFavorite(teamId)
@@ -32,6 +34,8 @@ export function TeamFavoriteWrapper({ teamId, className, size = 'lg' }: TeamFavo
                 isFavorite={isFavorite}
                 onToggle={handleFavoriteToggle}
                 size={size}
+                isLoading={!initialLoadComplete}
+                key={`${teamId}-${updateTrigger}`} // ✅ Force re-render con key
             />
         </div>
     )

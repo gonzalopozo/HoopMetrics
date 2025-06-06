@@ -30,3 +30,39 @@ async def update_user_role(db: AsyncSession, id: int, new_role: UserRole):
     await db.refresh(user)
     return user
 
+async def update_user_profile(
+    db: AsyncSession, 
+    user_id: int, 
+    username: str = None, 
+    profile_image_url: str = None
+):
+    """Actualiza el perfil del usuario"""
+    user = await db.get(User, user_id)
+    if not user:
+        return None
+    
+    # Actualizar campos si se proporcionan
+    if username is not None:
+        # Verificar que el username no esté ya en uso
+        existing_user = await get_user_by_username(db, username)
+        if existing_user and existing_user.id != user_id:
+            raise ValueError("Username already exists")
+        user.username = username
+    
+    if profile_image_url is not None:
+        user.profile_image_url = profile_image_url
+    
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+async def get_user_by_username(db: AsyncSession, username: str):
+    """Obtiene un usuario por username"""
+    result = await db.execute(select(User).where(User.username == username))
+    return result.scalar_one_or_none()
+
+async def get_user_profile(db: AsyncSession, user_id: int):
+    """Obtiene el perfil completo del usuario"""
+    user = await db.get(User, user_id)
+    return user
+

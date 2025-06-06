@@ -174,6 +174,8 @@ class User(UserBase, table=True):
         )
     )
     
+    profile_image_url: Optional[str] = Field(default=None)
+    
     favorite_players: List["UserFavoritePlayer"] = Relationship(back_populates="user")
     favorite_teams: List["UserFavoriteTeam"] = Relationship(back_populates="user")
 
@@ -518,3 +520,15 @@ class AddFavoriteRequest(SQLModel):
 class FavoriteStatusResponse(SQLModel):
     is_favorite: bool
     message: str
+
+class UserProfileUpdate(SQLModel):
+    username: Optional[str] = Field(default=None, min_length=3, max_length=50)
+    profile_image_url: Optional[str] = Field(default=None)
+
+class UserProfileResponse(SQLModel):
+    id: int
+    username: str
+    email: str
+    profile_image_url: Optional[str] = None
+    role: UserRole
+    registration_date: datetime

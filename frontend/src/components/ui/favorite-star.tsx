@@ -9,22 +9,23 @@ interface FavoriteStarProps {
     onToggle: () => Promise<boolean>
     className?: string
     size?: 'sm' | 'md' | 'lg'
+    isLoading?: boolean // ✅ Nuevo prop para estado de carga
 }
 
-export function FavoriteStar({ isFavorite, onToggle, className, size = 'md' }: FavoriteStarProps) {
-    const [isLoading, setIsLoading] = useState(false)
+export function FavoriteStar({ isFavorite, onToggle, className, size = 'md', isLoading: externalLoading = false }: FavoriteStarProps) {
+    const [isToggling, setIsToggling] = useState(false)
 
     const handleClick = async (e: React.MouseEvent) => {
         e.preventDefault()
         e.stopPropagation()
         
-        if (isLoading) return
+        if (isToggling || externalLoading) return
 
-        setIsLoading(true)
+        setIsToggling(true)
         try {
             await onToggle()
         } finally {
-            setIsLoading(false)
+            setIsToggling(false)
         }
     }
 
@@ -34,13 +35,15 @@ export function FavoriteStar({ isFavorite, onToggle, className, size = 'md' }: F
         lg: 'h-6 w-6'
     }
 
+    const isLoading = isToggling || externalLoading
+
     return (
         <button
             onClick={handleClick}
             disabled={isLoading}
             className={cn(
-                "p-1 rounded-full transition-all duration-200 hover:bg-background/20 focus:outline-none focus:ring-2 focus:ring-primary/50 backdrop-blur-sm",
-                isLoading && "opacity-50 cursor-not-allowed",
+                "p-1 rounded-full transition-all duration-100 hover:bg-background/20 focus:outline-none focus:ring-2 focus:ring-primary/50 backdrop-blur-sm",
+                isLoading && "opacity-75 cursor-not-allowed",
                 className
             )}
             title={isFavorite ? "Remove from favorites" : "Add to favorites"}
@@ -48,11 +51,13 @@ export function FavoriteStar({ isFavorite, onToggle, className, size = 'md' }: F
             <Star
                 className={cn(
                     sizeClasses[size],
-                    "transition-all duration-200",
-                    isFavorite 
+                    "transition-all duration-150", // ✅ Aumentar a 150ms para que sea más visible
+                    externalLoading 
+                        ? "text-gray-400 animate-pulse"
+                        : isFavorite 
                         ? "fill-yellow-400 text-yellow-400" 
                         : "text-white hover:text-yellow-400",
-                    isLoading && "animate-pulse"
+                    isToggling && "scale-95"
                 )}
             />
         </button>
