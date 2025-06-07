@@ -1,7 +1,7 @@
 from sqlmodel import Field, SQLModel, Relationship
 from sqlalchemy import Column
 from sqlalchemy.types import Enum as PgEnum
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from datetime import date, datetime
 from enum import Enum  # <-- Añade esto
 from typing_extensions import TypedDict
@@ -532,3 +532,75 @@ class UserProfileResponse(SQLModel):
     profile_image_url: Optional[str] = None
     role: UserRole
     registration_date: datetime
+
+# Admin Dashboard Models
+class SystemHealthMetrics(SQLModel):
+    cpu_usage: float
+    memory_usage: float
+    disk_usage: float
+    active_connections: int
+    response_time_avg: float
+    uptime_seconds: int
+    error_rate: float
+    requests_per_minute: int
+
+class DatabaseMetrics(SQLModel):
+    connection_pool_size: int
+    active_connections: int
+    idle_connections: int
+    total_queries_executed: int
+    slow_queries_count: int
+    database_size_mb: float
+    tables_count: int
+    avg_query_time_ms: float
+
+class UserMetrics(SQLModel):
+    total_users: int
+    active_users_24h: int
+    active_users_7d: int
+    new_users_today: int
+    new_users_this_week: int
+    users_by_role: Dict[str, int]
+    retention_rate_7d: float
+    retention_rate_30d: float
+
+class SubscriptionMetrics(SQLModel):
+    total_subscriptions: int
+    active_subscriptions: int
+    revenue_this_month: float
+    revenue_this_year: float
+    churn_rate: float
+    mrr: float
+    arr: float
+    subscriptions_by_plan: Dict[str, int]
+
+class APIMetrics(SQLModel):
+    total_requests_today: int
+    total_requests_this_week: int
+    avg_response_time: float
+    error_rate: float
+    most_used_endpoints: List[Dict[str, Any]]
+    requests_by_hour: List[Dict[str, Any]]
+    status_codes_distribution: Dict[str, int]
+
+class AdminDashboardData(SQLModel):
+    system_health: SystemHealthMetrics
+    database_metrics: DatabaseMetrics
+    user_metrics: UserMetrics
+    subscription_metrics: SubscriptionMetrics
+    api_metrics: APIMetrics
+    last_updated: str
+
+class AdminUserResponse(SQLModel):
+    id: int
+    username: str
+    email: str
+    role: str
+    created_at: Optional[datetime] = None
+    profile_image_url: Optional[str] = None
+
+class AdminLogEntry(SQLModel):
+    timestamp: str
+    level: str
+    message: str
+    module: str

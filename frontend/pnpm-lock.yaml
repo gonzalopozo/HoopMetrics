@@ -9,20 +9,32 @@ importers:
   .:
     dependencies:
       '@hookform/resolvers':
-        specifier: ^5.0.1
-        version: 5.0.1(react-hook-form@7.57.0(react@19.1.0))
+        specifier: ^5.1.0
+        version: 5.1.0(react-hook-form@7.57.0(react@19.1.0))
       '@nivo/heatmap':
         specifier: ^0.99.0
         version: 0.99.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@radix-ui/react-alert-dialog':
+        specifier: ^1.1.14
+        version: 1.1.14(@types/react-dom@19.1.6(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@radix-ui/react-avatar':
         specifier: ^1.1.10
         version: 1.1.10(@types/react-dom@19.1.6(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@radix-ui/react-dialog':
         specifier: ^1.1.14
         version: 1.1.14(@types/react-dom@19.1.6(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@radix-ui/react-dropdown-menu':
+        specifier: ^2.1.15
+        version: 2.1.15(@types/react-dom@19.1.6(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@radix-ui/react-popover':
         specifier: ^1.1.14
         version: 1.1.14(@types/react-dom@19.1.6(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@radix-ui/react-progress':
+        specifier: ^1.1.7
+        version: 1.1.7(@types/react-dom@19.1.6(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@radix-ui/react-select':
+        specifier: ^2.2.5
+        version: 2.2.5(@types/react-dom@19.1.6(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@radix-ui/react-slot':
         specifier: ^1.2.3
         version: 1.2.3(@types/react@19.1.6)(react@19.1.0)
@@ -94,7 +106,7 @@ importers:
         version: 19.1.0(react@19.1.0)
       react-force-graph:
         specifier: ^1.47.6
-        version: 1.47.6(aframe@1.7.1)(react@19.1.0)(three@0.177.0)
+        version: 1.47.6(aframe@1.7.1)(react@19.1.0)(three@0.164.1)
       react-force-graph-2d:
         specifier: ^1.27.1
         version: 1.27.1(react@19.1.0)
@@ -129,8 +141,8 @@ importers:
         specifier: ^4.0.2
         version: 4.0.2(react@19.1.0)(tailwindcss@4.1.8)
       zod:
-        specifier: ^3.25.53
-        version: 3.25.53
+        specifier: ^3.25.56
+        version: 3.25.56
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3.3.1
@@ -256,8 +268,8 @@ packages:
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
 
-  '@hookform/resolvers@5.0.1':
-    resolution: {integrity: sha512-u/+Jp83luQNx9AdyW2fIPGY6Y7NG68eN2ZW8FOJYL+M0i4s49+refdJdOp/A9n9HFQtQs3HIDHQvX3ZET2o7YA==}
+  '@hookform/resolvers@5.1.0':
+    resolution: {integrity: sha512-A5tY8gxqvvR0lFfropqpy/gUDOxjwT7LZCxJ8lNA9puK7nFNRl/O0egGKxzdF4JSz/pnnT1O8g76P/YMyTBEFw==}
     peerDependencies:
       react-hook-form: ^7.55.0
 
@@ -3488,8 +3500,8 @@ packages:
       '@types/react':
         optional: true
 
-  use-debounce@10.0.4:
-    resolution: {integrity: sha512-6Cf7Yr7Wk7Kdv77nnJMf6de4HuDE4dTxKij+RqE9rufDsI6zsbjyAxcH5y2ueJCQAnfgKbzXbZHYlkFwmBlWkw==}
+  use-debounce@10.0.5:
+    resolution: {integrity: sha512-Q76E3lnIV+4YT9AHcrHEHYmAd9LKwUAbPXDm7FlqVGDHiSOhX3RDjT8dm0AxbJup6WgOb1YEcKyCr11kBJR5KQ==}
     engines: {node: '>= 16.0.0'}
     peerDependencies:
       react: '*'
@@ -3569,25 +3581,25 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zod@3.25.53:
-    resolution: {integrity: sha512-BKOKoY3XcGUVkqaalCtFK15LhwR0G0i65AClFpWSXLN2gJNBGlTktukHgwexCTa/dAacPPp9ReryXPWyeZF4LQ==}
+  zod@3.25.56:
+    resolution: {integrity: sha512-rd6eEF3BTNvQnR2e2wwolfTmUTnp70aUTqr0oaGbHifzC3BKJsoV+Gat8vxUMR1hwOKBs6El+qWehrHbCpW6SQ==}
 
 snapshots:
 
-  3d-force-graph-ar@1.9.5(aframe@1.7.1)(three@0.177.0):
+  3d-force-graph-ar@1.9.5(aframe@1.7.1)(three@0.164.1):
     dependencies:
-      aframe-forcegraph-component: 3.2.3(aframe@1.7.1)(three@0.177.0)
+      aframe-forcegraph-component: 3.2.3(aframe@1.7.1)(three@0.164.1)
       kapsule: 1.16.3
     transitivePeerDependencies:
       - aframe
       - three
 
-  3d-force-graph-vr@3.0.3(aframe@1.7.1)(three@0.177.0):
+  3d-force-graph-vr@3.0.3(aframe@1.7.1)(three@0.164.1):
     dependencies:
       accessor-fn: 1.5.3
       aframe: 1.7.1
       aframe-extras: 7.5.4
-      aframe-forcegraph-component: 3.2.3(aframe@1.7.1)(three@0.177.0)
+      aframe-forcegraph-component: 3.2.3(aframe@1.7.1)(three@0.164.1)
       kapsule: 1.16.3
       polished: 4.3.1
     transitivePeerDependencies:
@@ -3689,7 +3701,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.9': {}
 
-  '@hookform/resolvers@5.0.1(react-hook-form@7.57.0(react@19.1.0))':
+  '@hookform/resolvers@5.1.0(react-hook-form@7.57.0(react@19.1.0))':
     dependencies:
       '@standard-schema/utils': 0.3.0
       react-hook-form: 7.57.0(react@19.1.0)
@@ -3903,7 +3915,7 @@ snapshots:
       lodash: 4.17.21
       react: 19.1.0
       react-virtualized-auto-sizer: 1.0.26(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      use-debounce: 10.0.4(react@19.1.0)
+      use-debounce: 10.0.5(react@19.1.0)
     transitivePeerDependencies:
       - react-dom
 
@@ -5102,10 +5114,10 @@ snapshots:
       three: 0.164.1
       three-pathfinding: 1.3.0(three@0.164.1)
 
-  aframe-forcegraph-component@3.2.3(aframe@1.7.1)(three@0.177.0):
+  aframe-forcegraph-component@3.2.3(aframe@1.7.1)(three@0.164.1):
     dependencies:
       aframe: 1.7.1
-      three-forcegraph: 1.42.13(three@0.177.0)
+      three-forcegraph: 1.42.13(three@0.164.1)
     transitivePeerDependencies:
       - three
 
@@ -6759,11 +6771,11 @@ snapshots:
       react: 19.1.0
       react-kapsule: 2.5.7(react@19.1.0)
 
-  react-force-graph@1.47.6(aframe@1.7.1)(react@19.1.0)(three@0.177.0):
+  react-force-graph@1.47.6(aframe@1.7.1)(react@19.1.0)(three@0.164.1):
     dependencies:
       3d-force-graph: 1.77.0
-      3d-force-graph-ar: 1.9.5(aframe@1.7.1)(three@0.177.0)
-      3d-force-graph-vr: 3.0.3(aframe@1.7.1)(three@0.177.0)
+      3d-force-graph-ar: 1.9.5(aframe@1.7.1)(three@0.164.1)
+      3d-force-graph-vr: 3.0.3(aframe@1.7.1)(three@0.164.1)
       force-graph: 1.49.6
       prop-types: 15.8.1
       react: 19.1.0
@@ -7162,6 +7174,20 @@ snapshots:
       nice-color-palettes: 3.0.0
       quad-indices: 2.0.1
 
+  three-forcegraph@1.42.13(three@0.164.1):
+    dependencies:
+      accessor-fn: 1.5.3
+      d3-array: 3.2.4
+      d3-force-3d: 3.0.6
+      d3-scale: 4.0.2
+      d3-scale-chromatic: 3.1.0
+      data-bind-mapper: 1.0.3
+      kapsule: 1.16.3
+      ngraph.forcelayout: 3.3.1
+      ngraph.graph: 20.0.1
+      three: 0.164.1
+      tinycolor2: 1.6.0
+
   three-forcegraph@1.42.13(three@0.177.0):
     dependencies:
       accessor-fn: 1.5.3
@@ -7308,7 +7334,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.1.6
 
-  use-debounce@10.0.4(react@19.1.0):
+  use-debounce@10.0.5(react@19.1.0):
     dependencies:
       react: 19.1.0
 
@@ -7414,4 +7440,4 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod@3.25.53: {}
+  zod@3.25.56: {}

@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     SPACES_BUCKET: str
     SPACES_ACCESS_KEY: str
     SPACES_SECRET_KEY: str
+    STRIPE_SECRET_KEY: str
+    STRIPE_WEBHOOK_SECRET: str
 
 
 # @lru_cache
