@@ -1,0 +1,616 @@
+2025-06-08 00:07:31,458 - uvicorn.error - INFO - Will watch for changes in these directories: ['/home/gonzalo/gonzaloProyects/HoopMetrics/backend']
+2025-06-08 00:07:31,459 - uvicorn.error - INFO - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-06-08 00:07:31,459 - uvicorn.error - INFO - Started reloader process [162109] using WatchFiles
+2025-06-08 00:07:35,915 - uvicorn.error - INFO - Started server process [162120]
+2025-06-08 00:07:35,916 - uvicorn.error - INFO - Waiting for application startup.
+2025-06-08 00:07:35,917 - backend.main - INFO - 🚀 HoopMetrics API starting up...
+2025-06-08 00:07:35,917 - uvicorn.error - INFO - Application startup complete.
+2025-06-08 00:07:36,244 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:07:36,645 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:07:53,156 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 00:07:53,219 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 00:07:53,265 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:07:54,303 - backend.main - INFO - 📤 Response: 200 - 1147.10ms - /home/top-performers
+2025-06-08 00:07:54,304 - backend.services.admin_metrics - INFO - 📊 Recording request: /home/top-performers - 200 - 1147.10ms
+2025-06-08 00:07:54,417 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:07:54,493 - backend.main - INFO - 📤 Response: 200 - 1273.71ms - /home/top-performers
+2025-06-08 00:07:54,493 - backend.services.admin_metrics - INFO - 📊 Recording request: /home/top-performers - 200 - 1273.71ms
+2025-06-08 00:07:54,797 - backend.main - INFO - 📥 Request: OPTIONS /favorites/
+2025-06-08 00:07:54,797 - backend.main - INFO - 📥 Request: OPTIONS /favorites/
+2025-06-08 00:07:54,797 - backend.main - INFO - 📤 Response: 200 - 0.78ms - /favorites/
+2025-06-08 00:07:54,797 - backend.services.admin_metrics - INFO - 📊 Recording request: /favorites/ - 200 - 0.78ms
+2025-06-08 00:07:54,798 - backend.main - INFO - 📤 Response: 200 - 0.57ms - /favorites/
+2025-06-08 00:07:54,798 - backend.services.admin_metrics - INFO - 📊 Recording request: /favorites/ - 200 - 0.57ms
+2025-06-08 00:07:54,800 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 00:07:54,802 - backend.main - INFO - 📤 Response: 401 - 1.69ms - /favorites/
+2025-06-08 00:07:54,802 - backend.services.admin_metrics - INFO - 📊 Recording request: /favorites/ - 401 - 1.69ms
+2025-06-08 00:07:54,802 - backend.services.admin_metrics - WARNING - ❌ Error recorded: 401 for /favorites/
+2025-06-08 00:07:54,803 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 00:07:54,804 - backend.main - INFO - 📤 Response: 401 - 0.66ms - /favorites/
+2025-06-08 00:07:54,804 - backend.services.admin_metrics - INFO - 📊 Recording request: /favorites/ - 401 - 0.66ms
+2025-06-08 00:07:54,804 - backend.services.admin_metrics - WARNING - ❌ Error recorded: 401 for /favorites/
+2025-06-08 00:08:06,290 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 00:08:06,431 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:08:06,681 - backend.main - INFO - 📥 Request: OPTIONS /profile/me
+2025-06-08 00:08:06,681 - backend.main - INFO - 📤 Response: 200 - 0.41ms - /profile/me
+2025-06-08 00:08:06,681 - backend.services.admin_metrics - INFO - 📊 Recording request: /profile/me - 200 - 0.41ms
+2025-06-08 00:08:06,681 - backend.main - INFO - 📥 Request: OPTIONS /profile/me
+2025-06-08 00:08:06,682 - backend.main - INFO - 📤 Response: 200 - 0.21ms - /profile/me
+2025-06-08 00:08:06,682 - backend.services.admin_metrics - INFO - 📊 Recording request: /profile/me - 200 - 0.21ms
+2025-06-08 00:08:06,684 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 00:08:07,134 - backend.main - INFO - 📤 Response: 200 - 844.74ms - /home/top-performers
+2025-06-08 00:08:07,135 - backend.services.admin_metrics - INFO - 📊 Recording request: /home/top-performers - 200 - 844.74ms
+2025-06-08 00:08:07,193 - backend.main - INFO - 📥 Request: OPTIONS /favorites/
+2025-06-08 00:08:07,193 - backend.main - INFO - 📤 Response: 200 - 0.45ms - /favorites/
+2025-06-08 00:08:07,193 - backend.services.admin_metrics - INFO - 📊 Recording request: /favorites/ - 200 - 0.45ms
+2025-06-08 00:08:07,194 - backend.services.admin_metrics - INFO - 📈 Request count: 10, Error count: 2
+2025-06-08 00:08:07,194 - backend.main - INFO - 📥 Request: OPTIONS /favorites/
+2025-06-08 00:08:07,194 - backend.main - INFO - 📤 Response: 200 - 0.23ms - /favorites/
+2025-06-08 00:08:07,194 - backend.services.admin_metrics - INFO - 📊 Recording request: /favorites/ - 200 - 0.23ms
+2025-06-08 00:08:07,196 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 00:08:07,282 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:08:11,136 - backend.main - INFO - 📤 Response: 200 - 4451.93ms - /profile/me
+2025-06-08 00:08:11,136 - backend.services.admin_metrics - INFO - 📊 Recording request: /profile/me - 200 - 4451.93ms
+2025-06-08 00:08:11,138 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 00:08:11,217 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:08:11,355 - backend.main - INFO - 📤 Response: 200 - 4158.22ms - /favorites/
+2025-06-08 00:08:11,355 - backend.services.admin_metrics - INFO - 📊 Recording request: /favorites/ - 200 - 4158.22ms
+2025-06-08 00:08:11,357 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 00:08:11,373 - backend.main - INFO - 📤 Response: 200 - 234.95ms - /profile/me
+2025-06-08 00:08:11,373 - backend.services.admin_metrics - INFO - 📊 Recording request: /profile/me - 200 - 234.95ms
+2025-06-08 00:08:12,260 - backend.main - INFO - 📤 Response: 200 - 902.46ms - /favorites/
+2025-06-08 00:08:12,260 - backend.services.admin_metrics - INFO - 📊 Recording request: /favorites/ - 200 - 902.46ms
+2025-06-08 00:08:12,369 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:08:38,943 - backend.main - INFO - 📥 Request: OPTIONS /auth/signup
+2025-06-08 00:08:38,943 - backend.main - INFO - 📤 Response: 200 - 0.28ms - /auth/signup
+2025-06-08 00:08:38,943 - backend.services.admin_metrics - INFO - 📊 Recording request: /auth/signup - 200 - 0.28ms
+2025-06-08 00:08:38,945 - backend.main - INFO - 📥 Request: POST /auth/signup
+2025-06-08 00:08:39,148 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:08:39,549 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:08:39,846 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-06-08 00:08:40,962 - backend.main - INFO - 📤 Response: 201 - 2017.37ms - /auth/signup
+2025-06-08 00:08:40,963 - backend.services.admin_metrics - INFO - 📊 Recording request: /auth/signup - 201 - 2017.37ms
+2025-06-08 00:08:41,049 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 00:08:41,101 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:08:41,139 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 00:08:41,390 - backend.main - INFO - 📤 Response: 200 - 250.43ms - /profile/me
+2025-06-08 00:08:41,390 - backend.services.admin_metrics - INFO - 📊 Recording request: /profile/me - 200 - 250.43ms
+2025-06-08 00:08:41,393 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 00:08:41,501 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:08:41,580 - backend.main - INFO - 📤 Response: 200 - 187.13ms - /profile/me
+2025-06-08 00:08:41,580 - backend.services.admin_metrics - INFO - 📊 Recording request: /profile/me - 200 - 187.13ms
+2025-06-08 00:08:41,658 - backend.main - INFO - 📤 Response: 200 - 609.29ms - /home/top-performers
+2025-06-08 00:08:41,658 - backend.services.admin_metrics - INFO - 📊 Recording request: /home/top-performers - 200 - 609.29ms
+2025-06-08 00:08:41,658 - backend.services.admin_metrics - INFO - 📈 Request count: 20, Error count: 2
+2025-06-08 00:08:41,730 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 00:08:42,044 - backend.main - INFO - 📤 Response: 200 - 314.58ms - /favorites/
+2025-06-08 00:08:42,044 - backend.services.admin_metrics - INFO - 📊 Recording request: /favorites/ - 200 - 314.58ms
+2025-06-08 00:08:42,046 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 00:08:42,252 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:08:42,424 - backend.main - INFO - 📤 Response: 200 - 377.38ms - /favorites/
+2025-06-08 00:08:42,424 - backend.services.admin_metrics - INFO - 📊 Recording request: /favorites/ - 200 - 377.38ms
+2025-06-08 00:09:04,745 - backend.main - INFO - 📥 Request: OPTIONS /auth/login
+2025-06-08 00:09:04,745 - backend.main - INFO - 📤 Response: 200 - 0.37ms - /auth/login
+2025-06-08 00:09:04,745 - backend.services.admin_metrics - INFO - 📊 Recording request: /auth/login - 200 - 0.37ms
+2025-06-08 00:09:04,747 - backend.main - INFO - 📥 Request: POST /auth/login
+2025-06-08 00:09:04,910 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:05,859 - backend.main - INFO - 📤 Response: 200 - 1111.97ms - /auth/login
+2025-06-08 00:09:05,859 - backend.services.admin_metrics - INFO - 📊 Recording request: /auth/login - 200 - 1111.97ms
+2025-06-08 00:09:06,061 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:06,462 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:08,231 - backend.main - INFO - 📥 Request: OPTIONS /admin/system-health
+2025-06-08 00:09:08,233 - backend.main - INFO - 📥 Request: OPTIONS /admin/database-metrics
+2025-06-08 00:09:08,233 - backend.main - INFO - 📤 Response: 200 - 2.31ms - /admin/system-health
+2025-06-08 00:09:08,233 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 2.31ms
+2025-06-08 00:09:08,233 - backend.main - INFO - 📤 Response: 200 - 0.59ms - /admin/database-metrics
+2025-06-08 00:09:08,233 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 0.59ms
+2025-06-08 00:09:08,244 - backend.main - INFO - 📥 Request: OPTIONS /admin/users
+2025-06-08 00:09:08,244 - backend.main - INFO - 📥 Request: OPTIONS /admin/logs/recent
+2025-06-08 00:09:08,245 - backend.main - INFO - 📤 Response: 200 - 0.76ms - /admin/users
+2025-06-08 00:09:08,245 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 0.76ms
+2025-06-08 00:09:08,245 - backend.main - INFO - 📤 Response: 200 - 0.67ms - /admin/logs/recent
+2025-06-08 00:09:08,245 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 0.67ms
+2025-06-08 00:09:08,249 - backend.main - INFO - 📥 Request: OPTIONS /admin/system-health
+2025-06-08 00:09:08,249 - backend.main - INFO - 📤 Response: 200 - 0.29ms - /admin/system-health
+2025-06-08 00:09:08,249 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 0.29ms
+2025-06-08 00:09:08,252 - backend.main - INFO - 📥 Request: OPTIONS /admin/database-metrics
+2025-06-08 00:09:08,252 - backend.main - INFO - 📤 Response: 200 - 0.22ms - /admin/database-metrics
+2025-06-08 00:09:08,253 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 0.22ms
+2025-06-08 00:09:08,253 - backend.services.admin_metrics - INFO - 📈 Request count: 30, Error count: 2
+2025-06-08 00:09:08,255 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:08,465 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:08,506 - backend.main - INFO - 📥 Request: OPTIONS /admin/users
+2025-06-08 00:09:08,506 - backend.main - INFO - 📤 Response: 200 - 0.60ms - /admin/users
+2025-06-08 00:09:08,507 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 0.60ms
+2025-06-08 00:09:08,507 - backend.main - INFO - 📥 Request: OPTIONS /admin/logs/recent
+2025-06-08 00:09:08,508 - backend.main - INFO - 📤 Response: 200 - 1.02ms - /admin/logs/recent
+2025-06-08 00:09:08,508 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 1.02ms
+2025-06-08 00:09:08,509 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:09:08,509 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:09:08,512 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:09:08,519 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:09:09,782 - backend.main - INFO - 📤 Response: 200 - 1273.30ms - /admin/system-health
+2025-06-08 00:09:09,782 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 1273.30ms
+2025-06-08 00:09:09,786 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:09:10,017 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:10,174 - backend.main - INFO - 📤 Response: 200 - 1654.98ms - /admin/logs/recent
+2025-06-08 00:09:10,174 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 1654.98ms
+2025-06-08 00:09:10,176 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:09:10,317 - backend.main - INFO - 📤 Response: 200 - 1804.46ms - /admin/users
+2025-06-08 00:09:10,317 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 1804.46ms
+2025-06-08 00:09:10,319 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:09:10,371 - backend.main - INFO - 📤 Response: 200 - 194.91ms - /admin/logs/recent
+2025-06-08 00:09:10,371 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 194.91ms
+2025-06-08 00:09:10,401 - backend.services.admin_metrics - ERROR - Error getting user metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT count(users.id) AS count_1 
+FROM users]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-08 00:09:10,417 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:10,470 - backend.services.admin_metrics - ERROR - Error getting subscription metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT users.role, count(users.id) AS count_1 
+FROM users GROUP BY users.role]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-08 00:09:10,504 - backend.main - INFO - 📤 Response: 200 - 2248.83ms - /admin/dashboard
+2025-06-08 00:09:10,504 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 2248.83ms
+2025-06-08 00:09:10,506 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:10,507 - backend.main - INFO - 📤 Response: 200 - 1997.87ms - /admin/database-metrics
+2025-06-08 00:09:10,507 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 1997.87ms
+2025-06-08 00:09:10,510 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:09:10,573 - backend.main - INFO - 📤 Response: 200 - 254.11ms - /admin/users
+2025-06-08 00:09:10,574 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 254.11ms
+2025-06-08 00:09:10,674 - backend.main - INFO - 📤 Response: 200 - 168.90ms - /admin/dashboard
+2025-06-08 00:09:10,675 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 168.90ms
+2025-06-08 00:09:10,675 - backend.services.admin_metrics - INFO - 📈 Request count: 40, Error count: 2
+2025-06-08 00:09:10,693 - backend.main - INFO - 📤 Response: 200 - 906.85ms - /admin/system-health
+2025-06-08 00:09:10,693 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 906.85ms
+2025-06-08 00:09:10,749 - backend.main - INFO - 📤 Response: 200 - 238.96ms - /admin/database-metrics
+2025-06-08 00:09:10,749 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 238.96ms
+2025-06-08 00:09:34,911 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-08 00:09:34,912 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:34,912 - backend.main - INFO - 📤 Response: 200 - 0.56ms - /admin/api-metrics
+2025-06-08 00:09:34,912 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/api-metrics - 200 - 0.56ms
+2025-06-08 00:09:34,914 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:09:34,915 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:09:34,916 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:09:34,917 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-08 00:09:34,917 - backend.main - INFO - 📤 Response: 200 - 0.23ms - /admin/api-metrics
+2025-06-08 00:09:34,917 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/api-metrics - 200 - 0.23ms
+2025-06-08 00:09:34,918 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:09:35,192 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 00:09:35,276 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:35,626 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:35,715 - backend.main - INFO - 📤 Response: 200 - 796.94ms - /admin/logs/recent
+2025-06-08 00:09:35,715 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 796.94ms
+2025-06-08 00:09:35,718 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:09:35,770 - backend.main - INFO - 📤 Response: 200 - 856.71ms - /admin/system-health
+2025-06-08 00:09:35,770 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 856.71ms
+2025-06-08 00:09:35,772 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:09:35,824 - backend.main - INFO - 📤 Response: 200 - 912.39ms - /admin/dashboard
+2025-06-08 00:09:35,824 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 912.39ms
+2025-06-08 00:09:35,826 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:35,829 - backend.main - INFO - 📤 Response: 200 - 913.92ms - /admin/database-metrics
+2025-06-08 00:09:35,829 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 913.92ms
+2025-06-08 00:09:35,830 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:09:35,842 - backend.main - INFO - 📤 Response: 200 - 926.53ms - /admin/users
+2025-06-08 00:09:35,842 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 926.53ms
+2025-06-08 00:09:35,844 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:09:35,936 - backend.main - INFO - 📤 Response: 200 - 218.20ms - /admin/logs/recent
+2025-06-08 00:09:35,936 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 218.20ms
+2025-06-08 00:09:35,936 - backend.services.admin_metrics - INFO - 📈 Request count: 50, Error count: 2
+2025-06-08 00:09:36,008 - backend.main - INFO - 📤 Response: 200 - 235.53ms - /admin/system-health
+2025-06-08 00:09:36,008 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 235.53ms
+2025-06-08 00:09:36,028 - backend.main - INFO - 📤 Response: 200 - 836.35ms - /admin/api-metrics
+2025-06-08 00:09:36,028 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/api-metrics - 200 - 836.35ms
+2025-06-08 00:09:36,030 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 00:09:36,086 - backend.main - INFO - 📤 Response: 200 - 259.90ms - /admin/dashboard
+2025-06-08 00:09:36,086 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 259.90ms
+2025-06-08 00:09:36,091 - backend.main - INFO - 📤 Response: 200 - 260.28ms - /admin/database-metrics
+2025-06-08 00:09:36,091 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 260.28ms
+2025-06-08 00:09:36,115 - backend.main - INFO - 📤 Response: 200 - 270.99ms - /admin/users
+2025-06-08 00:09:36,115 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 270.99ms
+2025-06-08 00:09:36,218 - backend.main - INFO - 📤 Response: 200 - 187.60ms - /admin/api-metrics
+2025-06-08 00:09:36,218 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/api-metrics - 200 - 187.60ms
+2025-06-08 00:09:36,427 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:39,752 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:39,955 - backend.main - INFO - 📤 Response: 200 - 203.57ms - /admin/dashboard
+2025-06-08 00:09:39,956 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 203.57ms
+2025-06-08 00:09:40,182 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:40,583 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:46,210 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:46,211 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:09:46,212 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:09:46,214 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:09:46,214 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:09:46,639 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:47,020 - backend.main - INFO - 📤 Response: 200 - 805.85ms - /admin/logs/recent
+2025-06-08 00:09:47,020 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 805.85ms
+2025-06-08 00:09:47,020 - backend.main - INFO - 📤 Response: 200 - 810.31ms - /admin/dashboard
+2025-06-08 00:09:47,020 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 810.31ms
+2025-06-08 00:09:47,022 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:09:47,024 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:47,055 - backend.main - INFO - 📤 Response: 200 - 842.73ms - /admin/database-metrics
+2025-06-08 00:09:47,055 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 842.73ms
+2025-06-08 00:09:47,055 - backend.services.admin_metrics - INFO - 📈 Request count: 60, Error count: 2
+2025-06-08 00:09:47,057 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:09:47,115 - backend.main - INFO - 📤 Response: 200 - 900.95ms - /admin/users
+2025-06-08 00:09:47,115 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 900.95ms
+2025-06-08 00:09:47,116 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:09:47,184 - backend.main - INFO - 📤 Response: 200 - 972.12ms - /admin/system-health
+2025-06-08 00:09:47,184 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 972.12ms
+2025-06-08 00:09:47,185 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:09:47,241 - backend.main - INFO - 📤 Response: 200 - 217.24ms - /admin/dashboard
+2025-06-08 00:09:47,241 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 217.24ms
+2025-06-08 00:09:47,274 - backend.main - INFO - 📤 Response: 200 - 217.02ms - /admin/database-metrics
+2025-06-08 00:09:47,274 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 217.02ms
+2025-06-08 00:09:47,397 - backend.main - INFO - 📤 Response: 200 - 280.84ms - /admin/users
+2025-06-08 00:09:47,397 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 280.84ms
+2025-06-08 00:09:47,402 - backend.main - INFO - 📤 Response: 200 - 216.12ms - /admin/system-health
+2025-06-08 00:09:47,402 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 216.12ms
+2025-06-08 00:09:47,440 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:47,904 - backend.main - INFO - 📤 Response: 200 - 881.18ms - /admin/logs/recent
+2025-06-08 00:09:47,904 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 881.18ms
+2025-06-08 00:09:48,016 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:48,018 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:09:48,020 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:09:48,021 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:09:48,023 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:09:48,024 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 00:09:48,191 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:48,210 - backend.main - INFO - 📤 Response: 200 - 191.95ms - /admin/system-health
+2025-06-08 00:09:48,210 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 191.95ms
+2025-06-08 00:09:48,211 - backend.main - INFO - 📤 Response: 200 - 190.48ms - /admin/database-metrics
+2025-06-08 00:09:48,211 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 190.48ms
+2025-06-08 00:09:48,212 - backend.main - INFO - 📤 Response: 200 - 188.97ms - /admin/logs/recent
+2025-06-08 00:09:48,212 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 188.97ms
+2025-06-08 00:09:48,212 - backend.services.admin_metrics - INFO - 📈 Request count: 70, Error count: 2
+2025-06-08 00:09:48,213 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:09:48,215 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:09:48,215 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:09:48,241 - backend.main - INFO - 📤 Response: 200 - 220.60ms - /admin/users
+2025-06-08 00:09:48,241 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 220.60ms
+2025-06-08 00:09:48,243 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:09:48,276 - backend.main - INFO - 📤 Response: 200 - 260.57ms - /admin/dashboard
+2025-06-08 00:09:48,276 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 260.57ms
+2025-06-08 00:09:48,278 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:48,285 - backend.main - INFO - 📤 Response: 200 - 261.66ms - /admin/api-metrics
+2025-06-08 00:09:48,285 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/api-metrics - 200 - 261.66ms
+2025-06-08 00:09:48,287 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 00:09:48,399 - backend.main - INFO - 📤 Response: 200 - 185.95ms - /admin/system-health
+2025-06-08 00:09:48,400 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 185.95ms
+2025-06-08 00:09:48,403 - backend.main - INFO - 📤 Response: 200 - 188.03ms - /admin/logs/recent
+2025-06-08 00:09:48,404 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 188.03ms
+2025-06-08 00:09:48,404 - backend.main - INFO - 📤 Response: 200 - 189.21ms - /admin/database-metrics
+2025-06-08 00:09:48,404 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 189.21ms
+2025-06-08 00:09:48,464 - backend.main - INFO - 📤 Response: 200 - 220.43ms - /admin/users
+2025-06-08 00:09:48,464 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 220.43ms
+2025-06-08 00:09:48,503 - backend.main - INFO - 📤 Response: 200 - 224.75ms - /admin/dashboard
+2025-06-08 00:09:48,503 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 224.75ms
+2025-06-08 00:09:48,511 - backend.main - INFO - 📤 Response: 200 - 223.96ms - /admin/api-metrics
+2025-06-08 00:09:48,511 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/api-metrics - 200 - 223.96ms
+2025-06-08 00:09:51,588 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:51,591 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:09:51,591 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:09:51,593 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:09:51,594 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:09:51,996 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:52,354 - backend.main - INFO - 📤 Response: 200 - 760.68ms - /admin/users
+2025-06-08 00:09:52,354 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 760.68ms
+2025-06-08 00:09:52,355 - backend.services.admin_metrics - INFO - 📈 Request count: 80, Error count: 2
+2025-06-08 00:09:52,359 - backend.main - INFO - 📤 Response: 200 - 770.38ms - /admin/dashboard
+2025-06-08 00:09:52,359 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 770.38ms
+2025-06-08 00:09:52,359 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:09:52,363 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:52,428 - backend.main - INFO - 📤 Response: 200 - 834.72ms - /admin/logs/recent
+2025-06-08 00:09:52,428 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 834.72ms
+2025-06-08 00:09:52,434 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:09:52,497 - backend.main - INFO - 📤 Response: 200 - 906.49ms - /admin/database-metrics
+2025-06-08 00:09:52,498 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 906.49ms
+2025-06-08 00:09:52,498 - backend.main - INFO - 📤 Response: 200 - 906.60ms - /admin/system-health
+2025-06-08 00:09:52,498 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 906.60ms
+2025-06-08 00:09:52,501 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:09:52,503 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:09:52,561 - backend.main - INFO - 📤 Response: 200 - 197.45ms - /admin/dashboard
+2025-06-08 00:09:52,561 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 197.45ms
+2025-06-08 00:09:52,658 - backend.main - INFO - 📤 Response: 200 - 224.01ms - /admin/logs/recent
+2025-06-08 00:09:52,658 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 224.01ms
+2025-06-08 00:09:52,738 - backend.main - INFO - 📤 Response: 200 - 236.82ms - /admin/database-metrics
+2025-06-08 00:09:52,738 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 236.82ms
+2025-06-08 00:09:52,767 - backend.main - INFO - 📤 Response: 200 - 263.80ms - /admin/system-health
+2025-06-08 00:09:52,767 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 263.80ms
+2025-06-08 00:09:52,797 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:53,325 - backend.main - INFO - 📤 Response: 200 - 966.37ms - /admin/users
+2025-06-08 00:09:53,325 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 966.37ms
+2025-06-08 00:09:53,443 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:53,446 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:09:53,446 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:09:53,447 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:09:53,451 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:09:53,617 - backend.main - INFO - 📤 Response: 200 - 171.43ms - /admin/system-health
+2025-06-08 00:09:53,617 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 171.43ms
+2025-06-08 00:09:53,617 - backend.services.admin_metrics - INFO - 📈 Request count: 90, Error count: 2
+2025-06-08 00:09:53,619 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:09:53,638 - backend.main - INFO - 📤 Response: 200 - 191.99ms - /admin/database-metrics
+2025-06-08 00:09:53,638 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 191.99ms
+2025-06-08 00:09:53,641 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:09:53,648 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:53,677 - backend.main - INFO - 📤 Response: 200 - 226.00ms - /admin/logs/recent
+2025-06-08 00:09:53,677 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 226.00ms
+2025-06-08 00:09:53,679 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:09:53,705 - backend.main - INFO - 📤 Response: 200 - 261.78ms - /admin/dashboard
+2025-06-08 00:09:53,705 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 261.78ms
+2025-06-08 00:09:53,706 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:53,724 - backend.main - INFO - 📤 Response: 200 - 277.48ms - /admin/users
+2025-06-08 00:09:53,724 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 277.48ms
+2025-06-08 00:09:53,726 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:09:53,807 - backend.main - INFO - 📤 Response: 200 - 165.34ms - /admin/database-metrics
+2025-06-08 00:09:53,807 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 165.34ms
+2025-06-08 00:09:53,867 - backend.main - INFO - 📤 Response: 200 - 187.71ms - /admin/logs/recent
+2025-06-08 00:09:53,867 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 187.71ms
+2025-06-08 00:09:53,879 - backend.main - INFO - 📤 Response: 200 - 260.54ms - /admin/system-health
+2025-06-08 00:09:53,880 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 260.54ms
+2025-06-08 00:09:53,930 - backend.main - INFO - 📤 Response: 200 - 223.60ms - /admin/dashboard
+2025-06-08 00:09:53,930 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 223.60ms
+2025-06-08 00:09:54,024 - backend.main - INFO - 📤 Response: 200 - 297.98ms - /admin/users
+2025-06-08 00:09:54,024 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 297.98ms
+2025-06-08 00:09:54,399 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:58,801 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:58,803 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:09:58,805 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:09:58,805 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:09:58,805 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:09:59,134 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:59,535 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:09:59,573 - backend.main - INFO - 📤 Response: 200 - 770.52ms - /admin/system-health
+2025-06-08 00:09:59,573 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 770.52ms
+2025-06-08 00:09:59,573 - backend.services.admin_metrics - INFO - 📈 Request count: 100, Error count: 2
+2025-06-08 00:09:59,574 - backend.main - INFO - 📤 Response: 200 - 772.70ms - /admin/dashboard
+2025-06-08 00:09:59,574 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 772.70ms
+2025-06-08 00:09:59,575 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:09:59,577 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:09:59,604 - backend.main - INFO - 📤 Response: 200 - 798.32ms - /admin/logs/recent
+2025-06-08 00:09:59,604 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 798.32ms
+2025-06-08 00:09:59,605 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:09:59,607 - backend.main - INFO - 📤 Response: 200 - 802.56ms - /admin/database-metrics
+2025-06-08 00:09:59,608 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 802.56ms
+2025-06-08 00:09:59,609 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:09:59,730 - backend.main - INFO - 📤 Response: 200 - 924.40ms - /admin/users
+2025-06-08 00:09:59,730 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 924.40ms
+2025-06-08 00:09:59,731 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:09:59,793 - backend.main - INFO - 📤 Response: 200 - 216.09ms - /admin/dashboard
+2025-06-08 00:09:59,793 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 216.09ms
+2025-06-08 00:09:59,823 - backend.main - INFO - 📤 Response: 200 - 218.03ms - /admin/logs/recent
+2025-06-08 00:09:59,824 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 218.03ms
+2025-06-08 00:09:59,825 - backend.main - INFO - 📤 Response: 200 - 216.33ms - /admin/database-metrics
+2025-06-08 00:09:59,825 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 216.33ms
+2025-06-08 00:10:00,013 - backend.main - INFO - 📤 Response: 200 - 281.11ms - /admin/users
+2025-06-08 00:10:00,013 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 281.11ms
+2025-06-08 00:10:00,286 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:10:00,326 - backend.main - INFO - 📤 Response: 200 - 750.49ms - /admin/system-health
+2025-06-08 00:10:00,326 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 750.49ms
+2025-06-08 00:10:01,141 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:10:01,144 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:10:01,144 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:10:01,144 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:10:01,144 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:10:01,336 - backend.main - INFO - 📤 Response: 200 - 191.84ms - /admin/system-health
+2025-06-08 00:10:01,336 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 191.84ms
+2025-06-08 00:10:01,336 - backend.services.admin_metrics - INFO - 📈 Request count: 110, Error count: 2
+2025-06-08 00:10:01,338 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 00:10:01,339 - backend.main - INFO - 📤 Response: 200 - 195.14ms - /admin/database-metrics
+2025-06-08 00:10:01,339 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 195.14ms
+2025-06-08 00:10:01,340 - backend.main - INFO - 📤 Response: 200 - 195.20ms - /admin/logs/recent
+2025-06-08 00:10:01,340 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 195.20ms
+2025-06-08 00:10:01,343 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 00:10:01,344 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 00:10:01,378 - backend.main - INFO - 📤 Response: 200 - 237.15ms - /admin/dashboard
+2025-06-08 00:10:01,379 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 237.15ms
+2025-06-08 00:10:01,380 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:10:01,399 - backend.main - INFO - 📤 Response: 200 - 255.05ms - /admin/users
+2025-06-08 00:10:01,399 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 255.05ms
+2025-06-08 00:10:01,402 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 00:10:01,437 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:10:01,532 - backend.main - INFO - 📤 Response: 200 - 189.12ms - /admin/database-metrics
+2025-06-08 00:10:01,532 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/database-metrics - 200 - 189.12ms
+2025-06-08 00:10:01,532 - backend.main - INFO - 📤 Response: 200 - 187.89ms - /admin/logs/recent
+2025-06-08 00:10:01,532 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/logs/recent - 200 - 187.89ms
+2025-06-08 00:10:01,559 - backend.main - INFO - 📤 Response: 200 - 221.24ms - /admin/system-health
+2025-06-08 00:10:01,559 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/system-health - 200 - 221.24ms
+2025-06-08 00:10:01,566 - backend.main - INFO - 📤 Response: 200 - 186.06ms - /admin/dashboard
+2025-06-08 00:10:01,566 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 186.06ms
+2025-06-08 00:10:01,638 - backend.main - INFO - 📤 Response: 200 - 236.18ms - /admin/users
+2025-06-08 00:10:01,638 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/users - 200 - 236.18ms
+2025-06-08 00:14:39,628 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-08 00:14:39,629 - backend.main - INFO - 📤 Response: 200 - 0.35ms - /admin/dashboard
+2025-06-08 00:14:39,629 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 0.35ms
+2025-06-08 00:14:39,629 - backend.services.admin_metrics - INFO - 📈 Request count: 120, Error count: 2
+2025-06-08 00:14:39,634 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:14:40,066 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:14:40,466 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:14:45,486 - backend.services.admin_metrics - ERROR - Error getting user metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT count(users.id) AS count_1 
+FROM users]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-08 00:14:45,551 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:14:45,561 - backend.services.admin_metrics - ERROR - Error getting subscription metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT users.role, count(users.id) AS count_1 
+FROM users GROUP BY users.role]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-08 00:14:45,600 - backend.main - INFO - 📤 Response: 200 - 5966.09ms - /admin/dashboard
+2025-06-08 00:14:45,600 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 5966.09ms
+2025-06-08 00:15:00,915 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:15:01,220 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:15:01,620 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:15:01,835 - backend.main - INFO - 📤 Response: 200 - 919.93ms - /admin/dashboard
+2025-06-08 00:15:01,835 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 919.93ms
+2025-06-08 00:19:45,459 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:19:45,682 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:19:47,536 - backend.services.admin_metrics - ERROR - Error getting user metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT count(users.id) AS count_1 
+FROM users]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-08 00:19:47,601 - backend.services.admin_metrics - ERROR - Error getting subscription metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT users.role, count(users.id) AS count_1 
+FROM users GROUP BY users.role]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-08 00:19:47,633 - backend.main - INFO - 📤 Response: 200 - 2173.70ms - /admin/dashboard
+2025-06-08 00:19:47,633 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 2173.70ms
+2025-06-08 00:19:47,984 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:20:01,390 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:20:01,649 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:20:02,230 - backend.main - INFO - 📤 Response: 200 - 840.21ms - /admin/dashboard
+2025-06-08 00:20:02,230 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 840.21ms
+2025-06-08 00:20:02,400 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:23:38,672 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:23:38,673 - uvicorn.error - WARNING - WatchFiles detected changes in 'services/admin_metrics.py'. Reloading...
+2025-06-08 00:23:38,744 - uvicorn.error - INFO - Shutting down
+2025-06-08 00:23:38,845 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-06-08 00:23:38,845 - backend.main - INFO - 🛑 HoopMetrics API shutting down...
+2025-06-08 00:23:38,846 - uvicorn.error - INFO - Application shutdown complete.
+2025-06-08 00:23:38,846 - uvicorn.error - INFO - Finished server process [162120]
+2025-06-08 00:23:39,201 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:23:43,136 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:23:43,323 - uvicorn.error - INFO - Started server process [170331]
+2025-06-08 00:23:43,323 - uvicorn.error - INFO - Waiting for application startup.
+2025-06-08 00:23:43,324 - backend.main - INFO - 🚀 HoopMetrics API starting up...
+2025-06-08 00:23:43,324 - uvicorn.error - INFO - Application startup complete.
+2025-06-08 00:23:43,486 - watchfiles.main - INFO - 3 changes detected
+2025-06-08 00:24:04,211 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:24:04,211 - uvicorn.error - WARNING - WatchFiles detected changes in 'services/admin_metrics.py'. Reloading...
+2025-06-08 00:24:04,252 - uvicorn.error - INFO - Shutting down
+2025-06-08 00:24:04,353 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-06-08 00:24:04,354 - backend.main - INFO - 🛑 HoopMetrics API shutting down...
+2025-06-08 00:24:04,354 - uvicorn.error - INFO - Application shutdown complete.
+2025-06-08 00:24:04,354 - uvicorn.error - INFO - Finished server process [170331]
+2025-06-08 00:24:04,711 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:24:05,242 - uvicorn.error - INFO - Started server process [170536]
+2025-06-08 00:24:05,243 - uvicorn.error - INFO - Waiting for application startup.
+2025-06-08 00:24:05,243 - backend.main - INFO - 🚀 HoopMetrics API starting up...
+2025-06-08 00:24:05,243 - uvicorn.error - INFO - Application startup complete.
+2025-06-08 00:24:05,362 - watchfiles.main - INFO - 3 changes detected
+2025-06-08 00:24:29,722 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:24:29,722 - uvicorn.error - WARNING - WatchFiles detected changes in 'services/admin_metrics.py'. Reloading...
+2025-06-08 00:24:29,760 - uvicorn.error - INFO - Shutting down
+2025-06-08 00:24:29,861 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-06-08 00:24:29,862 - backend.main - INFO - 🛑 HoopMetrics API shutting down...
+2025-06-08 00:24:29,862 - uvicorn.error - INFO - Application shutdown complete.
+2025-06-08 00:24:29,863 - uvicorn.error - INFO - Finished server process [170536]
+2025-06-08 00:24:30,223 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:24:30,573 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:24:30,838 - uvicorn.error - INFO - Started server process [170757]
+2025-06-08 00:24:30,839 - uvicorn.error - INFO - Waiting for application startup.
+2025-06-08 00:24:30,840 - backend.main - INFO - 🚀 HoopMetrics API starting up...
+2025-06-08 00:24:30,840 - uvicorn.error - INFO - Application startup complete.
+2025-06-08 00:24:30,924 - watchfiles.main - INFO - 2 changes detected
+2025-06-08 00:24:46,849 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-08 00:24:46,849 - backend.main - INFO - 📤 Response: 200 - 0.37ms - /admin/dashboard
+2025-06-08 00:24:46,849 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 0.37ms
+2025-06-08 00:24:46,851 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:24:47,292 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:24:47,642 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:24:49,493 - backend.services.admin_metrics - ERROR - Error getting user metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT count(users.id) AS count_1 
+FROM users]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-08 00:24:49,569 - backend.services.admin_metrics - ERROR - Error getting subscription metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT users.role, count(users.id) AS count_1 
+FROM users GROUP BY users.role]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-08 00:24:49,595 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:24:49,607 - backend.main - INFO - 📤 Response: 200 - 2755.42ms - /admin/dashboard
+2025-06-08 00:24:49,607 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 2755.42ms
+2025-06-08 00:25:05,446 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 00:25:05,743 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:25:06,229 - backend.main - INFO - 📤 Response: 200 - 783.18ms - /admin/dashboard
+2025-06-08 00:25:06,229 - backend.services.admin_metrics - INFO - 📊 Recording request: /admin/dashboard - 200 - 783.18ms
+2025-06-08 00:25:06,294 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:25:57,532 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:25:57,533 - uvicorn.error - WARNING - WatchFiles detected changes in 'services/admin_metrics.py'. Reloading...
+2025-06-08 00:25:57,600 - uvicorn.error - INFO - Shutting down
+2025-06-08 00:25:57,701 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-06-08 00:25:57,702 - backend.main - INFO - 🛑 HoopMetrics API shutting down...
+2025-06-08 00:25:57,702 - uvicorn.error - INFO - Application shutdown complete.
+2025-06-08 00:25:57,703 - uvicorn.error - INFO - Finished server process [170757]
+2025-06-08 00:25:58,061 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:25:58,412 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:25:58,559 - uvicorn.error - INFO - Started server process [171484]
+2025-06-08 00:25:58,560 - uvicorn.error - INFO - Waiting for application startup.
+2025-06-08 00:25:58,560 - backend.main - INFO - 🚀 HoopMetrics API starting up...
+2025-06-08 00:25:58,561 - uvicorn.error - INFO - Application startup complete.
+2025-06-08 00:25:58,762 - watchfiles.main - INFO - 2 changes detected
+2025-06-08 00:26:16,065 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:26:16,066 - uvicorn.error - WARNING - WatchFiles detected changes in 'routers/admin.py'. Reloading...
+2025-06-08 00:26:16,068 - uvicorn.error - INFO - Shutting down
+2025-06-08 00:26:16,169 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-06-08 00:26:16,170 - backend.main - INFO - 🛑 HoopMetrics API shutting down...
+2025-06-08 00:26:16,170 - uvicorn.error - INFO - Application shutdown complete.
+2025-06-08 00:26:16,170 - uvicorn.error - INFO - Finished server process [171484]
+2025-06-08 00:26:16,528 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:26:17,047 - uvicorn.error - INFO - Started server process [171647]
+2025-06-08 00:26:17,047 - uvicorn.error - INFO - Waiting for application startup.
+2025-06-08 00:26:17,048 - backend.main - INFO - 🚀 HoopMetrics API starting up...
+2025-06-08 00:26:17,048 - uvicorn.error - INFO - Application startup complete.
+2025-06-08 00:26:17,228 - watchfiles.main - INFO - 3 changes detected
+2025-06-08 00:26:19,481 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:26:19,481 - uvicorn.error - WARNING - WatchFiles detected changes in 'routers/admin.py'. Reloading...
+2025-06-08 00:26:19,551 - uvicorn.error - INFO - Shutting down
+2025-06-08 00:26:19,652 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-06-08 00:26:19,653 - backend.main - INFO - 🛑 HoopMetrics API shutting down...
+2025-06-08 00:26:19,653 - uvicorn.error - INFO - Application shutdown complete.
+2025-06-08 00:26:19,653 - uvicorn.error - INFO - Finished server process [171647]
+2025-06-08 00:26:20,010 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:26:20,361 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:26:20,503 - uvicorn.error - INFO - Started server process [171694]
+2025-06-08 00:26:20,503 - uvicorn.error - INFO - Waiting for application startup.
+2025-06-08 00:26:20,504 - backend.main - INFO - 🚀 HoopMetrics API starting up...
+2025-06-08 00:26:20,504 - uvicorn.error - INFO - Application startup complete.
+2025-06-08 00:26:20,711 - watchfiles.main - INFO - 2 changes detected
+2025-06-08 00:26:43,816 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:26:43,816 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2025-06-08 00:26:43,916 - uvicorn.error - INFO - Shutting down
+2025-06-08 00:26:44,017 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-06-08 00:26:44,017 - backend.main - INFO - 🛑 HoopMetrics API shutting down...
+2025-06-08 00:26:44,018 - uvicorn.error - INFO - Application shutdown complete.
+2025-06-08 00:26:44,018 - uvicorn.error - INFO - Finished server process [171694]
+2025-06-08 00:26:44,375 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:26:44,726 - watchfiles.main - INFO - 2 changes detected
+2025-06-08 00:26:44,864 - uvicorn.error - INFO - Started server process [171989]
+2025-06-08 00:26:44,865 - uvicorn.error - INFO - Waiting for application startup.
+2025-06-08 00:26:44,866 - backend.main - INFO - 🚀 HoopMetrics API starting up...
+2025-06-08 00:26:44,866 - uvicorn.error - INFO - Application startup complete.
+2025-06-08 00:26:49,532 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:26:49,532 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2025-06-08 00:26:49,574 - uvicorn.error - INFO - Shutting down
+2025-06-08 00:26:49,675 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-06-08 00:26:49,675 - backend.main - INFO - 🛑 HoopMetrics API shutting down...
+2025-06-08 00:26:49,675 - uvicorn.error - INFO - Application shutdown complete.
+2025-06-08 00:26:49,676 - uvicorn.error - INFO - Finished server process [171989]
+2025-06-08 00:26:50,033 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:26:50,383 - watchfiles.main - INFO - 3 changes detected
+2025-06-08 00:26:50,528 - uvicorn.error - INFO - Started server process [172056]
+2025-06-08 00:26:50,529 - uvicorn.error - INFO - Waiting for application startup.
+2025-06-08 00:26:50,529 - backend.main - INFO - 🚀 HoopMetrics API starting up...
+2025-06-08 00:26:50,529 - uvicorn.error - INFO - Application startup complete.
+2025-06-08 00:26:55,590 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:26:55,590 - uvicorn.error - WARNING - WatchFiles detected changes in 'main.py'. Reloading...
+2025-06-08 00:26:55,638 - uvicorn.error - INFO - Shutting down
+2025-06-08 00:26:55,738 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-06-08 00:26:55,739 - backend.main - INFO - 🛑 HoopMetrics API shutting down...
+2025-06-08 00:26:55,739 - uvicorn.error - INFO - Application shutdown complete.
+2025-06-08 00:26:55,740 - uvicorn.error - INFO - Finished server process [172056]
+2025-06-08 00:26:56,096 - watchfiles.main - INFO - 1 change detected
+2025-06-08 00:26:56,447 - watchfiles.main - INFO - 3 changes detected
+2025-06-08 00:26:56,623 - uvicorn.error - INFO - Started server process [172158]
+2025-06-08 00:26:56,624 - uvicorn.error - INFO - Waiting for application startup.
+2025-06-08 00:26:56,625 - backend.main - INFO - 🚀 HoopMetrics API starting up...
+2025-06-08 00:26:56,625 - uvicorn.error - INFO - Application startup complete.
+2025-06-08 00:26:59,430 - uvicorn.error - INFO - Shutting down
+2025-06-08 00:26:59,531 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-06-08 00:26:59,532 - backend.main - INFO - 🛑 HoopMetrics API shutting down...
+2025-06-08 00:26:59,532 - uvicorn.error - INFO - Application shutdown complete.
+2025-06-08 00:26:59,532 - uvicorn.error - INFO - Finished server process [172158]
+2025-06-08 00:26:59,538 - uvicorn.error - INFO - Stopping reloader process [162109]

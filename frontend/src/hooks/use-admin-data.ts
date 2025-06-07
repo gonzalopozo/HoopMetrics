@@ -217,7 +217,10 @@ export function useAdminData(): UseAdminDataReturn {
                 fetchSystemHealth(),
                 fetchDatabaseMetrics(),
                 fetchUsers(),
-                fetchLogs()
+                fetchLogs(),
+                fetchUserMetrics(),
+                fetchSubscriptionMetrics(),
+                fetchAPIMetrics()
             ]);
             
             console.log('📊 RefreshAll results:', results);

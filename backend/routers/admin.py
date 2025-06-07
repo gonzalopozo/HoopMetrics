@@ -218,7 +218,7 @@ async def get_recent_logs(limit: int = 50):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error getting logs: {str(e)}"
+            detail=f"Error getting recent logs: {str(e)}"
         )
 
 @router.post("/users/{user_id}/send-notification")
