@@ -284,8 +284,8 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         average_minutes: number;
     } | null>(null);
 
-    const isPremium = userRole === "premium" || userRole === "ultimate"
-    const isUltimate = userRole === "ultimate"
+    const isPremium = userRole === "premium" || userRole === "ultimate" || userRole === "admin"
+    const isUltimate = userRole === "ultimate" || userRole === "admin"
     const { resolvedTheme } = useTheme()
 
     useEffect(() => {

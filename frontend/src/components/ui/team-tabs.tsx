@@ -65,8 +65,8 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
     const [userRole, setUserRole] = useState<string>("free")
     const [pointsVsOpponent, setPointsVsOpponent] = useState<{ date: string; points_for: number; points_against: number }[]>([])
 
-    const isPremium = userRole === "premium" || userRole === "ultimate"
-    const isUltimate = userRole === "ultimate"
+    const isPremium = userRole === "premium" || userRole === "ultimate" || userRole === "admin"
+    const isUltimate = userRole === "ultimate" || userRole === "admin"
 
     const [pointsProgression, setPointsProgression] = useState<{ date: string; points: number }[]>([])
     const [teamPointsType, setTeamPointsType] = useState<{ two_points: number; three_points: number; free_throws: number } | null>(null)

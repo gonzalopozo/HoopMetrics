@@ -10385,3 +10385,44 @@ FROM users GROUP BY users.role]
 2025-06-08 14:47:29,630 - watchfiles.main - INFO - 1 change detected
 2025-06-08 14:47:30,174 - backend.main - INFO - 📤 Response: 200 - 926.38ms - /admin/api-metrics
 2025-06-08 14:47:30,381 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:47:58,758 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:47:59,141 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:47:59,492 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:47:59,577 - backend.main - INFO - 📤 Response: 200 - 818.19ms - /admin/api-metrics
+2025-06-08 14:48:01,504 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:48:01,744 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:48:02,427 - backend.main - INFO - 📤 Response: 200 - 923.83ms - /admin/api-metrics
+2025-06-08 14:48:02,895 - watchfiles.main - INFO - 1 change detected
+2025-06-08 15:38:56,173 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-08 15:38:56,173 - backend.main - INFO - 📤 Response: 200 - 0.35ms - /admin/dashboard
+2025-06-08 15:38:56,175 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-08 15:38:56,175 - backend.main - INFO - 📤 Response: 200 - 0.35ms - /admin/api-metrics
+2025-06-08 15:38:56,177 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-08 15:38:56,177 - backend.main - INFO - 📤 Response: 200 - 0.73ms - /admin/api-metrics
+2025-06-08 15:38:56,177 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-08 15:38:56,178 - backend.main - INFO - 📤 Response: 200 - 0.23ms - /admin/dashboard
+2025-06-08 15:38:56,181 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 15:38:56,182 - backend.main - INFO - 📤 Response: 401 - 1.10ms - /admin/dashboard
+2025-06-08 15:38:56,182 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 15:38:56,183 - backend.main - INFO - 📤 Response: 401 - 0.85ms - /admin/api-metrics
+2025-06-08 15:38:56,185 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 15:38:56,186 - backend.main - INFO - 📤 Response: 401 - 0.97ms - /admin/dashboard
+2025-06-08 15:38:56,193 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 15:38:56,195 - backend.main - INFO - 📤 Response: 401 - 2.04ms - /admin/api-metrics
+2025-06-08 15:38:56,563 - watchfiles.main - INFO - 1 change detected
+2025-06-08 15:39:01,254 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 15:39:01,254 - backend.main - INFO - 📤 Response: 401 - 0.76ms - /admin/api-metrics
+2025-06-08 15:39:01,572 - watchfiles.main - INFO - 1 change detected
+2025-06-08 15:39:32,735 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 15:39:32,736 - backend.main - INFO - 📤 Response: 401 - 0.91ms - /admin/api-metrics
+2025-06-08 15:39:33,070 - watchfiles.main - INFO - 1 change detected
+2025-06-08 15:39:33,471 - watchfiles.main - INFO - 1 change detected
+2025-06-08 15:39:35,417 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 15:39:35,418 - backend.main - INFO - 📤 Response: 401 - 1.12ms - /admin/api-metrics
+2025-06-08 15:39:35,826 - watchfiles.main - INFO - 1 change detected
+2025-06-08 15:39:40,012 - uvicorn.error - INFO - Shutting down
+2025-06-08 15:39:40,113 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-06-08 15:39:40,113 - backend.main - INFO - 🛑 HoopMetrics API shutting down...
+2025-06-08 15:39:40,114 - uvicorn.error - INFO - Application shutdown complete.
+2025-06-08 15:39:40,114 - uvicorn.error - INFO - Finished server process [54374]
+2025-06-08 15:39:40,119 - uvicorn.error - INFO - Stopping reloader process [5946]
