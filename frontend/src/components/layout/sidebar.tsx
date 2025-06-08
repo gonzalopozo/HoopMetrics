@@ -27,7 +27,6 @@ export function Sidebar() {
         // TODO: añadir rutas de perfil
         { name: "Profile", href: '/profile', icon: User },
         { name: "Favorites", href: '/favorites', icon: Star },
-        { name: "Alerts", href: '/alerts', icon: Bell },
     ]
 
     return (

@@ -9716,3 +9716,672 @@ FROM users]
 2025-06-08 14:29:21,163 - watchfiles.main - INFO - 1 change detected
 2025-06-08 14:29:21,513 - watchfiles.main - INFO - 1 change detected
 2025-06-08 14:29:21,843 - backend.main - INFO - 📤 Response: 200 - 847.82ms - /admin/api-metrics
+2025-06-08 14:29:48,043 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-08 14:29:48,043 - backend.main - INFO - 📤 Response: 200 - 0.28ms - /admin/api-metrics
+2025-06-08 14:29:48,045 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:29:48,422 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:29:48,976 - backend.main - INFO - 📤 Response: 200 - 930.37ms - /admin/api-metrics
+2025-06-08 14:29:50,513 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:29:50,624 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:29:51,441 - backend.main - INFO - 📤 Response: 200 - 927.43ms - /admin/api-metrics
+2025-06-08 14:29:51,776 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:29:53,260 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:29:53,628 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:29:54,108 - backend.main - INFO - 📤 Response: 200 - 848.17ms - /admin/api-metrics
+2025-06-08 14:29:54,379 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:30:19,438 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-08 14:30:19,438 - backend.main - INFO - 📤 Response: 200 - 0.25ms - /admin/api-metrics
+2025-06-08 14:30:19,439 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:30:19,742 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:30:20,289 - backend.main - INFO - 📤 Response: 200 - 850.02ms - /admin/api-metrics
+2025-06-08 14:30:20,493 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:30:23,065 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:30:23,446 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:30:23,989 - backend.main - INFO - 📤 Response: 200 - 924.31ms - /admin/api-metrics
+2025-06-08 14:30:25,527 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:30:25,698 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:30:26,456 - backend.main - INFO - 📤 Response: 200 - 929.01ms - /admin/api-metrics
+2025-06-08 14:30:26,799 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:30:55,042 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:30:55,408 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:30:55,761 - backend.main - INFO - 📤 Response: 200 - 718.69ms - /admin/api-metrics
+2025-06-08 14:30:57,796 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:30:58,011 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:30:58,361 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:30:58,591 - backend.main - INFO - 📤 Response: 200 - 794.65ms - /admin/api-metrics
+2025-06-08 14:31:27,587 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:31:27,717 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:31:28,387 - backend.main - INFO - 📤 Response: 200 - 799.75ms - /admin/api-metrics
+2025-06-08 14:31:28,819 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:31:30,059 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:31:30,320 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:31:30,849 - backend.main - INFO - 📤 Response: 200 - 790.00ms - /admin/api-metrics
+2025-06-08 14:31:59,569 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:31:59,681 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:32:00,440 - backend.main - INFO - 📤 Response: 200 - 871.32ms - /admin/api-metrics
+2025-06-08 14:32:00,833 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:32:02,328 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:32:02,684 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:32:03,124 - backend.main - INFO - 📤 Response: 200 - 795.96ms - /admin/api-metrics
+2025-06-08 14:32:03,435 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:32:32,123 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:32:32,296 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:32:32,837 - backend.main - INFO - 📤 Response: 200 - 713.38ms - /admin/api-metrics
+2025-06-08 14:32:34,587 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:32:34,898 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:32:35,507 - backend.main - INFO - 📤 Response: 200 - 919.83ms - /admin/api-metrics
+2025-06-08 14:32:35,649 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:33:01,169 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:33:01,529 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:33:01,863 - backend.main - INFO - 📤 Response: 200 - 694.47ms - /admin/api-metrics
+2025-06-08 14:33:06,857 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:33:07,164 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:33:07,515 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:33:07,784 - backend.main - INFO - 📤 Response: 200 - 926.79ms - /admin/api-metrics
+2025-06-08 14:33:33,722 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:33:34,146 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:33:34,496 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:33:34,651 - backend.main - INFO - 📤 Response: 200 - 928.78ms - /admin/api-metrics
+2025-06-08 14:33:36,190 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:33:36,599 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:33:36,973 - backend.main - INFO - 📤 Response: 200 - 782.35ms - /admin/api-metrics
+2025-06-08 14:34:02,953 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 14:34:03,256 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:03,606 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:03,757 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh dashboard data
+2025-06-08 14:34:05,041 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-08 14:34:05,042 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh user metrics from database
+2025-06-08 14:34:05,111 - backend.services.admin_metrics - ERROR - Error getting user metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT count(users.id) AS count_1 
+FROM users]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-08 14:34:05,111 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh subscription metrics from database
+2025-06-08 14:34:05,180 - backend.services.admin_metrics - ERROR - Error getting subscription role counts: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT users.role, count(users.id) AS count_1 
+FROM users GROUP BY users.role]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-08 14:34:05,180 - backend.services.admin_metrics - INFO - Subscription metrics: premium=0, ultimate=0, revenue_month=0.0
+2025-06-08 14:34:05,180 - backend.services.admin_metrics - INFO - ✅ Subscription metrics cached: {'free': 0, 'premium': 0, 'ultimate': 0}
+2025-06-08 14:34:05,180 - backend.services.admin_metrics - INFO - ✅ Dashboard data cached
+2025-06-08 14:34:05,216 - backend.main - INFO - 📤 Response: 200 - 2262.37ms - /admin/dashboard
+2025-06-08 14:34:05,218 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 14:34:05,308 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:05,700 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:34:05,954 - backend.services.admin_metrics - INFO - ✅ Using cached dashboard data
+2025-06-08 14:34:05,987 - backend.main - INFO - 📤 Response: 200 - 768.80ms - /admin/dashboard
+2025-06-08 14:34:06,599 - backend.main - INFO - 📤 Response: 200 - 898.42ms - /admin/api-metrics
+2025-06-08 14:34:06,810 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:08,447 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:34:08,712 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:09,247 - backend.main - INFO - 📤 Response: 200 - 799.47ms - /admin/api-metrics
+2025-06-08 14:34:09,463 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:38,253 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:34:38,675 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:38,968 - backend.main - INFO - 📤 Response: 200 - 715.72ms - /admin/api-metrics
+2025-06-08 14:34:40,727 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:34:40,928 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:41,491 - backend.main - INFO - 📤 Response: 200 - 763.49ms - /admin/api-metrics
+2025-06-08 14:34:41,779 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:43,043 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:34:43,382 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:43,385 - backend.main - INFO - 📥 Request: OPTIONS /profile/me
+2025-06-08 14:34:43,386 - backend.main - INFO - 📤 Response: 200 - 0.93ms - /profile/me
+2025-06-08 14:34:43,388 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:34:44,051 - backend.main - INFO - 📤 Response: 200 - 1007.70ms - /home/top-performers
+2025-06-08 14:34:44,092 - backend.main - INFO - 📤 Response: 200 - 704.08ms - /profile/me
+2025-06-08 14:34:44,133 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:44,185 - backend.main - INFO - 📥 Request: OPTIONS /favorites/
+2025-06-08 14:34:44,185 - backend.main - INFO - 📥 Request: OPTIONS /favorites/
+2025-06-08 14:34:44,186 - backend.main - INFO - 📤 Response: 200 - 0.86ms - /favorites/
+2025-06-08 14:34:44,186 - backend.main - INFO - 📤 Response: 200 - 0.60ms - /favorites/
+2025-06-08 14:34:44,189 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:34:45,025 - backend.main - INFO - 📤 Response: 200 - 835.95ms - /favorites/
+2025-06-08 14:34:45,027 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:34:45,284 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:45,958 - backend.main - INFO - 📤 Response: 200 - 931.58ms - /favorites/
+2025-06-08 14:34:53,755 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics/refresh
+2025-06-08 14:34:53,756 - backend.main - INFO - 📤 Response: 200 - 0.52ms - /admin/api-metrics/refresh
+2025-06-08 14:34:53,759 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics/refresh
+2025-06-08 14:34:53,760 - backend.main - INFO - 📤 Response: 200 - 0.42ms - /admin/api-metrics/refresh
+2025-06-08 14:34:53,766 - backend.main - INFO - 📥 Request: POST /admin/api-metrics/refresh
+2025-06-08 14:34:53,923 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:54,046 - backend.main - INFO - 📥 Request: POST /admin/api-metrics/refresh
+2025-06-08 14:34:54,324 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:54,649 - backend.routers.admin - INFO - 🧹 Cache cleared for critical metrics
+2025-06-08 14:34:54,687 - backend.main - INFO - 📤 Response: 200 - 921.51ms - /admin/api-metrics/refresh
+2025-06-08 14:34:54,691 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-08 14:34:54,691 - backend.main - INFO - 📥 Request: OPTIONS /admin/system-health
+2025-06-08 14:34:54,692 - backend.main - INFO - 📤 Response: 200 - 0.52ms - /admin/dashboard
+2025-06-08 14:34:54,692 - backend.main - INFO - 📥 Request: OPTIONS /admin/database-metrics
+2025-06-08 14:34:54,692 - backend.main - INFO - 📤 Response: 200 - 0.73ms - /admin/system-health
+2025-06-08 14:34:54,692 - backend.main - INFO - 📤 Response: 200 - 0.53ms - /admin/database-metrics
+2025-06-08 14:34:54,695 - backend.main - INFO - 📥 Request: OPTIONS /admin/users
+2025-06-08 14:34:54,695 - backend.main - INFO - 📤 Response: 200 - 0.29ms - /admin/users
+2025-06-08 14:34:54,695 - backend.main - INFO - 📥 Request: OPTIONS /admin/logs/recent
+2025-06-08 14:34:54,696 - backend.main - INFO - 📤 Response: 200 - 0.18ms - /admin/logs/recent
+2025-06-08 14:34:54,697 - backend.main - INFO - 📥 Request: OPTIONS /admin/user-metrics
+2025-06-08 14:34:54,697 - backend.main - INFO - 📤 Response: 200 - 0.21ms - /admin/user-metrics
+2025-06-08 14:34:54,698 - backend.main - INFO - 📥 Request: OPTIONS /admin/subscription-metrics
+2025-06-08 14:34:54,698 - backend.main - INFO - 📤 Response: 200 - 0.21ms - /admin/subscription-metrics
+2025-06-08 14:34:54,698 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-08 14:34:54,699 - backend.main - INFO - 📤 Response: 200 - 0.57ms - /admin/api-metrics
+2025-06-08 14:34:54,700 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 14:34:54,701 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 14:34:54,772 - backend.routers.admin - INFO - 🧹 Cache cleared for critical metrics
+2025-06-08 14:34:54,805 - backend.main - INFO - 📤 Response: 200 - 758.35ms - /admin/api-metrics/refresh
+2025-06-08 14:34:54,806 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 14:34:54,970 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 14:34:54,972 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 14:34:54,973 - backend.main - INFO - 📥 Request: GET /admin/user-metrics
+2025-06-08 14:34:55,163 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh user metrics from database
+2025-06-08 14:34:55,241 - backend.main - INFO - 📤 Response: 200 - 268.87ms - /admin/logs/recent
+2025-06-08 14:34:55,242 - backend.main - INFO - 📥 Request: GET /admin/subscription-metrics
+2025-06-08 14:34:55,291 - backend.services.admin_metrics - INFO - 📊 Real users by role: {'premium': 5, 'admin': 7, 'ultimate': 16, 'free': 16}
+2025-06-08 14:34:55,425 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:55,433 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh subscription metrics from database
+2025-06-08 14:34:55,510 - backend.services.admin_metrics - INFO - 📊 Raw role counts: {'premium': 5, 'admin': 7, 'ultimate': 16, 'free': 16}
+2025-06-08 14:34:55,510 - backend.services.admin_metrics - INFO - Subscription metrics: premium=5, ultimate=16, revenue_month=369.78999999999996
+2025-06-08 14:34:55,510 - backend.services.admin_metrics - INFO - ✅ Subscription metrics cached: {'free': 16, 'premium': 5, 'ultimate': 16}
+2025-06-08 14:34:55,548 - backend.main - INFO - 📤 Response: 200 - 305.26ms - /admin/subscription-metrics
+2025-06-08 14:34:55,549 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:34:56,560 - backend.services.admin_metrics - INFO - User metrics calculated: total=44, active_24h=8, active_7d=15
+2025-06-08 14:34:56,560 - backend.services.admin_metrics - INFO - ✅ User metrics cached: {'premium': 5, 'admin': 7, 'ultimate': 16, 'free': 16}
+2025-06-08 14:34:56,560 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh dashboard data
+2025-06-08 14:34:56,592 - backend.main - INFO - 📤 Response: 200 - 1619.07ms - /admin/user-metrics
+2025-06-08 14:34:56,594 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-08 14:34:56,594 - backend.main - INFO - 📤 Response: 200 - 0.23ms - /admin/dashboard
+2025-06-08 14:34:56,596 - backend.main - INFO - 📥 Request: OPTIONS /admin/system-health
+2025-06-08 14:34:56,596 - backend.main - INFO - 📤 Response: 200 - 0.18ms - /admin/system-health
+2025-06-08 14:34:56,597 - backend.main - INFO - 📥 Request: OPTIONS /admin/database-metrics
+2025-06-08 14:34:56,597 - backend.main - INFO - 📤 Response: 200 - 0.19ms - /admin/database-metrics
+2025-06-08 14:34:56,599 - backend.main - INFO - 📤 Response: 200 - 1897.49ms - /admin/system-health
+2025-06-08 14:34:56,600 - backend.main - INFO - 📥 Request: OPTIONS /admin/users
+2025-06-08 14:34:56,600 - backend.main - INFO - 📤 Response: 200 - 0.24ms - /admin/users
+2025-06-08 14:34:56,602 - backend.main - INFO - 📥 Request: OPTIONS /admin/logs/recent
+2025-06-08 14:34:56,602 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/logs/recent
+2025-06-08 14:34:56,603 - backend.main - INFO - 📥 Request: OPTIONS /admin/user-metrics
+2025-06-08 14:34:56,603 - backend.main - INFO - 📤 Response: 200 - 0.16ms - /admin/user-metrics
+2025-06-08 14:34:56,604 - backend.main - INFO - 📥 Request: OPTIONS /admin/subscription-metrics
+2025-06-08 14:34:56,605 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/subscription-metrics
+2025-06-08 14:34:56,606 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-08 14:34:56,606 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/api-metrics
+2025-06-08 14:34:56,607 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 14:34:56,750 - backend.main - INFO - 📤 Response: 200 - 1201.10ms - /admin/api-metrics
+2025-06-08 14:34:56,752 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-08 14:34:56,765 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh dashboard data
+2025-06-08 14:34:56,793 - backend.main - INFO - 📤 Response: 200 - 1822.39ms - /admin/users
+2025-06-08 14:34:56,794 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-08 14:34:56,867 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-08 14:34:56,868 - backend.services.admin_metrics - INFO - ✅ Using cached user metrics
+2025-06-08 14:34:56,868 - backend.services.admin_metrics - INFO - ✅ Using cached subscription metrics
+2025-06-08 14:34:56,868 - backend.services.admin_metrics - INFO - ✅ Dashboard data cached
+2025-06-08 14:34:56,886 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-08 14:34:56,906 - backend.main - INFO - 📤 Response: 200 - 2206.03ms - /admin/dashboard
+2025-06-08 14:34:56,908 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-08 14:34:56,927 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:56,981 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-08 14:34:57,019 - backend.main - INFO - 📤 Response: 200 - 2212.55ms - /admin/database-metrics
+2025-06-08 14:34:57,019 - backend.main - INFO - 📤 Response: 200 - 266.82ms - /admin/system-health
+2025-06-08 14:34:57,021 - backend.main - INFO - 📥 Request: GET /admin/user-metrics
+2025-06-08 14:34:57,022 - backend.main - INFO - 📥 Request: GET /admin/subscription-metrics
+2025-06-08 14:34:57,029 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-08 14:34:57,029 - backend.services.admin_metrics - INFO - ✅ Using cached user metrics
+2025-06-08 14:34:57,029 - backend.services.admin_metrics - INFO - ✅ Using cached subscription metrics
+2025-06-08 14:34:57,029 - backend.services.admin_metrics - INFO - ✅ Dashboard data cached
+2025-06-08 14:34:57,061 - backend.main - INFO - 📤 Response: 200 - 454.03ms - /admin/dashboard
+2025-06-08 14:34:57,063 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:34:57,142 - backend.main - INFO - 📤 Response: 200 - 255.39ms - /admin/users
+2025-06-08 14:34:57,175 - backend.main - INFO - 📤 Response: 200 - 267.88ms - /admin/logs/recent
+2025-06-08 14:34:57,213 - backend.services.admin_metrics - INFO - ✅ Using cached subscription metrics
+2025-06-08 14:34:57,249 - backend.services.admin_metrics - INFO - ✅ Using cached user metrics
+2025-06-08 14:34:57,251 - backend.main - INFO - 📤 Response: 200 - 228.67ms - /admin/subscription-metrics
+2025-06-08 14:34:57,255 - backend.main - INFO - 📤 Response: 200 - 192.08ms - /admin/api-metrics
+2025-06-08 14:34:57,288 - backend.main - INFO - 📤 Response: 200 - 266.37ms - /admin/user-metrics
+2025-06-08 14:34:57,293 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-08 14:34:57,327 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:57,332 - backend.main - INFO - 📤 Response: 200 - 537.35ms - /admin/database-metrics
+2025-06-08 14:34:58,022 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:34:58,068 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:34:58,296 - backend.main - INFO - 📤 Response: 200 - 227.87ms - /profile/me
+2025-06-08 14:34:58,297 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:34:58,429 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:34:58,511 - backend.main - INFO - 📤 Response: 200 - 489.35ms - /home/top-performers
+2025-06-08 14:34:58,526 - backend.main - INFO - 📤 Response: 200 - 228.41ms - /profile/me
+2025-06-08 14:35:10,525 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:35:10,743 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:35:11,374 - backend.main - INFO - 📤 Response: 200 - 848.43ms - /admin/api-metrics
+2025-06-08 14:35:11,494 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:35:12,990 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:35:13,397 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:35:13,797 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:35:13,915 - backend.main - INFO - 📤 Response: 200 - 924.21ms - /admin/api-metrics
+2025-06-08 14:35:42,505 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:35:42,859 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:35:43,408 - backend.main - INFO - 📤 Response: 200 - 903.10ms - /admin/api-metrics
+2025-06-08 14:35:43,610 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:35:45,254 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:35:45,562 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:35:46,188 - backend.main - INFO - 📤 Response: 200 - 934.43ms - /admin/api-metrics
+2025-06-08 14:35:46,313 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:15,055 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-08 14:36:15,055 - backend.main - INFO - 📤 Response: 200 - 0.27ms - /admin/api-metrics
+2025-06-08 14:36:15,057 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:36:15,271 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:15,977 - backend.main - INFO - 📤 Response: 200 - 920.34ms - /admin/api-metrics
+2025-06-08 14:36:17,523 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:36:17,924 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:18,339 - backend.main - INFO - 📤 Response: 200 - 816.11ms - /admin/api-metrics
+2025-06-08 14:36:18,675 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:28,933 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:36:29,186 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:29,250 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:36:29,587 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:29,716 - backend.main - INFO - 📤 Response: 200 - 783.29ms - /home/top-performers
+2025-06-08 14:36:30,148 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:36:30,155 - backend.main - INFO - 📤 Response: 200 - 904.84ms - /profile/me
+2025-06-08 14:36:30,338 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:30,970 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:36:31,207 - backend.main - INFO - 📤 Response: 200 - 1059.77ms - /favorites/
+2025-06-08 14:36:31,214 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:36:31,489 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:31,802 - backend.main - INFO - 📤 Response: 200 - 831.74ms - /home/top-performers
+2025-06-08 14:36:32,148 - backend.main - INFO - 📤 Response: 200 - 934.29ms - /profile/me
+2025-06-08 14:36:32,150 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:36:32,240 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:33,132 - backend.main - INFO - 📤 Response: 200 - 981.48ms - /favorites/
+2025-06-08 14:36:33,133 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:36:36,326 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:36,586 - backend.main - INFO - 📤 Response: 200 - 3452.98ms - /favorites/
+2025-06-08 14:36:36,677 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:47,327 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:36:47,538 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:48,255 - backend.main - INFO - 📤 Response: 200 - 927.35ms - /admin/api-metrics
+2025-06-08 14:36:48,639 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:49,786 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:36:50,141 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:50,541 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:36:50,645 - backend.main - INFO - 📤 Response: 200 - 858.95ms - /admin/api-metrics
+2025-06-08 14:37:19,307 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:37:19,651 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:37:20,225 - backend.main - INFO - 📤 Response: 200 - 918.16ms - /admin/api-metrics
+2025-06-08 14:37:20,402 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:37:22,046 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:37:22,305 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:37:22,835 - backend.main - INFO - 📤 Response: 200 - 788.86ms - /admin/api-metrics
+2025-06-08 14:37:38,166 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:37:38,423 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:37:38,727 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:37:39,176 - backend.main - INFO - 📤 Response: 200 - 1010.35ms - /home/top-performers
+2025-06-08 14:37:39,335 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:37:39,489 - backend.main - INFO - 📤 Response: 200 - 762.35ms - /profile/me
+2025-06-08 14:37:39,574 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:37:40,414 - backend.main - INFO - 📤 Response: 200 - 1078.80ms - /favorites/
+2025-06-08 14:37:40,416 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:37:40,726 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:37:41,399 - backend.main - INFO - 📤 Response: 200 - 983.38ms - /favorites/
+2025-06-08 14:37:41,477 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:37:51,848 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:37:51,921 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:37:52,776 - backend.main - INFO - 📤 Response: 200 - 927.88ms - /admin/api-metrics
+2025-06-08 14:37:53,072 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:37:53,422 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:37:54,314 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:37:54,574 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:37:55,155 - backend.main - INFO - 📤 Response: 200 - 840.36ms - /admin/api-metrics
+2025-06-08 14:37:55,325 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:37:58,017 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:37:58,259 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:37:58,328 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:37:58,925 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:37:59,016 - backend.main - INFO - 📤 Response: 200 - 756.15ms - /profile/me
+2025-06-08 14:37:59,021 - backend.main - INFO - 📤 Response: 200 - 1004.12ms - /home/top-performers
+2025-06-08 14:37:59,129 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:37:59,193 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:37:59,907 - backend.main - INFO - 📤 Response: 200 - 982.42ms - /home/top-performers
+2025-06-08 14:38:00,094 - backend.main - INFO - 📤 Response: 200 - 900.56ms - /profile/me
+2025-06-08 14:38:00,096 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:38:00,281 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:01,192 - backend.main - INFO - 📤 Response: 200 - 1095.72ms - /favorites/
+2025-06-08 14:38:01,194 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:38:01,382 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:02,250 - backend.main - INFO - 📤 Response: 200 - 1056.07ms - /favorites/
+2025-06-08 14:38:02,534 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:03,521 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:38:03,685 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:03,800 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:38:04,534 - backend.main - INFO - 📤 Response: 200 - 1013.29ms - /home/top-performers
+2025-06-08 14:38:04,622 - backend.main - INFO - 📤 Response: 200 - 821.98ms - /profile/me
+2025-06-08 14:38:04,631 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:38:04,786 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:05,728 - backend.main - INFO - 📤 Response: 200 - 1097.14ms - /favorites/
+2025-06-08 14:38:05,730 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:38:05,938 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:06,813 - backend.main - INFO - 📤 Response: 200 - 1082.65ms - /favorites/
+2025-06-08 14:38:07,089 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:07,440 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:11,631 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:38:11,945 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:12,154 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:38:12,345 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:12,348 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:38:12,627 - backend.main - INFO - 📤 Response: 200 - 995.99ms - /home/top-performers
+2025-06-08 14:38:12,691 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:38:13,092 - backend.main - INFO - 📤 Response: 200 - 938.74ms - /profile/me
+2025-06-08 14:38:13,349 - backend.main - INFO - 📤 Response: 200 - 1001.47ms - /home/top-performers
+2025-06-08 14:38:13,497 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:13,615 - backend.main - INFO - 📤 Response: 200 - 924.03ms - /profile/me
+2025-06-08 14:38:13,617 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:38:14,505 - backend.main - INFO - 📤 Response: 200 - 888.20ms - /favorites/
+2025-06-08 14:38:14,507 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:38:14,648 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:15,428 - backend.main - INFO - 📤 Response: 200 - 920.84ms - /favorites/
+2025-06-08 14:38:15,800 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:24,120 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:38:24,390 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:25,048 - backend.main - INFO - 📤 Response: 200 - 928.16ms - /admin/api-metrics
+2025-06-08 14:38:25,141 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:26,582 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:38:26,643 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:27,506 - backend.main - INFO - 📤 Response: 200 - 923.34ms - /admin/api-metrics
+2025-06-08 14:38:27,794 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:29,639 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:38:29,878 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:38:30,047 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:30,320 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:38:30,448 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:30,581 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:38:30,628 - backend.main - INFO - 📤 Response: 200 - 989.31ms - /home/top-performers
+2025-06-08 14:38:30,644 - backend.main - INFO - 📤 Response: 200 - 765.27ms - /profile/me
+2025-06-08 14:38:31,144 - backend.main - INFO - 📤 Response: 200 - 823.57ms - /home/top-performers
+2025-06-08 14:38:31,337 - backend.main - INFO - 📤 Response: 200 - 755.79ms - /profile/me
+2025-06-08 14:38:31,339 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:38:31,549 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:32,331 - backend.main - INFO - 📤 Response: 200 - 991.77ms - /favorites/
+2025-06-08 14:38:32,333 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:38:32,700 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:33,422 - backend.main - INFO - 📤 Response: 200 - 1089.01ms - /favorites/
+2025-06-08 14:38:33,852 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:35,088 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:38:35,344 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:38:35,354 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:36,099 - backend.main - INFO - 📤 Response: 200 - 754.93ms - /profile/me
+2025-06-08 14:38:36,102 - backend.main - INFO - 📤 Response: 200 - 1013.76ms - /home/top-performers
+2025-06-08 14:38:36,186 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:38:36,505 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:37,231 - backend.main - INFO - 📤 Response: 200 - 1045.02ms - /favorites/
+2025-06-08 14:38:37,233 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:38:37,607 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:38,281 - backend.main - INFO - 📤 Response: 200 - 1047.70ms - /favorites/
+2025-06-08 14:38:38,358 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:53,446 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:38:53,624 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:57,306 - backend.main - INFO - 📤 Response: 200 - 3859.81ms - /admin/api-metrics
+2025-06-08 14:38:57,708 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:58,851 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:38:59,210 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:59,560 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:38:59,642 - backend.main - INFO - 📤 Response: 200 - 790.67ms - /admin/api-metrics
+2025-06-08 14:39:07,098 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-08 14:39:07,099 - backend.main - INFO - 📤 Response: 200 - 0.28ms - /admin/dashboard
+2025-06-08 14:39:07,100 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 14:39:07,368 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:39:07,850 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh dashboard data
+2025-06-08 14:39:09,116 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-08 14:39:09,117 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh user metrics from database
+2025-06-08 14:39:09,180 - backend.services.admin_metrics - ERROR - Error getting user metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT count(users.id) AS count_1 
+FROM users]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-08 14:39:09,180 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh subscription metrics from database
+2025-06-08 14:39:09,243 - backend.services.admin_metrics - ERROR - Error getting subscription role counts: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT users.role, count(users.id) AS count_1 
+FROM users GROUP BY users.role]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-08 14:39:09,243 - backend.services.admin_metrics - INFO - Subscription metrics: premium=0, ultimate=0, revenue_month=0.0
+2025-06-08 14:39:09,243 - backend.services.admin_metrics - INFO - ✅ Subscription metrics cached: {'free': 0, 'premium': 0, 'ultimate': 0}
+2025-06-08 14:39:09,243 - backend.services.admin_metrics - INFO - ✅ Dashboard data cached
+2025-06-08 14:39:09,270 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:39:09,275 - backend.main - INFO - 📤 Response: 200 - 2174.90ms - /admin/dashboard
+2025-06-08 14:39:09,277 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 14:39:09,950 - backend.services.admin_metrics - INFO - ✅ Using cached dashboard data
+2025-06-08 14:39:09,978 - backend.main - INFO - 📤 Response: 200 - 700.88ms - /admin/dashboard
+2025-06-08 14:39:25,437 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:39:25,637 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:39:26,378 - backend.main - INFO - 📤 Response: 200 - 940.43ms - /admin/api-metrics
+2025-06-08 14:39:26,738 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:39:28,190 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:39:28,640 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:39:28,978 - backend.main - INFO - 📤 Response: 200 - 788.13ms - /admin/api-metrics
+2025-06-08 14:39:57,975 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:39:58,351 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:39:58,701 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:39:58,908 - backend.main - INFO - 📤 Response: 200 - 932.99ms - /admin/api-metrics
+2025-06-08 14:40:00,452 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:40:00,604 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:40:01,307 - backend.main - INFO - 📤 Response: 200 - 855.85ms - /admin/api-metrics
+2025-06-08 14:40:01,405 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:40:29,960 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:40:30,273 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:40:30,623 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:40:30,892 - backend.main - INFO - 📤 Response: 200 - 932.03ms - /admin/api-metrics
+2025-06-08 14:40:32,719 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:40:32,926 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:40:33,559 - backend.main - INFO - 📤 Response: 200 - 839.39ms - /admin/api-metrics
+2025-06-08 14:40:33,677 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:00,438 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:41:00,540 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:01,011 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:41:01,448 - backend.main - INFO - 📤 Response: 200 - 1009.93ms - /home/top-performers
+2025-06-08 14:41:01,593 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:41:01,692 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:01,932 - backend.main - INFO - 📤 Response: 200 - 921.45ms - /profile/me
+2025-06-08 14:41:02,228 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:41:02,443 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:02,480 - backend.main - INFO - 📤 Response: 200 - 887.00ms - /favorites/
+2025-06-08 14:41:02,482 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:41:02,938 - backend.main - INFO - 📤 Response: 200 - 709.95ms - /admin/api-metrics
+2025-06-08 14:41:03,377 - backend.main - INFO - 📤 Response: 200 - 894.50ms - /favorites/
+2025-06-08 14:41:03,594 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:04,988 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:41:05,096 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:05,446 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:05,913 - backend.main - INFO - 📤 Response: 200 - 925.21ms - /admin/api-metrics
+2025-06-08 14:41:26,143 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-08 14:41:26,422 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-08 14:41:26,599 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:27,009 - backend.main - INFO - 📤 Response: 200 - 866.77ms - /home/top-performers
+2025-06-08 14:41:27,320 - backend.main - INFO - 📤 Response: 200 - 898.21ms - /profile/me
+2025-06-08 14:41:27,322 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:41:27,350 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:28,235 - backend.main - INFO - 📤 Response: 200 - 912.77ms - /favorites/
+2025-06-08 14:41:28,237 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-08 14:41:28,501 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:29,309 - backend.main - INFO - 📤 Response: 200 - 1072.41ms - /favorites/
+2025-06-08 14:41:29,602 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:34,788 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:41:34,909 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:35,711 - backend.main - INFO - 📤 Response: 200 - 923.24ms - /admin/api-metrics
+2025-06-08 14:41:36,060 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:36,411 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:37,252 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:41:37,562 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:41:38,160 - backend.main - INFO - 📤 Response: 200 - 907.36ms - /admin/api-metrics
+2025-06-08 14:41:38,312 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:42:06,759 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:42:07,025 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:42:07,425 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:42:07,549 - backend.main - INFO - 📤 Response: 200 - 790.42ms - /admin/api-metrics
+2025-06-08 14:42:09,521 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:42:09,678 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:42:10,449 - backend.main - INFO - 📤 Response: 200 - 927.55ms - /admin/api-metrics
+2025-06-08 14:42:10,779 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:42:39,312 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:42:39,494 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:42:40,250 - backend.main - INFO - 📤 Response: 200 - 937.84ms - /admin/api-metrics
+2025-06-08 14:42:40,645 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:42:41,783 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:42:42,147 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:42:42,498 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:42:42,582 - backend.main - INFO - 📤 Response: 200 - 799.08ms - /admin/api-metrics
+2025-06-08 14:43:11,294 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:43:11,665 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:43:12,152 - backend.main - INFO - 📤 Response: 200 - 858.20ms - /admin/api-metrics
+2025-06-08 14:43:12,466 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:43:14,051 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:43:14,318 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:43:14,992 - backend.main - INFO - 📤 Response: 200 - 940.73ms - /admin/api-metrics
+2025-06-08 14:43:43,855 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:43:44,182 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:43:44,583 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:43:44,642 - backend.main - INFO - 📤 Response: 200 - 786.58ms - /admin/api-metrics
+2025-06-08 14:43:46,309 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:43:46,485 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:43:47,169 - backend.main - INFO - 📤 Response: 200 - 859.80ms - /admin/api-metrics
+2025-06-08 14:43:47,586 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:44:08,315 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 14:44:08,462 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:44:09,210 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh dashboard data
+2025-06-08 14:44:09,613 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:44:10,525 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-08 14:44:10,525 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh user metrics from database
+2025-06-08 14:44:10,601 - backend.services.admin_metrics - ERROR - Error getting user metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT count(users.id) AS count_1 
+FROM users]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-08 14:44:10,601 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh subscription metrics from database
+2025-06-08 14:44:13,609 - backend.services.admin_metrics - ERROR - Error getting subscription role counts: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT users.role, count(users.id) AS count_1 
+FROM users GROUP BY users.role]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-08 14:44:13,609 - backend.services.admin_metrics - INFO - Subscription metrics: premium=0, ultimate=0, revenue_month=0.0
+2025-06-08 14:44:13,609 - backend.services.admin_metrics - INFO - ✅ Subscription metrics cached: {'free': 0, 'premium': 0, 'ultimate': 0}
+2025-06-08 14:44:13,609 - backend.services.admin_metrics - INFO - ✅ Dashboard data cached
+2025-06-08 14:44:13,648 - backend.main - INFO - 📤 Response: 200 - 5332.08ms - /admin/dashboard
+2025-06-08 14:44:13,650 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-08 14:44:13,697 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:44:14,532 - backend.services.admin_metrics - INFO - ✅ Using cached dashboard data
+2025-06-08 14:44:14,571 - backend.main - INFO - 📤 Response: 200 - 920.60ms - /admin/dashboard
+2025-06-08 14:44:14,848 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:44:15,830 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:44:15,950 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:44:16,616 - backend.main - INFO - 📤 Response: 200 - 785.38ms - /admin/api-metrics
+2025-06-08 14:44:16,701 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:44:18,583 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:44:19,003 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:44:19,448 - backend.main - INFO - 📤 Response: 200 - 865.23ms - /admin/api-metrics
+2025-06-08 14:44:19,754 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:44:45,158 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:44:45,536 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:44:48,798 - backend.main - INFO - 📤 Response: 200 - 3639.82ms - /admin/api-metrics
+2025-06-08 14:44:49,220 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:44:49,620 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:44:50,853 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:44:51,122 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:44:51,473 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:44:51,776 - backend.main - INFO - 📤 Response: 200 - 923.09ms - /admin/api-metrics
+2025-06-08 14:45:17,718 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:45:18,105 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:45:18,456 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:45:18,655 - backend.main - INFO - 📤 Response: 200 - 936.42ms - /admin/api-metrics
+2025-06-08 14:45:20,185 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:45:20,358 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:45:24,016 - backend.main - INFO - 📤 Response: 200 - 3831.01ms - /admin/api-metrics
+2025-06-08 14:45:24,441 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:45:49,692 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:45:49,821 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:45:50,470 - backend.main - INFO - 📤 Response: 200 - 778.52ms - /admin/api-metrics
+2025-06-08 14:45:50,572 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:45:52,437 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:45:52,875 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:45:53,363 - backend.main - INFO - 📤 Response: 200 - 925.11ms - /admin/api-metrics
+2025-06-08 14:45:53,626 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:46:22,248 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-08 14:46:22,248 - backend.main - INFO - 📤 Response: 200 - 0.26ms - /admin/api-metrics
+2025-06-08 14:46:22,250 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:46:22,691 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:46:23,170 - backend.main - INFO - 📤 Response: 200 - 919.51ms - /admin/api-metrics
+2025-06-08 14:46:23,442 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:46:24,712 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:46:24,994 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:46:25,651 - backend.main - INFO - 📤 Response: 200 - 938.70ms - /admin/api-metrics
+2025-06-08 14:46:25,745 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:46:54,233 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:46:54,458 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:46:55,030 - backend.main - INFO - 📤 Response: 200 - 797.83ms - /admin/api-metrics
+2025-06-08 14:46:55,209 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:46:56,978 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:46:57,112 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:46:57,512 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:46:57,764 - backend.main - INFO - 📤 Response: 200 - 785.95ms - /admin/api-metrics
+2025-06-08 14:47:26,776 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:47:26,977 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:47:27,734 - backend.main - INFO - 📤 Response: 200 - 958.03ms - /admin/api-metrics
+2025-06-08 14:47:28,128 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:47:28,529 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:47:29,247 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-08 14:47:29,630 - watchfiles.main - INFO - 1 change detected
+2025-06-08 14:47:30,174 - backend.main - INFO - 📤 Response: 200 - 926.38ms - /admin/api-metrics
+2025-06-08 14:47:30,381 - watchfiles.main - INFO - 1 change detected

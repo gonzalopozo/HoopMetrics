@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Menu, X, LogOut } from "lucide-react"
+import { Menu, X, LogOut, Shield } from "lucide-react" // ✅ Añadir Shield import
 import { MobileMenu } from "@/components/layout/mobile-menu"
 import { Logo } from "@/components/ui/logo"
 import { SearchBar } from "@/components/ui/search-bar"
@@ -65,14 +65,14 @@ export function Header() {
                     try {
                         const payload = JSON.parse(atob(token.split('.')[1]))
                         console.log('Decoded payload:', payload)
-                        
+
                         try {
                             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profile/me`, {
                                 headers: {
                                     'Authorization': `Bearer ${token}`
                                 }
                             })
-                            
+
                             if (response.ok) {
                                 const profileData = await response.json()
                                 setUser(new AppUser(
@@ -155,6 +155,17 @@ export function Header() {
                         </div>
                     ) : isLoggedIn ? (
                         <div className="flex items-center gap-3">
+                            {/* ✅ Botón Admin Dashboard - Solo visible para admins */}
+                            {user.role === 'admin' && (
+                                <Link
+                                    href="/admin/dashboard"
+                                    className="group relative flex items-center gap-2 rounded-lg border border-amber-300 bg-gradient-to-r from-amber-50 to-yellow-50 px-4 py-2 text-sm font-semibold text-amber-900 shadow-md transition-all duration-300 hover:border-amber-400 hover:from-amber-100 hover:to-yellow-100 hover:shadow-lg hover:shadow-amber-500/20 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:border-amber-600 dark:from-amber-900/20 dark:to-yellow-900/20 dark:text-amber-200 dark:hover:from-amber-900/30 dark:hover:to-yellow-900/30"
+                                    title="Admin Dashboard"
+                                >
+                                    <Shield className="h-4 w-4 text-amber-600 transition-transform duration-300 group-hover:scale-110 group-hover:text-amber-700 dark:text-amber-400 animate-heartbeat" />
+                                    <span className="hidden sm:inline">Admin Panel</span>
+                                </Link>
+                            )}
                             {(user.role !== 'ultimate' && user.role !== 'admin') && (
                                 <Link
                                     href="/upgrade"

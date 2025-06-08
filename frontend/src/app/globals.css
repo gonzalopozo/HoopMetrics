@@ -176,6 +176,20 @@
   }
 }
 
+/* ✅ Añadir animación de corazón palpitante */
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.75s ease-in-out infinite;
+}
+
 @layer base {
   :root {
     --chart-1: 12 76% 61%;
