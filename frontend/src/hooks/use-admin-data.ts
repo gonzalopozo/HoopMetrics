@@ -58,24 +58,31 @@ export function useAdminData(): UseAdminDataReturn {
         errorMessage: string
     ): Promise<void> => {
         try {
-            console.log(`🚀 Making API call to: ${process.env.NEXT_PUBLIC_API_URL}${url}`);
+            setError(null);
+            console.log(`🔄 Starting API call to ${url}`);
             
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
                 headers: getAuthHeaders(),
+                cache: 'no-store', // ✅ Evitar cache del navegador
             });
 
             console.log(`📡 Response status for ${url}:`, response.status);
-            console.log(`📡 Response headers for ${url}:`, Object.fromEntries(response.headers.entries()));
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                console.error(`❌ Error response for ${url}:`, errorData);
-                throw new Error(errorData.detail || `HTTP ${response.status}`);
+                console.error(`❌ API error for ${url}:`, errorData);
+                throw new Error(errorData.detail || errorMessage);
             }
 
             const data = await response.json();
             console.log(`✅ Success response for ${url}:`, data);
-            setter(data);
+            
+            // ✅ Verificar que los datos no estén vacíos antes de settear
+            if (data && typeof data === 'object') {
+                setter(data);
+            } else {
+                console.warn(`⚠️ Empty or invalid data received from ${url}`);
+            }
         } catch (err) {
             console.error(`❌ ${errorMessage} (${url}):`, err);
             setError(err instanceof Error ? err.message : errorMessage);
@@ -129,7 +136,12 @@ export function useAdminData(): UseAdminDataReturn {
             '/admin/api-metrics',
             (data) => {
                 console.log('🎯 Setting API metrics data:', data);
-                setAPIMetrics(data);
+                // ✅ Validar estructura de datos antes de settear
+                if (data && data.status_codes_distribution && data.most_used_endpoints) {
+                    setAPIMetrics(data);
+                } else {
+                    console.error('❌ Invalid API metrics data structure:', data);
+                }
             },
             'Failed to fetch API metrics'
         );
@@ -154,7 +166,7 @@ export function useAdminData(): UseAdminDataReturn {
     const updateUserRole = async (userId: number, newRole: string): Promise<boolean> => {
         try {
             console.log(`🔄 Updating user ${userId} role to ${newRole}`);
-            
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/users/${userId}/role`, {
                 method: 'PUT',
                 headers: getAuthHeaders(),
@@ -182,7 +194,7 @@ export function useAdminData(): UseAdminDataReturn {
     const deleteUser = async (userId: number): Promise<boolean> => {
         try {
             console.log(`🗑️ Deleting user ${userId}`);
-            
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/users/${userId}`, {
                 method: 'DELETE',
                 headers: getAuthHeaders(),
@@ -212,6 +224,17 @@ export function useAdminData(): UseAdminDataReturn {
         setError(null);
 
         try {
+            // ✅ Primero limpiar el cache del backend
+            try {
+                await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/api-metrics/refresh`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                });
+                console.log('🧹 Backend cache cleared');
+            } catch (refreshError) {
+                console.warn('⚠️ Could not clear backend cache:', refreshError);
+            }
+
             const results = await Promise.allSettled([
                 fetchDashboardData(),
                 fetchSystemHealth(),
@@ -222,7 +245,7 @@ export function useAdminData(): UseAdminDataReturn {
                 fetchSubscriptionMetrics(),
                 fetchAPIMetrics()
             ]);
-            
+
             console.log('📊 RefreshAll results:', results);
         } catch (err) {
             console.error('❌ Error refreshing data:', err);
@@ -264,6 +287,21 @@ export function useAdminData(): UseAdminDataReturn {
             apiMetrics: apiMetrics ? 'loaded' : 'null'
         });
     }, [loading, error, apiMetrics, systemHealth, databaseMetrics]);
+
+    useEffect(() => {
+        if (!apiMetrics) return;
+
+        console.log('⏰ Setting up API metrics auto-refresh interval');
+        const interval = setInterval(() => {
+            console.log('⏰ Auto-refreshing API metrics...');
+            fetchAPIMetrics();
+        }, 30 * 1000); // ✅ Cada 30 segundos para API metrics
+
+        return () => {
+            console.log('⏰ Clearing API metrics auto-refresh interval');
+            clearInterval(interval);
+        };
+    }, [fetchAPIMetrics, apiMetrics]);
 
     return {
         dashboardData,

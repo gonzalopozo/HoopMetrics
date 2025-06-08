@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { 
-    RefreshCw, 
-    AlertTriangle, 
+import {
+    RefreshCw,
+    AlertTriangle,
     Globe,
     TrendingUp,
     Clock,
@@ -28,17 +28,19 @@ import {
     BarChart,
     Bar
 } from 'recharts'
+import axios from 'axios'
+import Cookies from 'js-cookie'
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8']
 
 export default function AdminAPIPage() {
-    const { 
+    const {
         apiMetrics,
-        loading, 
-        error, 
+        loading,
+        error,
         fetchAPIMetrics
     } = useAdminData()
-    
+
     const [isRefreshing, setIsRefreshing] = useState(false)
 
     // ✅ Llamar fetchAPIMetrics cuando el componente se monta
@@ -47,17 +49,34 @@ export default function AdminAPIPage() {
         fetchAPIMetrics()
     }, [fetchAPIMetrics])
 
+    // En frontend/src/app/admin/api/page.tsx
     const handleRefresh = async () => {
         setIsRefreshing(true)
-        await fetchAPIMetrics()
+
+        try {
+            // ✅ Llamar al endpoint de refresh forzado
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/admin/api-metrics/refresh`, {}, {
+                headers: {
+                    'Authorization': `Bearer ${Cookies.get('token')}`
+                }
+            })
+
+            // Luego fetch los datos actualizados
+            await fetchAPIMetrics()
+        } catch (error) {
+            console.error('Error forcing refresh:', error)
+            // Fallback al refresh normal
+            await fetchAPIMetrics()
+        }
+
         setIsRefreshing(false)
     }
 
     if (loading && !apiMetrics) {
         return (
             <div className="space-y-6">
-                <AdminHeader 
-                    title="API Metrics" 
+                <AdminHeader
+                    title="API Metrics"
                     description="Monitor API performance and usage analytics"
                 />
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -77,17 +96,17 @@ export default function AdminAPIPage() {
     if (error) {
         return (
             <div className="space-y-6">
-                <AdminHeader 
-                    title="API Metrics" 
+                <AdminHeader
+                    title="API Metrics"
                     description="Monitor API performance and usage analytics"
                 />
                 <Card className="border-destructive">
                     <CardContent className="flex items-center gap-2 pt-6">
                         <AlertTriangle className="h-5 w-5 text-destructive" />
                         <span>Error loading API metrics: {error}</span>
-                        <Button 
-                            variant="outline" 
-                            size="sm" 
+                        <Button
+                            variant="outline"
+                            size="sm"
                             onClick={handleRefresh}
                             disabled={isRefreshing}
                         >
@@ -107,8 +126,8 @@ export default function AdminAPIPage() {
         console.log('❌ No API metrics data available yet')
         return (
             <div className="space-y-6">
-                <AdminHeader 
-                    title="API Metrics" 
+                <AdminHeader
+                    title="API Metrics"
                     description="Monitor API performance and usage analytics"
                 />
                 <Card>
@@ -134,13 +153,13 @@ export default function AdminAPIPage() {
 
     return (
         <div className="space-y-6">
-            <AdminHeader 
-                title="API Metrics" 
+            <AdminHeader
+                title="API Metrics"
                 description="Monitor API performance and usage analytics"
             >
-                <Button 
-                    variant="outline" 
-                    size="sm" 
+                <Button
+                    variant="outline"
+                    size="sm"
                     onClick={handleRefresh}
                     disabled={isRefreshing}
                 >
@@ -197,7 +216,7 @@ export default function AdminAPIPage() {
                                     cx="50%"
                                     cy="50%"
                                     labelLine={false}
-                                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
                                     outerRadius={80}
                                     fill="#8884d8"
                                     dataKey="value"
@@ -223,10 +242,10 @@ export default function AdminAPIPage() {
                                 <XAxis dataKey="hour" />
                                 <YAxis />
                                 <Tooltip />
-                                <Line 
-                                    type="monotone" 
-                                    dataKey="requests" 
-                                    stroke="#8884d8" 
+                                <Line
+                                    type="monotone"
+                                    dataKey="requests"
+                                    stroke="#8884d8"
                                     strokeWidth={2}
                                 />
                             </LineChart>
@@ -244,8 +263,8 @@ export default function AdminAPIPage() {
                     <ResponsiveContainer width="100%" height={400}>
                         <BarChart data={endpointsData}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis 
-                                dataKey="name" 
+                            <XAxis
+                                dataKey="name"
                                 angle={-45}
                                 textAnchor="end"
                                 height={100}

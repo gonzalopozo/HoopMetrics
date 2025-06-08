@@ -1,39 +1,40 @@
 "use client"
 
-import { useState } from 'react'
+import { useAdminData } from "@/hooks/use-admin-data"
+import { AdminHeader } from "@/components/admin/admin-header"
+import { MetricCard } from "@/components/admin/metric-card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
 import { 
     RefreshCw, 
     Cpu, 
     Server, 
     HardDrive, 
-    Activity,
-    Users,
-    Database,
-    CreditCard,
+    Activity, 
+    Users, 
+    DollarSign, 
     Globe,
-    AlertTriangle,
     TrendingUp,
-    TrendingDown
+    BarChart2,
+    AlertTriangle
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { AdminHeader } from '@/components/admin/admin-header'
-import { MetricCard } from '@/components/admin/metric-card'
-import { useAdminData } from '@/hooks/use-admin-data'
+import { useState, useEffect } from 'react'
 import {
-    LineChart,
-    Line,
+    BarChart,
+    Bar,
     XAxis,
     YAxis,
     CartesianGrid,
     Tooltip,
+    Legend,
     ResponsiveContainer,
     PieChart,
     Pie,
     Cell,
-    BarChart,
-    Bar
+    LineChart,
+    Line,
+    ComposedChart
 } from 'recharts'
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
@@ -54,6 +55,16 @@ export default function AdminDashboardPage() {
         setIsRefreshing(false);
     };
 
+    // ✅ Debug logging
+    useEffect(() => {
+        console.log('📊 Dashboard data updated:', {
+            hasData: !!dashboardData,
+            userRoles: dashboardData?.user_metrics?.users_by_role,
+            subscriptionPlans: dashboardData?.subscription_metrics?.subscriptions_by_plan,
+            timestamp: dashboardData?.last_updated
+        });
+    }, [dashboardData]);
+
     if (loading && !dashboardData) {
         return (
             <div className="space-y-6">
@@ -63,12 +74,7 @@ export default function AdminDashboardPage() {
                 />
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     {[...Array(4)].map((_, i) => (
-                        <Card key={i} className="animate-pulse">
-                            <CardContent className="p-6">
-                                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                                <div className="h-8 bg-muted rounded w-1/2"></div>
-                            </CardContent>
-                        </Card>
+                        <div key={i} className="h-32 bg-muted animate-pulse rounded-lg" />
                     ))}
                 </div>
             </div>
@@ -83,21 +89,11 @@ export default function AdminDashboardPage() {
                     description="System overview and metrics"
                 />
                 <Card className="border-destructive">
-                    <CardContent className="flex items-center gap-2 pt-6">
-                        <AlertTriangle className="h-5 w-5 text-destructive" />
-                        <span>Error loading dashboard: {error}</span>
-                        <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={handleRefresh}
-                            disabled={isRefreshing}
-                        >
-                            {isRefreshing ? (
-                                <RefreshCw className="h-4 w-4 animate-spin" />
-                            ) : (
-                                "Retry"
-                            )}
-                        </Button>
+                    <CardContent className="pt-6">
+                        <div className="flex items-center gap-2 text-destructive">
+                            <AlertTriangle className="h-5 w-5" />
+                            <span>Error loading dashboard data: {error}</span>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
@@ -143,15 +139,30 @@ export default function AdminDashboardPage() {
         value: count
     }));
 
-    const userRoleData = Object.entries(user_metrics.users_by_role).map(([role, count]) => ({
-        name: role,
-        value: count
-    }));
+    const userRoleData = user_metrics?.users_by_role ? 
+        Object.entries(user_metrics.users_by_role)
+            .filter(([role, count]) => count > 0) // Solo roles con usuarios
+            .map(([role, count]) => ({
+                name: role,
+                value: count
+            })) : [];
 
-    const subscriptionData = Object.entries(subscription_metrics.subscriptions_by_plan).map(([plan, count]) => ({
-        name: plan,
-        value: count
-    }));
+    const subscriptionData = subscription_metrics?.subscriptions_by_plan ?
+        Object.entries(subscription_metrics.subscriptions_by_plan)
+            .filter(([plan, count]) => count > 0) // Solo planes con usuarios
+            .map(([plan, count]) => ({
+                name: plan,
+                value: count
+            })) : [];
+
+    // Preparar datos para gráficos
+    const dailyRequestsData = api_metrics.daily_requests_trend || [];
+    const featureUsageData = api_metrics.feature_usage_stats || [];
+
+    console.log('📈 Chart data prepared:', {
+        userRoles: userRoleData,
+        subscriptions: subscriptionData
+    });
 
     return (
         <div className="space-y-6">
@@ -169,9 +180,9 @@ export default function AdminDashboardPage() {
                         <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
                         Refresh
                     </Button>
-                    <p className="text-sm text-muted-foreground">
+                    <span className="text-xs text-muted-foreground">
                         Last updated: {new Date(last_updated).toLocaleString()}
-                    </p>
+                    </span>
                 </div>
             </AdminHeader>
 
@@ -212,78 +223,50 @@ export default function AdminDashboardPage() {
                 <MetricCard
                     title="Total Users"
                     value={user_metrics.total_users.toLocaleString()}
-                    description={`${user_metrics.new_users_today} new today`}
+                    description="Registered users"
                     icon={<Users className="h-4 w-4" />}
-                    trend={{
-                        value: ((user_metrics.new_users_this_week / user_metrics.total_users) * 100),
-                        isPositive: true
-                    }}
                 />
                 <MetricCard
-                    title="Database Size"
-                    value={`${database_metrics.database_size_mb.toFixed(1)} MB`}
-                    description={`${database_metrics.tables_count} tables`}
-                    icon={<Database className="h-4 w-4" />}
-                />
-                <MetricCard
-                    title="Monthly Revenue"
-                    value={`€${subscription_metrics.revenue_this_month.toFixed(2)}`}
-                    description={`${subscription_metrics.active_subscriptions} active subs`}
-                    icon={<CreditCard className="h-4 w-4" />}
-                    trend={{
-                        value: subscription_metrics.churn_rate,
-                        isPositive: subscription_metrics.churn_rate < 5
-                    }}
+                    title="Active Users (24h)"
+                    value={user_metrics.active_users_24h.toLocaleString()}
+                    description="Users active in last 24 hours"
+                    icon={<Activity className="h-4 w-4" />}
                 />
                 <MetricCard
                     title="API Requests Today"
                     value={api_metrics.total_requests_today.toLocaleString()}
-                    description={`${api_metrics.avg_response_time.toFixed(0)}ms avg response`}
+                    description="Total requests today"
                     icon={<Globe className="h-4 w-4" />}
+                />
+                <MetricCard
+                    title="Revenue This Month"
+                    value={`${subscription_metrics.revenue_this_month.toLocaleString()}€`}
+                    description="Monthly recurring revenue"
+                    icon={<DollarSign className="h-4 w-4" />}
                 />
             </div>
 
-            {/* Charts Section */}
+            {/* Distribution Charts */}
             <div className="grid gap-6 md:grid-cols-2">
+                {/* User Roles Distribution */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>API Requests by Hour</CardTitle>
+                        <CardTitle>User Roles Distribution</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <LineChart data={requestsData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="hour" />
-                                <YAxis />
-                                <Tooltip />
-                                <Line 
-                                    type="monotone" 
-                                    dataKey="requests" 
-                                    stroke="#8884d8" 
-                                    strokeWidth={2}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>HTTP Status Codes</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <ResponsiveContainer width="100%" height={300}>
+                        <ResponsiveContainer width="100%" height={250}>
                             <PieChart>
                                 <Pie
-                                    data={statusCodesData}
+                                    data={userRoleData}
                                     cx="50%"
                                     cy="50%"
-                                    outerRadius={100}
+                                    labelLine={false}
+                                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                    outerRadius={80}
                                     fill="#8884d8"
                                     dataKey="value"
-                                    label
                                 >
-                                    {statusCodesData.map((entry, index) => (
+                                    {userRoleData.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
@@ -292,42 +275,24 @@ export default function AdminDashboardPage() {
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
-            </div>
 
-            {/* Additional Charts */}
-            <div className="grid gap-6 md:grid-cols-2">
+                {/* Subscription Plans Distribution */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Users by Role</CardTitle>
+                        <CardTitle>Subscription Plans</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <BarChart data={userRoleData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Bar dataKey="value" fill="#82ca9d" />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Subscriptions by Plan</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <ResponsiveContainer width="100%" height={300}>
+                        <ResponsiveContainer width="100%" height={250}>
                             <PieChart>
                                 <Pie
                                     data={subscriptionData}
                                     cx="50%"
                                     cy="50%"
-                                    outerRadius={100}
-                                    fill="#ffc658"
+                                    labelLine={false}
+                                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                    outerRadius={80}
+                                    fill="#8884d8"
                                     dataKey="value"
-                                    label
                                 >
                                     {subscriptionData.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -340,58 +305,40 @@ export default function AdminDashboardPage() {
                 </Card>
             </div>
 
-            {/* System Health Details */}
+            {/* Database Health */}
             <Card>
                 <CardHeader>
-                    <CardTitle>System Health Details</CardTitle>
+                    <CardTitle>Database Health</CardTitle>
+                    <CardDescription>Current database performance metrics</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div>
-                        <div className="flex justify-between text-sm mb-1">
-                            <span>CPU Usage</span>
-                            <span className={getStatusColor(system_health.cpu_usage)}>
-                                {system_health.cpu_usage.toFixed(1)}%
-                            </span>
+                <CardContent>
+                    <div className="grid gap-4 md:grid-cols-3">
+                        <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                                <span>Active Connections</span>
+                                <span>{database_metrics.active_connections}/{database_metrics.connection_pool_size}</span>
+                            </div>
+                            <Progress 
+                                value={(database_metrics.active_connections / database_metrics.connection_pool_size) * 100} 
+                                className="h-2"
+                            />
                         </div>
-                        <Progress value={system_health.cpu_usage} />
-                    </div>
-                    
-                    <div>
-                        <div className="flex justify-between text-sm mb-1">
-                            <span>Memory Usage</span>
-                            <span className={getStatusColor(system_health.memory_usage)}>
-                                {system_health.memory_usage.toFixed(1)}%
-                            </span>
+                        <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                                <span>Database Size</span>
+                                <span>{database_metrics.database_size_mb.toFixed(1)} MB</span>
+                            </div>
+                            <Progress value={75} className="h-2" />
                         </div>
-                        <Progress value={system_health.memory_usage} />
-                    </div>
-                    
-                    <div>
-                        <div className="flex justify-between text-sm mb-1">
-                            <span>Disk Usage</span>
-                            <span className={getStatusColor(system_health.disk_usage)}>
-                                {system_health.disk_usage.toFixed(1)}%
-                            </span>
-                        </div>
-                        <Progress value={system_health.disk_usage} />
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
-                        <div className="text-center">
-                            <div className="text-2xl font-bold">{system_health.active_connections}</div>
-                            <div className="text-sm text-muted-foreground">Active Connections</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-2xl font-bold">{system_health.response_time_avg.toFixed(0)}ms</div>
-                            <div className="text-sm text-muted-foreground">Avg Response Time</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-2xl font-bold">{system_health.error_rate.toFixed(1)}%</div>
-                            <div className="text-sm text-muted-foreground">Error Rate</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-2xl font-bold">{system_health.requests_per_minute}</div>
-                            <div className="text-sm text-muted-foreground">Requests/min</div>
+                        <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                                <span>Avg Query Time</span>
+                                <span>{database_metrics.avg_query_time_ms.toFixed(1)} ms</span>
+                            </div>
+                            <Progress 
+                                value={Math.min((database_metrics.avg_query_time_ms / 100) * 100, 100)} 
+                                className="h-2"
+                            />
                         </div>
                     </div>
                 </CardContent>

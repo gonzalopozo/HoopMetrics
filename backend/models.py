@@ -582,6 +582,8 @@ class APIMetrics(SQLModel):
     most_used_endpoints: List[Dict[str, Any]]
     requests_by_hour: List[Dict[str, Any]]
     status_codes_distribution: Dict[str, int]
+    daily_requests_trend: List[Dict[str, Any]]
+    feature_usage_stats: List[Dict[str, Any]]
 
 class AdminDashboardData(SQLModel):
     system_health: SystemHealthMetrics

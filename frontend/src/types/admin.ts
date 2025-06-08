@@ -50,6 +50,8 @@ export interface APIMetrics {
     most_used_endpoints: Array<{ endpoint: string; count: number }>;
     requests_by_hour: Array<{ hour: string; requests: number }>;
     status_codes_distribution: Record<string, number>;
+    daily_requests_trend: Array<{ date: string; requests: number; errors: number }>;
+    feature_usage_stats: Array<{ feature: string; usage_count: number; trend: number }>;
 }
 
 export interface AdminDashboardData {

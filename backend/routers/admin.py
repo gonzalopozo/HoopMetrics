@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select, func, delete
 from typing import List, Dict, Any
 from datetime import datetime, timedelta
+import logging
 
 from ..deps import get_db, require_role
 from ..models import (
@@ -11,12 +12,14 @@ from ..models import (
     AdminUserResponse
 )
 from ..services.admin_metrics import admin_metrics_service
-
 router = APIRouter(
     prefix="/admin",
     tags=["admin"],
     dependencies=[Depends(require_role(UserRole.admin))]
 )
+
+logger = logging.getLogger(__name__)
+
 
 @router.get("/dashboard", response_model=AdminDashboardData)
 async def get_admin_dashboard(db: AsyncSession = Depends(get_db)):
@@ -245,4 +248,32 @@ async def send_user_notification(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error sending notification: {str(e)}"
+        )
+
+@router.post("/api-metrics/refresh")
+async def force_refresh_api_metrics(db: AsyncSession = Depends(get_db)):
+    """Fuerza la actualización de métricas de API limpiando el cache"""
+    try:
+        # ✅ Limpiar cache específico para métricas críticas
+        cache_keys_to_clear = ["api_metrics", "user_metrics", "subscription_metrics", "dashboard_data"]
+        for key in cache_keys_to_clear:
+            if key in admin_metrics_service.cache:
+                del admin_metrics_service.cache[key]
+            if key in admin_metrics_service.last_cache_update:
+                del admin_metrics_service.last_cache_update[key]
+        
+        logger.info("🧹 Cache cleared for critical metrics")
+        
+        # Obtener datos frescos
+        fresh_metrics = await admin_metrics_service.get_api_metrics(db)
+        
+        return {
+            "message": "API metrics refreshed successfully",
+            "timestamp": datetime.utcnow().isoformat(),
+            "metrics": fresh_metrics
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error refreshing API metrics: {str(e)}"
         )
