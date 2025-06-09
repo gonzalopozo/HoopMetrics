@@ -24,19 +24,17 @@ export function Sidebar() {
     ]
 
     const userLinks: Link[] = [
-        // TODO: añadir rutas de perfil
         { name: "Profile", href: '/profile', icon: User },
         { name: "Favorites", href: '/favorites', icon: Star },
     ]
 
-    // ✅ Nueva sección para "Other Stuff"
     const otherLinks: Link[] = [
         { name: "Terms of Service", href: '/terms', icon: FileText },
         { name: "Privacy Policy", href: '/privacy', icon: Shield },
     ]
 
     return (
-        <aside className="fixed top-[66px] left-0 bottom-0 w-64 border-r border-border bg-card p-4 hidden md:block overflow-y-auto border-t-0">
+        <aside className="fixed top-[66px] left-0 bottom-0 w-64 border-r border-border bg-card p-4 hidden md:block overflow-y-auto border-t-0 scrollbar-elegant">
             <nav className="space-y-6">
                 <div className="space-y-2">
                     <h3 className="text-xs font-semibold uppercase text-muted-foreground">Main</h3>
