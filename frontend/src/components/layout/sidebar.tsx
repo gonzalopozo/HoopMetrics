@@ -1,10 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { TrendingUp, Users, Table, Calendar, Award, Star, Bell, User, LucideIcon, FileText, Shield } from "lucide-react"
+import { TrendingUp, Users, Table, Calendar, Award, Star, Bell, User, LucideIcon, FileText, Shield, Palette } from "lucide-react"
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 type Link = {
     name: string;
@@ -94,7 +94,20 @@ export function Sidebar() {
                         </>
                     </ul>
                 </div>
-                {/* ✅ Nueva sección "Other Stuff" */}
+                {/* ✅ Nueva sección "Tools" con mejor diseño */}
+                <div className="space-y-2">
+                    <h3 className="text-xs font-semibold uppercase text-muted-foreground">Tools</h3>
+                    <div className="space-y-1">
+                        <div className="flex items-center justify-between rounded-lg px-3 py-2 text-foreground bg-accent/30">
+                            <div className="flex items-center gap-2">
+                                <Palette className="h-4 w-4" />
+                                <span className="text-sm font-medium">Theme</span>
+                            </div>
+                            <ThemeToggle />
+                        </div>
+                    </div>
+                </div>
+                {/* ✅ Sección "Other Stuff" */}
                 <div className="space-y-2">
                     <h3 className="text-xs font-semibold uppercase text-muted-foreground">Other Stuff</h3>
                     <ul className="space-y-1">
