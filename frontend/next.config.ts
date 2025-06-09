@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'www.statmuse.com',
+        hostname: 'cdn.nba.com',
         port: '',
         pathname: '/**',
       },
