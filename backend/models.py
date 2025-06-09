@@ -606,3 +606,36 @@ class AdminLogEntry(SQLModel):
     level: str
     message: str
     module: str
+
+# Modelos para búsqueda
+class SearchTeamResult(SQLModel):
+    id: int
+    full_name: str
+    abbreviation: str
+    conference: Optional[str] = None
+    division: Optional[str] = None
+    city: Optional[str] = None
+
+class SearchPlayerResult(SQLModel):
+    id: int
+    name: str
+    position: str
+    number: Optional[int] = None
+    team_name: Optional[str] = None
+    url_pic: Optional[str] = None
+
+class SearchSuggestions(SQLModel):
+    teams: List[SearchTeamResult]
+    players: List[SearchPlayerResult]
+    total_teams: int
+    total_players: int
+
+class SearchResults(SQLModel):
+    teams: List[SearchTeamResult]
+    players: List[SearchPlayerResult]
+    query: str
+    total_teams: int
+    total_players: int
+    page: int
+    limit: int
+    has_next_page: bool

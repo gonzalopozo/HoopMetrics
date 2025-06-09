@@ -3,24 +3,71 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { Check, X, Sparkles } from "lucide-react"
+import { Check, X, Sparkles, Crown } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 
+export function getUserRoleFromToken(): string {
+    if (typeof window === 'undefined') return 'free'
+    
+    const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='))
+        ?.split('=')[1]
+    
+    if (!token) return 'free'
+    
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        return payload.role || 'free'
+    } catch {
+        return 'free'
+    }
+}
+
 export default function UpgradePage() {
     const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly")
     const [mounted, setMounted] = useState(false)
+    const [userRole, setUserRole] = useState<string>("free")
 
-    // Prevent hydration mismatch
+    // Prevent hydration mismatch and get user role
     useEffect(() => {
         setMounted(true)
+        const role = getUserRoleFromToken()
+        setUserRole(role)
     }, [])
 
     const toggleBillingCycle = () => {
         setBillingCycle(billingCycle === "monthly" ? "annual" : "monthly")
+    }
+
+    // Helper functions to determine plan status
+    const isPlanCurrent = (plan: string) => {
+        return userRole === plan
+    }
+
+    const isPlanDowngrade = (plan: string) => {
+        const hierarchy = { "free": 0, "premium": 1, "ultimate": 2, "admin": 3 }
+        return hierarchy[userRole as keyof typeof hierarchy] > hierarchy[plan as keyof typeof hierarchy]
+    }
+
+    const canUpgrade = (plan: string) => {
+        return !isPlanCurrent(plan) && !isPlanDowngrade(plan)
+    }
+
+    const getPlanButtonText = (plan: string) => {
+        if (isPlanCurrent(plan)) return "Current Plan"
+        if (isPlanDowngrade(plan)) return "Downgrade"
+        return plan === "premium" ? "Upgrade Now" : "Get Ultimate"
+    }
+
+    const getPlanButtonVariant = (plan: string) => {
+        if (isPlanCurrent(plan)) return "current"
+        if (isPlanDowngrade(plan)) return "downgrade"
+        return "upgrade"
     }
 
     // Animation variants
@@ -69,39 +116,52 @@ export default function UpgradePage() {
             >
                 <h1 className="text-3xl font-bold mb-2">Choose Your Plan</h1>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
-                    Select the plan that best fits your needs. Upgrade or downgrade at any time.
+                    {userRole === "free" 
+                        ? "Select the plan that best fits your needs. Upgrade or downgrade at any time."
+                        : `You're currently on the ${userRole.charAt(0).toUpperCase() + userRole.slice(1)} plan. ${userRole !== "ultimate" ? "Upgrade to unlock more features." : "You have access to all features!"}`
+                    }
                 </p>
+                {userRole !== "free" && (
+                    <div className="flex items-center justify-center gap-2 mt-2">
+                        <Crown className="h-4 w-4 text-nba-blue-600 dark:text-nba-red-500" />
+                        <span className="text-sm font-medium text-nba-blue-600 dark:text-nba-red-500">
+                            Current Plan: {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
+                        </span>
+                    </div>
+                )}
             </motion.div>
 
-            {/* Billing Toggle */}
-            <motion.div
-                className="flex items-center justify-center mb-10"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2, duration: 0.3 }}
-            >
-                <span className={cn("mr-2 text-sm", billingCycle === "monthly" ? "font-medium" : "text-muted-foreground")}>
-                    Monthly
-                </span>
-                <div className="relative">
-                    <Switch checked={billingCycle === "annual"} onCheckedChange={toggleBillingCycle} />
-                    <AnimatePresence>
-                        {billingCycle === "annual" && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0 }}
-                                className="absolute -top-3 -right-3"
-                            >
-                                <Sparkles className="h-4 w-4 text-nba-blue-500 dark:text-nba-red-500" />
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-                <span className={cn("ml-2 text-sm", billingCycle === "annual" ? "font-medium" : "text-muted-foreground")}>
-                    Annual <span className="text-nba-blue-600 dark:text-nba-red-500 font-medium">Save 17%</span>
-                </span>
-            </motion.div>
+            {/* Billing Toggle - Hide if user is admin or ultimate */}
+            {userRole !== "admin" && userRole !== "ultimate" && (
+                <motion.div
+                    className="flex items-center justify-center mb-10"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2, duration: 0.3 }}
+                >
+                    <span className={cn("mr-2 text-sm", billingCycle === "monthly" ? "font-medium" : "text-muted-foreground")}>
+                        Monthly
+                    </span>
+                    <div className="relative">
+                        <Switch checked={billingCycle === "annual"} onCheckedChange={toggleBillingCycle} />
+                        <AnimatePresence>
+                            {billingCycle === "annual" && (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0 }}
+                                    className="absolute -top-3 -right-3"
+                                >
+                                    <Sparkles className="h-4 w-4 text-nba-blue-500 dark:text-nba-red-500" />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                    <span className={cn("ml-2 text-sm", billingCycle === "annual" ? "font-medium" : "text-muted-foreground")}>
+                        Annual <span className="text-nba-blue-600 dark:text-nba-red-500 font-medium">Save 17%</span>
+                    </span>
+                </motion.div>
+            )}
 
             {/* Pricing Cards */}
             <motion.div
@@ -111,8 +171,18 @@ export default function UpgradePage() {
                 animate="visible"
             >
                 {/* Free Tier */}
-                <motion.div variants={cardVariants} whileHover="hover">
-                    <Card className="border-border hover:border-primary/50 transition-colors h-full flex flex-col">
+                <motion.div variants={cardVariants} whileHover={canUpgrade("free") ? "hover" : undefined}>
+                    <Card className={cn(
+                        "transition-colors h-full flex flex-col relative",
+                        isPlanCurrent("free") 
+                            ? "border-nba-blue-500 dark:border-nba-red-500 bg-nba-blue-50/50 dark:bg-nba-red-950/20" 
+                            : "border-border hover:border-primary/50"
+                    )}>
+                        {isPlanCurrent("free") && (
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-nba-blue-600 dark:bg-nba-red-600 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-6 rounded-full shadow-lg z-20">
+                                Current Plan
+                            </div>
+                        )}
                         <CardHeader className="text-center pb-8 pt-6">
                             <CardTitle className="text-xl">Free</CardTitle>
                             <CardDescription>Basic stats for casual fans</CardDescription>
@@ -135,33 +205,42 @@ export default function UpgradePage() {
                                     <FeatureItem included>1 favorite team</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
-                                    <FeatureItem included>Notifications for that player and team</FeatureItem>
+                                    <FeatureItem included>Basic player stats (PPG, RPG, APG)</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
-                                    <FeatureItem included>Basic player and team stats</FeatureItem>
+                                    <FeatureItem included>Basic team stats (wins/losses, PPG, standings)</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
-                                    <FeatureItem included>Game schedules and results</FeatureItem>
+                                    <FeatureItem included>Player search functionality</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem included>Team roster information</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem included>Recent games and schedules</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
                                     <FeatureItem>Advanced search filters</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
-                                    <FeatureItem>Derived statistics</FeatureItem>
+                                    <FeatureItem>Derived statistics & analytics</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
-                                    <FeatureItem>Head-to-head comparisons</FeatureItem>
+                                    <FeatureItem>Performance progression charts</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem>Advanced impact metrics</FeatureItem>
                                 </motion.div>
                             </motion.div>
                         </CardContent>
                         <CardFooter className="mt-auto pt-4">
-                            <motion.button
-                                className="w-full py-2 rounded-lg border border-primary text-primary hover:bg-primary/5 transition-colors"
-                                whileHover={{ scale: 1.03 }}
-                                whileTap={{ scale: 0.97 }}
-                            >
-                                Current Plan
-                            </motion.button>
+                            <PlanButton 
+                                plan="free" 
+                                variant={getPlanButtonVariant("free")}
+                                text={getPlanButtonText("free")}
+                                canUpgrade={canUpgrade("free")}
+                                billingCycle={billingCycle}
+                            />
                         </CardFooter>
                     </Card>
                 </motion.div>
@@ -169,12 +248,12 @@ export default function UpgradePage() {
                 {/* Premium Tier */}
                 <motion.div
                     variants={cardVariants}
-                    whileHover="hover"
+                    whileHover={canUpgrade("premium") ? "hover" : undefined}
                     initial={{ y: 50, opacity: 0, scale: 0.95 }}
                     animate={{
                         y: 0,
                         opacity: 1,
-                        scale: 1.05,
+                        scale: isPlanCurrent("premium") ? 1.05 : userRole === "free" ? 1.05 : 1,
                         transition: {
                             type: "spring",
                             stiffness: 100,
@@ -184,17 +263,35 @@ export default function UpgradePage() {
                     }}
                     className="relative mt-6 md:mt-0"
                 >
-                    {/* Most Popular Badge - Positioned outside the card */}
-                    <motion.div
-                        className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider py-1.5 px-6 rounded-full shadow-lg z-20"
-                        initial={{ y: -20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.5, type: "spring", stiffness: 300 }}
-                    >
-                        Most Popular
-                    </motion.div>
+                    {/* Current Plan or Most Popular Badge */}
+                    {isPlanCurrent("premium") ? (
+                        <motion.div
+                            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-nba-blue-600 dark:bg-nba-red-600 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-6 rounded-full shadow-lg z-20"
+                            initial={{ y: -20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.5, type: "spring", stiffness: 300 }}
+                        >
+                            Current Plan
+                        </motion.div>
+                    ) : userRole === "free" && (
+                        <motion.div
+                            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider py-1.5 px-6 rounded-full shadow-lg z-20"
+                            initial={{ y: -20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.5, type: "spring", stiffness: 300 }}
+                        >
+                            Most Popular
+                        </motion.div>
+                    )}
 
-                    <Card className="border-primary/50 shadow-md shadow-primary/10 h-full flex flex-col pt-2">
+                    <Card className={cn(
+                        "h-full flex flex-col pt-2",
+                        isPlanCurrent("premium") 
+                            ? "border-nba-blue-500 dark:border-nba-red-500 bg-nba-blue-50/50 dark:bg-nba-red-950/20" 
+                            : isPlanDowngrade("premium")
+                            ? "border-muted bg-muted/30 opacity-75"
+                            : "border-primary/50 shadow-md shadow-primary/10"
+                    )}>
                         <CardHeader className="text-center pb-8 pt-6">
                             <CardTitle className="text-xl">Premium</CardTitle>
                             <CardDescription>Advanced stats for serious fans</CardDescription>
@@ -213,7 +310,7 @@ export default function UpgradePage() {
                                     </span>
                                 </motion.div>
                             </AnimatePresence>
-                            {billingCycle === "annual" && (
+                            {billingCycle === "annual" && !isPlanCurrent("premium") && (
                                 <motion.div
                                     className="text-sm text-nba-blue-600 dark:text-nba-red-500 font-medium"
                                     initial={{ opacity: 0, scale: 0.8 }}
@@ -230,52 +327,67 @@ export default function UpgradePage() {
                                     <FeatureItem included>All Free features</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
-                                    <FeatureItem included>Advanced search (filter by date, stat type, opponent, etc.)</FeatureItem>
-                                </motion.div>
-                                <motion.div variants={featureVariants}>
-                                    <FeatureItem included>
-                                        Derived statistics (efficiency ratings, shooting percentages, trends)
-                                    </FeatureItem>
-                                </motion.div>
-                                <motion.div variants={featureVariants}>
                                     <FeatureItem included>Up to 3 favorite players</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
                                     <FeatureItem included>Up to 3 favorite teams</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
-                                    <FeatureItem included>Notifications for all favorites</FeatureItem>
+                                    <FeatureItem included>Derived statistics (efficiency ratings, shooting percentages)</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
-                                    <FeatureItem>Head-to-head comparisons</FeatureItem>
+                                    <FeatureItem included>Points progression charts</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
-                                    <FeatureItem>Exportable PDF reports</FeatureItem>
+                                    <FeatureItem included>Minutes progression tracking</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem included>Participation rates analytics</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem included>Skill profile radar charts</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem included>Bar chart comparisons vs league average</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem included>Shooting distribution by type</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem>Ultimate player impact metrics (LEBRON, PIPM, RAPTOR)</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem>Advanced team analytics (TMPRI, TTAQ, Clutch DNA)</FeatureItem>
                                 </motion.div>
                             </motion.div>
                         </CardContent>
                         <CardFooter className="mt-auto pt-4">
-                            <Link
-                                // href={billingCycle === "monthly" ? "/pay?price=price_1RRA6e2cPejVT0hsZA0U1wJQ" : "/pay?price=price_1RRpgV2cPejVT0hskHLy9sIk"}
-                                href={`/checkout?plan=premium&billing=${billingCycle}`}
-                                className="w-full cursor-pointer"
-                            >
-                                <motion.button
-                                    className="w-full cursor-pointer py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                >
-
-                                    Upgrade Now
-                                </motion.button>
-                            </Link>
+                            <PlanButton 
+                                plan="premium" 
+                                variant={getPlanButtonVariant("premium")}
+                                text={getPlanButtonText("premium")}
+                                canUpgrade={canUpgrade("premium")}
+                                billingCycle={billingCycle}
+                            />
                         </CardFooter>
                     </Card>
                 </motion.div>
 
                 {/* Ultimate Tier */}
-                <motion.div variants={cardVariants} whileHover="hover">
-                    <Card className="border-border hover:border-primary/50 transition-colors bg-gradient-to-b from-background to-accent/30 h-full flex flex-col">
+                <motion.div variants={cardVariants} whileHover={canUpgrade("ultimate") ? "hover" : undefined}>
+                    <Card className={cn(
+                        "transition-colors bg-gradient-to-b from-background to-accent/30 h-full flex flex-col relative",
+                        isPlanCurrent("ultimate") 
+                            ? "border-nba-blue-500 dark:border-nba-red-500 bg-gradient-to-b from-nba-blue-50/50 to-nba-blue-100/30 dark:from-nba-red-950/20 dark:to-nba-red-900/10" 
+                            : isPlanDowngrade("ultimate")
+                            ? "border-muted bg-muted/30 opacity-75"
+                            : "border-border hover:border-primary/50"
+                    )}>
+                        {isPlanCurrent("ultimate") && (
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-nba-blue-600 to-nba-blue-800 dark:from-nba-red-600 dark:to-nba-red-800 text-white text-xs font-bold uppercase tracking-wider py-1.5 px-6 rounded-full shadow-lg z-20">
+                                Current Plan
+                            </div>
+                        )}
                         <CardHeader className="text-center pb-8 pt-6">
                             <CardTitle className="text-xl">Ultimate</CardTitle>
                             <CardDescription>Complete access for analysts and power users</CardDescription>
@@ -294,7 +406,7 @@ export default function UpgradePage() {
                                     </span>
                                 </motion.div>
                             </AnimatePresence>
-                            {billingCycle === "annual" && (
+                            {billingCycle === "annual" && !isPlanCurrent("ultimate") && (
                                 <motion.div
                                     className="text-sm text-nba-blue-600 dark:text-nba-red-500 font-medium"
                                     initial={{ opacity: 0, scale: 0.8 }}
@@ -311,16 +423,34 @@ export default function UpgradePage() {
                                     <FeatureItem included>All Premium features</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
-                                    <FeatureItem included>Head-to-head comparison between any two players</FeatureItem>
+                                    <FeatureItem included>Unlimited favorites (players & teams)</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
-                                    <FeatureItem included>Head-to-head comparison between any two teams</FeatureItem>
+                                    <FeatureItem included>Advanced impact metrics (LEBRON, PIPM, RAPTOR WAR)</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
-                                    <FeatureItem included>Exportable PDF report of comparisons (with charts and key metrics)</FeatureItem>
+                                    <FeatureItem included>Position comparison scatter plots</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
-                                    <FeatureItem included>Unlimited favorites</FeatureItem>
+                                    <FeatureItem included>Pace impact analysis</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem included>Fatigue performance curves</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem included>Team momentum & resilience metrics (TMPRI)</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem included>Tactical adaptability quotient (TTAQ)</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem included>Clutch DNA performance profiles</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem included>Efficiency radar charts for teams</FeatureItem>
+                                </motion.div>
+                                <motion.div variants={featureVariants}>
+                                    <FeatureItem included>Points vs opponent progression tracking</FeatureItem>
                                 </motion.div>
                                 <motion.div variants={featureVariants}>
                                     <FeatureItem included>Early access to new features</FeatureItem>
@@ -328,22 +458,13 @@ export default function UpgradePage() {
                             </motion.div>
                         </CardContent>
                         <CardFooter className="mt-auto pt-4">
-                            <Link
-                                // href={billingCycle === "monthly" ? "/pay?price=price_1RRphR2cPejVT0hsN5BFQdXO" : "/pay?price=price_1RRphR2cPejVT0hspMaAwRAc"}
-                                href={`/checkout?plan=ultimate&billing=${billingCycle}`}
-                                className="w-full cursor-pointer"
-                            >
-                                <motion.button
-                                    className="w-full py-2 rounded-lg bg-gradient-to-r from-nba-blue-600 to-nba-blue-800 dark:from-nba-red-600 dark:to-nba-red-800 text-white hover:opacity-90 transition-opacity cursor-pointer"
-                                    whileHover={{
-                                        scale: 1.05,
-                                        boxShadow: "0 0 15px rgba(66, 115, 255, 0.5)",
-                                    }}
-                                    whileTap={{ scale: 0.95 }}
-                                >
-                                    Get Ultimate
-                                </motion.button>
-                            </Link>
+                            <PlanButton 
+                                plan="ultimate" 
+                                variant={getPlanButtonVariant("ultimate")}
+                                text={getPlanButtonText("ultimate")}
+                                canUpgrade={canUpgrade("ultimate")}
+                                billingCycle={billingCycle}
+                            />
                         </CardFooter>
                     </Card>
                 </motion.div>
@@ -377,6 +498,74 @@ export default function UpgradePage() {
                 </div>
             </motion.div>
         </div>
+    )
+}
+
+interface PlanButtonProps {
+    plan: string
+    variant: "current" | "downgrade" | "upgrade"
+    text: string
+    canUpgrade: boolean
+    billingCycle: "monthly" | "annual"
+}
+
+function PlanButton({ plan, variant, text, canUpgrade, billingCycle }: PlanButtonProps) {
+    if (variant === "current") {
+        return (
+            <motion.button
+                className="w-full py-2 rounded-lg border border-nba-blue-500 dark:border-nba-red-500 text-nba-blue-600 dark:text-nba-red-500 bg-nba-blue-50 dark:bg-nba-red-950/30 cursor-default"
+                whileHover={{ scale: 1.02 }}
+            >
+                {text}
+            </motion.button>
+        )
+    }
+
+    if (variant === "downgrade") {
+        return (
+            <motion.button
+                className="w-full py-2 rounded-lg border border-muted text-muted-foreground cursor-not-allowed opacity-60"
+                disabled
+            >
+                {text}
+            </motion.button>
+        )
+    }
+
+    // Upgrade button
+    if (plan === "premium") {
+        return (
+            <Link
+                href={`/checkout?plan=premium&billing=${billingCycle}`}
+                className="w-full cursor-pointer"
+            >
+                <motion.button
+                    className="w-full cursor-pointer py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                >
+                    {text}
+                </motion.button>
+            </Link>
+        )
+    }
+
+    return (
+        <Link
+            href={`/checkout?plan=ultimate&billing=${billingCycle}`}
+            className="w-full cursor-pointer"
+        >
+            <motion.button
+                className="w-full py-2 rounded-lg bg-gradient-to-r from-nba-blue-600 to-nba-blue-800 dark:from-nba-red-600 dark:to-nba-red-800 text-white hover:opacity-90 transition-opacity cursor-pointer"
+                whileHover={{
+                    scale: 1.05,
+                    boxShadow: "0 0 15px rgba(66, 115, 255, 0.5)",
+                }}
+                whileTap={{ scale: 0.95 }}
+            >
+                {text}
+            </motion.button>
+        </Link>
     )
 }
 

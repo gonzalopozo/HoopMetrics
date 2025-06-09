@@ -226,3 +226,16 @@
 .scrollbar-track-muted\/20::-webkit-scrollbar-track {
   background-color: rgba(113, 113, 122, 0.2); /* Cambia según tu color */
 }
+
+@keyframes search-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.search-loading {
+  animation: search-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

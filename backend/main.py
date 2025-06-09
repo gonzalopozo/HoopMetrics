@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 from .models import UserRole
 from .deps import get_db, require_role
 from .config import get_settings
-from .routers import home, debug, players, auth, teams, favorites, profile, admin
+from .routers import home, debug, players, auth, teams, favorites, profile, admin, search
 from .services.admin_metrics import admin_metrics_service
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -35,7 +35,8 @@ app.include_router(auth.router)
 app.include_router(teams.router)
 app.include_router(favorites.router)
 app.include_router(profile.router)
-app.include_router(admin.router)  # ✅ Añadir esta línea
+app.include_router(admin.router)
+app.include_router(search.router)
 
 app.add_middleware(
     CORSMiddleware,

@@ -144,3 +144,5 @@ interface TeamGame {
     away_score: number
     status: "completed" | "scheduled"
 }
+
+export * from './search'

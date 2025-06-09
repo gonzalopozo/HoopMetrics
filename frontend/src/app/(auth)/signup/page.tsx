@@ -171,7 +171,7 @@ export default function SignupPage() {
                                 {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
                             </div>
 
-                                                        {/* Terms and Conditions */}
+                            {/* Terms and Conditions */}
                             <div className="flex items-start space-x-2">
                                 <input
                                     type="checkbox"

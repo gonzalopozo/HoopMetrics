@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { TrendingUp, Users, Table, Calendar, Award, Star, Bell, User, LucideIcon } from "lucide-react"
+import { TrendingUp, Users, Table, Calendar, Award, Star, Bell, User, LucideIcon, FileText, Shield } from "lucide-react"
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -29,8 +29,14 @@ export function Sidebar() {
         { name: "Favorites", href: '/favorites', icon: Star },
     ]
 
+    // ✅ Nueva sección para "Other Stuff"
+    const otherLinks: Link[] = [
+        { name: "Terms of Service", href: '/terms', icon: FileText },
+        { name: "Privacy Policy", href: '/privacy', icon: Shield },
+    ]
+
     return (
-        <aside className="fixed top-[73px] left-0 bottom-0 w-64 border-r border-border bg-card p-4 hidden md:block overflow-y-auto">
+        <aside className="fixed top-[66px] left-0 bottom-0 w-64 border-r border-border bg-card p-4 hidden md:block overflow-y-auto border-t-0">
             <nav className="space-y-6">
                 <div className="space-y-2">
                     <h3 className="text-xs font-semibold uppercase text-muted-foreground">Main</h3>
@@ -65,6 +71,35 @@ export function Sidebar() {
                     <ul className="space-y-1">
                         <>
                             {userLinks.map(link => {
+                                const { name, href, icon } = link
+
+                                const LinkIcon = icon;
+                                const isActive = pathname === href
+
+                                return (
+                                    <Link
+                                        key={name}
+                                        href={href}
+                                        className={cn(
+                                            "flex items-center gap-2 rounded-lg px-3 py-2 text-foreground transition-colors",
+                                            "hover:bg-accent hover:text-accent-foreground",
+                                            isActive && "bg-primary/10 text-primary font-medium border-l-2 border-primary",
+                                        )}
+                                    >
+                                        <LinkIcon className="h-4 w-4" />
+                                        <span>{name}</span>
+                                    </Link>
+                                )
+                            })}
+                        </>
+                    </ul>
+                </div>
+                {/* ✅ Nueva sección "Other Stuff" */}
+                <div className="space-y-2">
+                    <h3 className="text-xs font-semibold uppercase text-muted-foreground">Other Stuff</h3>
+                    <ul className="space-y-1">
+                        <>
+                            {otherLinks.map(link => {
                                 const { name, href, icon } = link
 
                                 const LinkIcon = icon;
