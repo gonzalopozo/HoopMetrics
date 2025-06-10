@@ -919,7 +919,8 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                             <CardDescription>{`Team's leading players`}</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {/* Cambia la grilla a 2x2 */}
+                            <div className="grid grid-cols-2 gap-4">
                                 {team.players.slice(0, 4).map((player: Player) => (
                                     <Link
                                         href={`/players/${player.id}`}
@@ -1747,7 +1748,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                                         fill={barColors[idx]}
                                                         radius={idx === barKeys.length - 1 ? [0, 4, 4, 0] : 0}
                                                         isAnimationActive={false}
-                                                    />
+                                                                                                       />
                                                 ))}
                                             </BarChart>
                                         ) : (

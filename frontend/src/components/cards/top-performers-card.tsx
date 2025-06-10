@@ -8,8 +8,8 @@ export function TopPerformersCard({ data } : { data: TopPerformer[] }) {
     return (
         <div className="col-span-1 row-span-1 overflow-hidden rounded-xl border border-border bg-card shadow-sm lg:col-span-2 min-h-[400px] flex flex-col">
             <CardHeader title="Top Performers" icon={Award} />
-            <div className="grid grid-cols-2 gap-6 p-6 flex-1">
-                {data.slice(0, 4).map((player, index) => (
+            <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 flex-1">
+                {data.map((player, index) => (
                     <div key={index} className="relative flex items-center gap-4 rounded-lg border border-border p-4 min-h-[140px]">
                         {/* Team Logo Circle in Top Right - MÁS GRANDE */}
                         <div className="absolute top-3 right-3 h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
