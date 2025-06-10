@@ -1,7 +1,6 @@
 import logging
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
-from sqlmodel import SQLModel
 from config import get_settings
 
 logger = logging.getLogger(__name__)
@@ -14,7 +13,7 @@ def get_engine():
         future=True,
         pool_pre_ping=True,
         # Configuración optimizada para web
-        pool_size=50,  # Permitir más conexiones concurrentes
+        pool_size=5,  # Permitir más conexiones concurrentes
         max_overflow=10,
         pool_recycle=5,  # Reciclar conexiones después de 5 segundos
         pool_timeout=5,  # Timeout para obtener una conexión del pool
