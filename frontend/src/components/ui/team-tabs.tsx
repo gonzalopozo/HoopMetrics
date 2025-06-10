@@ -909,45 +909,45 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                         </CardContent>
                     </Card>
 
+                    {/* Top Players */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Users className="h-5 w-5 text-primary" />
+                                Top Performers
+                            </CardTitle>
+                            <CardDescription>{`Team's leading players`}</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                {team.players.slice(0, 4).map((player: Player) => (
+                                    <Link
+                                        href={`/players/${player.id}`}
+                                        key={player.id}
+                                        className="flex items-center gap-3 rounded-lg border border-border p-3 hover:border-primary/50 hover:bg-accent/50 transition-colors"
+                                    >
+                                        <Image
+                                            src={player.url_pic || "/placeholder.svg"}
+                                            alt={player.name}
+                                            width={80}
+                                            height={80}
+                                            className="h-16 w-16 rounded-full object-cover"
+                                        />
+                                        <div>
+                                            <div className="font-semibold">{player.name}</div>
+                                            <div className="text-xs text-muted-foreground">
+                                                {player.position} • #{player.number}
+                                            </div>
+                                            <div className="mt-1 text-sm font-medium text-primary">{player.stats.ppg.toFixed(1)} PPG</div>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
                     
                 </div>
 
-                {/* Top Players */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Users className="h-5 w-5 text-primary" />
-                            Top Performers
-                        </CardTitle>
-                        <CardDescription>{`Team's leading players`}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {team.players.slice(0, 4).map((player: Player) => (
-                                <Link
-                                    href={`/players/${player.id}`}
-                                    key={player.id}
-                                    className="flex items-center gap-3 rounded-lg border border-border p-3 hover:border-primary/50 hover:bg-accent/50 transition-colors"
-                                >
-                                    <Image
-                                        src={player.url_pic || "/placeholder.svg"}
-                                        alt={player.name}
-                                        width={80}
-                                        height={80}
-                                        className="h-16 w-16 rounded-full object-cover"
-                                    />
-                                    <div>
-                                        <div className="font-semibold">{player.name}</div>
-                                        <div className="text-xs text-muted-foreground">
-                                            {player.position} • #{player.number}
-                                        </div>
-                                        <div className="mt-1 text-sm font-medium text-primary">{player.stats.ppg.toFixed(1)} PPG</div>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
             </TabsContent>
 
             <TabsContent value="roster" className="space-y-6">
@@ -1011,6 +1011,9 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                             <Calendar className="h-5 w-5 text-primary" />
                             Upcoming Games
                         </CardTitle>
+                        <CardDescription>
+                            No upcoming games scheduled
+                        </CardDescription>
                         <CardDescription>Next 5 games on the schedule</CardDescription>
                     </CardHeader>
                     <CardContent>
