@@ -1,7 +1,8 @@
-import Link from "next/link"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { TrendingUp, Users, Table, Calendar, Award, Star, Bell, LogOut } from "lucide-react"
+import Link from "next/link";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { TrendingUp, Users, Table, Calendar, Award, Star, Bell, LogOut } from "lucide-react";
 import { AppUser } from "@/components/layout/header";
+import { SearchBar } from "@/components/ui/search-bar";
 
 // Add isLoading to the interface props
 interface MobileMenuProps {
@@ -15,10 +16,17 @@ export function MobileMenu({ isLoading, isLoggedIn, user, onLogout }: MobileMenu
     return (
         <div className="fixed inset-0 top-[57px] z-20 bg-background md:hidden">
             <nav className="flex flex-col p-4">
+                {/* Mobile Search Bar - Wider */}
+                <div className="mb-4">
+                    <div className="w-full">
+                        <SearchBar />
+                    </div>
+                </div>
+
                 {/* Your existing navigation links */}
                 <div className="flex flex-col gap-3">
                     {/* Mobile Navigation Links */}
-                    <div className="mt-4 border-t border-border pt-4">
+                    <div className="border-t border-border pt-4">
                         <nav className="space-y-2">
                             <Link href="#" className="flex items-center gap-2 rounded-lg px-3 py-2 text-foreground hover:bg-accent">
                                 <TrendingUp className="h-4 w-4" />

@@ -1,9 +1,6 @@
 import { TrendingQueriesCard } from "@/components/cards/trending-queries-card"
-import { UpcomingGamesCard } from "@/components/cards/upcoming-games-card"
 import { TopPerformersCard } from "@/components/cards/top-performers-card"
 import { QuickStatsCard } from "@/components/cards/quick-stats-card"
-import { TeamStandingsCard } from "@/components/cards/team-standings-card"
-import { NewsInsightsCard } from "@/components/cards/news-insights-card"
 import { WatchlistCard } from "@/components/cards/watchlist-card"
 import { SeasonalMilestonesCard } from "@/components/cards/seasonal-milestones-card"
 import axios from "axios"
@@ -15,15 +12,11 @@ export default async function CardsWrapper() {
     const topPerformers: TopPerformer[] = response.data
 
     return (
-        <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
             <TrendingQueriesCard />
-            <UpcomingGamesCard />
+            <WatchlistCard />
             <TopPerformersCard data={topPerformers} />
             <QuickStatsCard />
-            <TeamStandingsCard />
-            <NewsInsightsCard />
-            <WatchlistCard />
-            <SeasonalMilestonesCard />
         </div>
     )
 }

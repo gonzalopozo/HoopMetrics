@@ -165,7 +165,7 @@ export function WatchlistCard() {
     const remainingTeams = Math.max(0, favorites.teams.length - 6)
 
     return (
-        <div className="col-span-1 row-span-1 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        <div className="col-span-1 row-span-1 overflow-hidden rounded-xl border border-border bg-card shadow-sm min-h-[400px] flex flex-col">
             <CardHeader title="Your Watchlist" icon={Star} />
             <div className="p-4">
                 <div className="mb-3 flex items-center justify-between">
