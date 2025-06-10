@@ -1,6 +1,6 @@
 "use client"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useTheme } from "next-themes"
 import { getRoleColor, type UserRole } from "@/lib/role-colors"
 import { useEffect, useState } from "react"

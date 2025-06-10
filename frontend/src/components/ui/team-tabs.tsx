@@ -20,15 +20,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn, getNBALogo } from "@/lib/utils"
 import { TeamDetails } from "@/types"
-import { ResponsiveContainer, AreaChart as ReAreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, LineChart, Line, PieChart, Pie, Legend, RadarChart as ReRadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, BarChart, Bar, RadialBarChart as ReRadialBarChart, RadialBar, ComposedChart } from "recharts"
+import { ResponsiveContainer, AreaChart as ReAreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, LineChart, Line, PieChart, Pie, RadarChart as ReRadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, BarChart, Bar } from "recharts"
 import axios from "axios"
 import { useTheme } from "next-themes"
 import { CardFooter } from "@/components/ui/card"
 import {
     ChartConfig,
     ChartContainer,
-    ChartLegend,
-    ChartLegendContent,
     ChartTooltip,
 } from "@/components/ui/chart";
 // Al inicio del archivo team-tabs.tsx, agregar estos imports de lucide-react
@@ -57,6 +55,34 @@ function getUserRoleFromToken(): string {
         return payload.role || "free"
     } catch {
         return "free"
+    }
+}
+
+interface Game {
+    id: number
+    date: string
+    home_team_id: number
+    away_team_id: number
+    home_team_name: string
+    away_team_name: string
+    home_score: number
+    away_score: number
+    status: string
+    rival_team_abbreviation: string
+}
+
+interface Player {
+    id: number
+    name: string
+    position: string
+    number: number
+    height: number
+    weight: number
+    url_pic?: string
+    stats: {
+        ppg: number
+        rpg: number
+        apg: number
     }
 }
 
@@ -248,7 +274,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
     for (let i = yMin; i <= yMax; i += 20) yTicks.push(i)  // Incrementos de 20
 
     // Tooltip personalizado
-    const CustomTooltip = ({ active, payload }: any) => {
+    const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { date: string }; value: number }> }) => {
         if (active && payload && payload.length) {
             const dateValue = payload[0].payload.date
             return (
@@ -287,7 +313,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
     const pointsVsOpponentStats = getPointsVsOpponentStats()
 
     // Tooltip personalizado para puntos vs oponente
-    const PointsVsOpponentTooltip = ({ active, payload }: any) => {
+    const PointsVsOpponentTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { date: string; points_for: number; points_against: number }; value: number }> }) => {
         if (active && payload && payload.length) {
             const dateValue = payload[0].payload.date
             return (
@@ -336,22 +362,6 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
         ]
         : []
 
-    const teamPieChartConfig: ChartConfig = {
-        "2PT": {
-            label: "2PT",
-            color: resolvedTheme === "dark" ? "hsl(0, 80%, 50%)" : "hsl(214, 80%, 55%)",
-        },
-        "3PT": {
-            label: "3PT",
-            color: resolvedTheme === "dark" ? "hsl(0, 60%, 40%)" : "hsl(214, 65%, 40%)",
-        },
-        FT: {
-            label: "FT",
-            color: resolvedTheme === "dark" ? "hsl(0, 40%, 70%)" : "hsl(214, 90%, 80%)",
-        },
-        value: { label: "Points" },
-    }
-
     // Calcular estadísticas para el perfil ofensivo del equipo
     const getTeamOffensiveProfile = () => {
         if (!teamPointsType) return { mostUsed: "-", highestPercentage: "-", totalPoints: 0 }
@@ -395,7 +405,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
     }
 
     // Tooltip personalizado para el radar del equipo
-    const TeamRadarTooltip = ({ active, payload }: any) => {
+    const TeamRadarTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { skill: string; original: number } }> }) => {
         if (active && payload && payload.length) {
             const { skill, original } = payload[0].payload
             return (
@@ -469,7 +479,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
     ]
 
     // Tooltip personalizado
-    const ContributionTooltip = ({ active, payload }: any) => {
+    const ContributionTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: Record<string, number> }> }) => {
         if (active && payload && payload.length) {
             return (
                 <div className="rounded-lg border bg-card p-3 shadow-md">
@@ -492,22 +502,6 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
         }
         return null
     }
-
-    // Añadir después de las funciones existentes (línea ~400)
-    // Datos para el gauge chart principal (TAER Score)
-    const taerGaugeData = teamEfficiencyRating ? [
-        {
-            name: "TAER Score",
-            value: teamEfficiencyRating.taer_score,
-            fill: (() => {
-                const score = teamEfficiencyRating.taer_score;
-                if (score >= 80) return resolvedTheme === "dark" ? "hsl(120, 70%, 60%)" : "hsl(120, 70%, 50%)"; // Elite - Green
-                if (score >= 65) return resolvedTheme === "dark" ? "hsl(43, 70%, 60%)" : "hsl(43, 70%, 50%)"; // Good - Yellow
-                if (score >= 45) return resolvedTheme === "dark" ? "hsl(30, 70%, 60%)" : "hsl(30, 70%, 50%)"; // Average - Orange
-                return resolvedTheme === "dark" ? "hsl(0, 70%, 60%)" : "hsl(0, 70%, 50%)"; // Poor - Red
-            })()
-        }
-    ] : [];
 
     const efficiencyRadarData = teamEfficiencyRating ? [
         {
@@ -549,7 +543,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
     ] : [];
 
     // Tooltip personalizado para el radar de eficiencia - CORREGIDO
-    const EfficiencyRadarTooltip = ({ active, payload }: any) => {
+    const EfficiencyRadarTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { component: string; original: number; unit: string } }> }) => {
         if (active && payload && payload.length) {
             const { component, original, unit } = payload[0].payload;
             return (
@@ -571,14 +565,6 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
             );
         }
         return null;
-    };
-
-    // Configuración del radar chart
-    const efficiencyRadarConfig: ChartConfig = {
-        value: {
-            label: "Efficiency Component",
-            color: resolvedTheme === "dark" ? "hsl(0, 80%, 50%)" : "hsl(214, 80%, 55%)",
-        },
     };
 
     // Simular histórico de TMPRI si solo tienes el valor actual
@@ -648,7 +634,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
     ] : [];
 
     // Tooltip personalizado para tactical adaptability
-    const TacticalAdaptabilityTooltip = ({ active, payload }: any) => {
+    const TacticalAdaptabilityTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { name: string; value: number } }> }) => {
         if (active && payload && payload.length) {
             const { name, value } = payload[0].payload;
             const originalValue = tacticalAdaptability ? (() => {
@@ -674,253 +660,6 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                             : `${originalValue.toFixed(1)}/100`
                         }
                     </p>
-                </div>
-            );
-        }
-        return null;
-    };
-
-    const clutchRadialData = clutchDNAProfile ? [
-        {
-            name: "DNA Score",
-            value: clutchDNAProfile.clutch_dna_score,
-            maxValue: 100,
-            color: "hsl(0, 70%, 55%)",
-            ring: 1,
-            description: "Overall clutch performance"
-        },
-        {
-            name: "Multi-Scenario",
-            value: clutchDNAProfile.multi_scenario_clutch,
-            maxValue: 100,
-            color: "hsl(240, 70%, 55%)",
-            ring: 2,
-            description: "Win% in pressure situations"
-        },
-        {
-            name: "Pressure Shooting",
-            value: Math.max(0, 50 + clutchDNAProfile.pressure_shooting),
-            maxValue: 100,
-            color: "hsl(120, 70%, 55%)",
-            ring: 3,
-            description: "Shooting under pressure"
-        },
-        {
-            name: "Collective IQ",
-            value: clutchDNAProfile.collective_clutch_iq,
-            maxValue: 100,
-            color: "hsl(280, 70%, 55%)",
-            ring: 4,
-            description: "Team chemistry in clutch"
-        }
-    ] : [];
-
-    // NUEVO: Componente personalizado para radial progress
-    const RadialProgressRing = ({ data, centerX, centerY, innerRadius, outerRadius }: {
-        data: any;
-        centerX: number;
-        centerY: number;
-        innerRadius: number;
-        outerRadius: number;
-    }) => {
-        const percentage = (data.value / data.maxValue) * 100;
-        const angle = (percentage / 100) * 360;
-        const strokeWidth = outerRadius - innerRadius;
-        const radius = (innerRadius + outerRadius) / 2;
-        const circumference = 2 * Math.PI * radius;
-        const strokeDasharray = circumference;
-        const strokeDashoffset = circumference - (percentage / 100) * circumference;
-
-        return (
-            <g>
-                {/* Background ring */}
-                <circle
-                    cx={centerX}
-                    cy={centerY}
-                    r={radius}
-                    fill="none"
-                    stroke="var(--muted)"
-                    strokeWidth={strokeWidth}
-                    opacity={0.2}
-                />
-                {/* Progress ring */}
-                <circle
-                    cx={centerX}
-                    cy={centerY}
-                    r={radius}
-                    fill="none"
-                    stroke={data.color}
-                    strokeWidth={strokeWidth}
-                    strokeDasharray={strokeDasharray}
-                    strokeDashoffset={strokeDashoffset}
-                    strokeLinecap="round"
-                    transform={`rotate(-90 ${centerX} ${centerY})`}
-                    style={{
-                        transition: 'stroke-dashoffset 1s ease-in-out'
-                    }}
-                />
-            </g>
-        );
-    };
-
-    // NUEVO: Tooltip mejorado para el radial chart
-    const ClutchRadialTooltip = ({ active, payload }: any) => {
-        if (active && payload && payload.length) {
-            const data = payload[0].payload;
-            return (
-                <div className="rounded-lg border bg-card p-4 shadow-lg border-primary/20">
-                    <div className="flex items-center gap-3 mb-2">
-                        <div
-                            className="w-4 h-4 rounded-full"
-                            style={{ backgroundColor: data.color }}
-                        />
-                        <h3 className="font-semibold text-sm">{data.name}</h3>
-                    </div>
-                    <div className="space-y-1">
-                        <p className="text-2xl font-bold text-primary">
-                            {data.value.toFixed(0)}
-                            <span className="text-sm text-muted-foreground ml-1">/100</span>
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                            {data.description}
-                        </p>
-                        <div className="mt-2 pt-2 border-t border-border">
-                            <div className="flex justify-between items-center">
-                                <span className="text-xs text-muted-foreground">Performance Level:</span>
-                                <span className={`text-xs px-2 py-1 rounded-full font-medium ${data.value >= 75 ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400" :
-                                    data.value >= 60 ? "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400" :
-                                        data.value >= 45 ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400" :
-                                            "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400"
-                                    }`}>
-                                    {data.value >= 75 ? "Elite" : data.value >= 60 ? "Strong" : data.value >= 45 ? "Average" : "Developing"}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-        return null;
-    };
-
-    // NUEVO: Heat Map Matrix Data - DISEÑO COMPLETAMENTE REVOLUCIONARIO
-    const clutchHeatMapData = clutchDNAProfile ? [
-        [
-            { scenario: "Last 2 Min", metric: "Shooting", value: Math.max(0, 50 + clutchDNAProfile.pressure_shooting), intensity: "shooting" },
-            { scenario: "Last 2 Min", metric: "Decision", value: (clutchDNAProfile.decision_making_pressure / 3) * 100, intensity: "decision" },
-            { scenario: "Last 2 Min", metric: "Defense", value: (clutchDNAProfile.pressure_defense / 120) * 100, intensity: "defense" },
-            { scenario: "Last 2 Min", metric: "Teamwork", value: clutchDNAProfile.collective_clutch_iq, intensity: "teamwork" }
-        ],
-        [
-            { scenario: "Overtime", metric: "Shooting", value: clutchDNAProfile.overtime_performance, intensity: "shooting" },
-            { scenario: "Overtime", metric: "Decision", value: (clutchDNAProfile.decision_making_pressure / 3) * 100 * 0.9, intensity: "decision" },
-            { scenario: "Overtime", metric: "Defense", value: (clutchDNAProfile.pressure_defense / 120) * 100 * 1.1, intensity: "defense" },
-            { scenario: "Overtime", metric: "Teamwork", value: clutchDNAProfile.collective_clutch_iq * 0.95, intensity: "teamwork" }
-        ],
-        [
-            { scenario: "Close Games", metric: "Shooting", value: clutchDNAProfile.multi_scenario_clutch, intensity: "shooting" },
-            { scenario: "Close Games", metric: "Decision", value: (clutchDNAProfile.decision_making_pressure / 3) * 100 * 1.05, intensity: "decision" },
-            { scenario: "Close Games", metric: "Defense", value: (clutchDNAProfile.pressure_defense / 120) * 100 * 0.9, intensity: "defense" },
-            { scenario: "Close Games", metric: "Teamwork", value: clutchDNAProfile.collective_clutch_iq * 1.1, intensity: "teamwork" }
-        ],
-        [
-            { scenario: "Playoffs", metric: "Shooting", value: Math.max(0, 50 + clutchDNAProfile.pressure_shooting) * 0.85, intensity: "shooting" },
-            { scenario: "Playoffs", metric: "Decision", value: (clutchDNAProfile.decision_making_pressure / 3) * 100 * 1.15, intensity: "decision" },
-            { scenario: "Playoffs", metric: "Defense", value: (clutchDNAProfile.pressure_defense / 120) * 100 * 1.2, intensity: "defense" },
-            { scenario: "Playoffs", metric: "Teamwork", value: clutchDNAProfile.collective_clutch_iq * 1.05, intensity: "teamwork" }
-        ]
-    ] : [];
-
-    // NUEVO: Componente Heat Map Cell personalizado
-    const HeatMapCell = ({ data, x, y, width, height, onClick }: {
-        data: any;
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-        onClick?: () => void;
-    }) => {
-        const intensity = Math.min(100, Math.max(0, data.value));
-        const getColor = () => {
-            if (intensity >= 80) return "#10b981"; // Verde elite
-            if (intensity >= 65) return "#3b82f6"; // Azul strong
-            if (intensity >= 50) return "#f59e0b"; // Amarillo average
-            if (intensity >= 35) return "#f97316"; // Naranja weak
-            return "#ef4444"; // Rojo poor
-        };
-
-        const opacity = 0.3 + (intensity / 100) * 0.7; // 0.3 to 1.0
-
-        return (
-            <rect
-                x={x}
-                y={y}
-                width={width}
-                height={height}
-                fill={getColor()}
-                fillOpacity={opacity}
-                stroke="var(--border)"
-                strokeWidth={1}
-                rx={4}
-                className="cursor-pointer transition-all duration-200 hover:stroke-primary hover:stroke-2"
-                onClick={onClick}
-            />
-        );
-    };
-
-    // NUEVO: Tooltip revolucionario para heat map
-    const ClutchHeatMapTooltip = ({ active, payload }: any) => {
-        if (active && payload && payload.length) {
-            const data = payload[0].payload;
-            const intensity = Math.min(100, Math.max(0, data.value));
-
-            const getPerformanceLevel = (value: number) => {
-                if (value >= 80) return { level: "ELITE", color: "text-green-500", bgColor: "bg-green-500/10" };
-                if (value >= 65) return { level: "STRONG", color: "text-blue-500", bgColor: "bg-blue-500/10" };
-                if (value >= 50) return { level: "AVERAGE", color: "text-yellow-500", bgColor: "bg-yellow-500/10" };
-                if (value >= 35) return { level: "WEAK", color: "text-orange-500", bgColor: "bg-orange-500/10" };
-                return { level: "POOR", color: "text-red-500", bgColor: "bg-red-500/10" };
-            };
-
-            const performance = getPerformanceLevel(intensity);
-
-            return (
-                <div className="rounded-lg border bg-card p-4 shadow-xl border-primary/20 min-w-[200px]">
-                    <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-bold text-sm">{data.scenario}</h3>
-                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${performance.bgColor} ${performance.color}`}>
-                            {performance.level}
-                        </span>
-                    </div>
-
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground capitalize">{data.metric}:</span>
-                            <span className="font-bold text-lg">{intensity.toFixed(0)}</span>
-                        </div>
-
-                        <div className="w-full bg-secondary rounded-full h-2">
-                            <div
-                                className="h-2 rounded-full transition-all duration-300"
-                                style={{
-                                    width: `${intensity}%`,
-                                    backgroundColor: intensity >= 80 ? "#10b981" :
-                                        intensity >= 65 ? "#3b82f6" :
-                                            intensity >= 50 ? "#f59e0b" :
-                                                intensity >= 35 ? "#f97316" : "#ef4444"
-                                }}
-                            />
-                        </div>
-
-                        <div className="mt-3 pt-2 border-t border-border">
-                            <p className="text-xs text-muted-foreground">
-                                {data.metric === "Shooting" && "Field goal efficiency under pressure"}
-                                {data.metric === "Decision" && "Assist/turnover ratio in clutch"}
-                                {data.metric === "Defense" && "Defensive rating in pressure moments"}
-                                {data.metric === "Teamwork" && "Collective performance coordination"}
-                            </p>
-                        </div>
-                    </div>
                 </div>
             );
         }
@@ -1079,7 +818,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {team.recent_games.slice(0, 5).map((game) => {
+                                {team.recent_games.slice(0, 5).map((game: Game) => {
                                     const isHomeTeam = game.home_team_id === team.id;
                                     const currentTeamName = team.full_name;
                                     const opponentTeamName = isHomeTeam ? game.away_team_name : game.home_team_name;
@@ -1185,7 +924,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                     <h3 className="text-lg font-bold mb-2">Championships</h3>
                                     {team.championships && team.championships.length > 0 ? (
                                         <div className="flex flex-wrap gap-2">
-                                            {team.championships.map((year) => (
+                                            {team.championships.map((year: number) => (
                                                 <div
                                                     key={year}
                                                     className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary"
@@ -1228,7 +967,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {team.players.slice(0, 4).map((player) => (
+                            {team.players.slice(0, 4).map((player: Player) => (
                                 <Link
                                     href={`/players/${player.id}`}
                                     key={player.id}
@@ -1278,7 +1017,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {team.players.map((player) => (
+                                    {team.players.map((player: Player) => (
                                         <tr key={player.id} className="border-b border-border hover:bg-accent/50">
                                             <td className="px-4 py-3">
                                                 <Link href={`/players/${player.id}`} className="flex items-center gap-3 hover:text-primary">
@@ -1320,7 +1059,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {team.upcoming_games.slice(0, 5).map((game) => (
+                            {team.upcoming_games.slice(0, 5).map((game: Game) => (
                                 <div key={game.id} className="flex items-center justify-between rounded-lg border border-border p-4">
                                     <div className="flex items-center gap-4">
                                         <div className="text-center w-24">
@@ -1393,7 +1132,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {team.recent_games.slice(0, 5).map((game) => {
+                                    {team.recent_games.slice(0, 5).map((game: Game) => {
                                         const isHomeTeam = game.home_team_id === team.id
                                         const teamScore = isHomeTeam ? game.home_score : game.away_score
                                         const opponentScore = isHomeTeam ? game.away_score : game.home_score
@@ -2018,7 +1757,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                             <CardContent>
                                 <div style={{ width: "100%", height: 300 }}>
                                     <ResponsiveContainer width="100%" height="100%">
-                                        {playersContribution.length > 0 ? (
+                                        {playersContribution.length >  0 ? (
                                             <BarChart
                                                 data={stackedBarData}
                                                 layout="vertical"
@@ -2339,7 +2078,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                                                                 TMPRI: {payload[0].payload.tmpri.toFixed(1)}
                                                                             </p>
                                                                             <p className="text-xs text-muted-foreground">
-                                                                                4Q Factor: {payload[0].payload.fourth_quarter.toFixed(1)}
+                                                                                {`4Q Factor: ${payload[0].payload.fourth_quarter.toFixed(1)}`}
                                                                             </p>
                                                                         </div>
                                                                     )
@@ -2440,7 +2179,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                     </div>
                                     <div className="mt-4 text-xs text-muted-foreground">
                                         <p>
-                                            <strong>TMPRI (Team Momentum & Resilience Index)</strong> measures the team's ability to maintain performance
+                                            <strong>{`TMPRI (Team Momentum & Resilience Index)`}</strong> {`measures the team's ability to maintain performance`}
                                             and composure in high-pressure situations, particularly in the clutch moments of the game.
                                         </p>
                                         <div className="flex justify-between mt-2 text-xs">
@@ -2462,7 +2201,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                     Team Tactical Adaptability Quotient (TTAQ)
                                 </CardTitle>
                                 <CardDescription>
-                                    Team's ability to adapt playing style against different opponents and situations
+                                    {`Team's ability to adapt playing style against different opponents and situations`}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -2667,7 +2406,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                                     </div>
                                     <div className="mt-4 text-xs text-muted-foreground">
                                         <p>
-                                            <strong>Team Tactical Adaptability Quotient</strong> measures the team's ability to modify their playing style
+                                            <strong>{`Team Tactical Adaptability Quotient`}</strong> {`measures the team's ability to modify their playing style`}
                                             based on opponent strengths, game situations, and league trends. Higher scores indicate better strategic flexibility.
                                         </p>
                                         <div className="flex justify-between mt-2 text-xs">

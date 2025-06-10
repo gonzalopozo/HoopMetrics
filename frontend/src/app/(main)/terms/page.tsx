@@ -15,12 +15,12 @@ export default function TermsPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <p>
-                            By accessing and using HoopMetrics ("the Service"), you accept and agree to be bound by the terms and provision of this agreement. 
-                            If you do not agree to abide by the above, please do not use this service.
+                            {`By accessing and using HoopMetrics ("the Service"), you accept and agree to be bound by the terms and provision of this agreement. 
+                            If you do not agree to abide by the above, please do not use this service.`}
                         </p>
                         <p>
-                            These Terms of Service ("Terms") govern your use of our website located at hoopmetrics.com and our mobile application 
-                            (together or individually "Service") operated by HoopMetrics ("us", "we", or "our").
+                            {`These Terms of Service ("Terms") govern your use of our website located at hoopmetrics.com and our mobile application `}
+                            {`(together or individually "Service") operated by HoopMetrics ("us", "we", or "our").`}
                         </p>
                     </CardContent>
                 </Card>
@@ -139,7 +139,7 @@ export default function TermsPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <p>
-                            The Service is provided "as is" without warranties of any kind. We do not guarantee the accuracy, 
+                            {`The Service is provided "as is" without warranties of any kind. We do not guarantee the accuracy, `}
                             completeness, or reliability of any statistical data or analytics.
                         </p>
                         <p>

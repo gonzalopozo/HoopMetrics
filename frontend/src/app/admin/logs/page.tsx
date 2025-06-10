@@ -1,16 +1,14 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { 
     RefreshCw, 
     FileText, 
-    Search,
     Filter,
     AlertTriangle,
     Info,
     AlertCircle,
     CheckCircle,
-    Calendar,
     Clock
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -40,32 +38,6 @@ export default function AdminLogsPage() {
         setIsRefreshing(true)
         await fetchLogs()
         setIsRefreshing(false)
-    }
-
-    const getLevelIcon = (level: string) => {
-        switch (level.toLowerCase()) {
-            case 'error':
-                return <AlertTriangle className="h-4 w-4 text-red-600" />
-            case 'warning':
-                return <AlertCircle className="h-4 w-4 text-yellow-600" />
-            case 'info':
-                return <Info className="h-4 w-4 text-blue-600" />
-            default:
-                return <CheckCircle className="h-4 w-4 text-green-600" />
-        }
-    }
-
-    const getLevelBadgeVariant = (level: string) => {
-        switch (level.toLowerCase()) {
-            case 'error':
-                return 'destructive' as const
-            case 'warning':
-                return 'secondary' as const
-            case 'info':
-                return 'default' as const
-            default:
-                return 'outline' as const
-        }
     }
 
     const filteredLogs = logs.filter(log => {

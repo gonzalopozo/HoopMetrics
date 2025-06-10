@@ -21,8 +21,6 @@ import {
     ChartContainer,
     ChartLegend,
     ChartLegendContent,
-    ChartTooltip,
-    ChartTooltipContent
 } from "@/components/ui/chart"
 import {
     LineChart,
@@ -36,14 +34,12 @@ import {
     Radar,
     PolarAngleAxis,
     PolarGrid,
-    PolarRadiusAxis,
     Tooltip,
-    Cell,
     ComposedChart,
-    Legend
+    Legend,
+    Area
 } from "recharts"
-import { BarChart as ReBarChart, Bar, CartesianGrid, LabelList, Tooltip as BarTooltip, ReferenceLine } from "recharts";
-import { AreaChart as ReAreaChart, Area, Tooltip as AreaTooltip } from "recharts";
+import { BarChart as ReBarChart, Bar, CartesianGrid, Tooltip as BarTooltip, ReferenceLine } from "recharts";
 import { RadialBarChart, RadialBar, Tooltip as RadialTooltip } from "recharts";
 import {
     ScatterChart,
@@ -142,7 +138,7 @@ function getUserRoleFromToken(): string {
 }
 
 // Tooltip for Pace Impact Chart
-function PaceImpactTooltip({ active, payload }: any) {
+function PaceImpactTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
     if (active && payload && payload.length) {
         const data = payload[0].payload;
         return (
@@ -349,6 +345,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 );
                 setBarCompareData(res.data);
             } catch (e) {
+                console.error("Error fetching bar compare data:", e);
                 setBarCompareData([]);
             }
         }
@@ -363,6 +360,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 );
                 setMinutesProgression(res.data);
             } catch (e) {
+                console.error("Error fetching minutes progression:", e);
                 setMinutesProgression([]);
             }
         }
@@ -377,6 +375,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                 );
                 setParticipationRates(res.data);
             } catch (e) {
+                console.error("Error fetching participation rates:", e);
                 setParticipationRates([]);
             }
         }
@@ -586,14 +585,6 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         if (isUltimate) fetchFatiguePerformanceCurve();
     }, [player.id, isUltimate]);
 
-    const areaChartConfig: ChartConfig = {
-        minutes: {
-            label: "Minutes",
-            color: resolvedTheme === "dark"
-                ? "hsl(43, 74%, 66%)"
-                : "hsl(43, 74%, 66%)",
-        },
-    };
     const radialChartConfig: ChartConfig = {
         value: {
             label: "Participation %",
@@ -620,27 +611,6 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                     <p className="font-medium text-sm">{label}</p>
                     <p className="text-base font-bold text-primary mt-1">
                         {value} / 85 games
-                    </p>
-                </div>
-            );
-        }
-        return null;
-    };
-
-    const MinutesAreaTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
-        if (active && payload && payload.length) {
-            const { date, minutes } = payload[0].payload;
-            return (
-                <div className="rounded-lg border bg-card p-3 shadow-md">
-                    <p className="font-medium text-sm">
-                        {new Date(date).toLocaleDateString("es-ES", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric"
-                        })}
-                    </p>
-                    <p className="text-base font-bold text-primary mt-1">
-                        {minutes} <span className="text-sm text-muted-foreground">min</span>
                     </p>
                 </div>
             );
@@ -787,50 +757,6 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
         return null;
     };
 
-    // Tooltip para BarChart
-    const BarChartTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
-        if (active && payload && payload.length) {
-            const { name, value } = payload[0].payload;
-            return (
-                <div className="rounded-lg border bg-card p-3 shadow-md">
-                    <p className="font-medium text-sm">{name}</p>
-                    <p className="text-base font-bold text-primary mt-1">
-                        {value}
-                    </p>
-                </div>
-            );
-        }
-        return null;
-    };
-
-    const participationMax = {
-        "Games Played": 85,
-        "20+ Points": 85,
-        "Double-Doubles": 85,
-        "3PT Made": 85,
-    };
-
-    // Ordena de mayor a menor máximo (más adentro los de mayor máximo)
-    const sortedParticipation = [...participationRates]
-        .map(d => {
-            const max = participationMax[d.label as keyof typeof participationMax] || 85;
-            return {
-                ...d,
-                max,
-                percent: Math.min((d.value / max) * 100, 100), // Calculate percentage based on max value
-            };
-        })
-        .sort((a, b) => b.max - a.max);
-
-    const baseInner = 40;
-    const barWidth = 18;
-    const radialData = sortedParticipation.map((d, i) => ({
-        ...d,
-        innerRadius: baseInner + i * barWidth,
-        outerRadius: baseInner + (i + 1) * barWidth - 4,
-        fill: radialColors[i % radialColors.length],
-    }));
-
     // Escalado para el bar chart (máximo visual = 100 para todas las barras)
     const barChartMax = 100;
     const barChartScales = {
@@ -847,8 +773,8 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
 
     const barCompareDataScaled = barCompareData.map(d => ({
         ...d,
-        scaled: barChartScales[d.name]
-            ? Math.min((d.value / barChartScales[d.name]) * barChartMax, barChartMax)
+        scaled: barChartScales[d.name as keyof typeof barChartScales]
+            ? Math.min((d.value / barChartScales[d.name as keyof typeof barChartScales]) * barChartMax, barChartMax)
             : d.value,
         original: d.value,
     }));
@@ -909,7 +835,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     }, [positionAverages, advancedImpactMatrix, player.name]);
 
     // Tooltip del scatter plot
-    const ScatterTooltip = ({ active, payload }: any) => {
+    const ScatterTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
         if (active && payload && payload.length) {
             const data = payload[0].payload;
             return (
@@ -944,7 +870,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     };
 
     // Función para obtener color por posición
-    const getPositionColor = (data: any) => {
+    const getPositionColor = (data: { position: string; is_player: boolean }) => {
         if (data.is_player) {
             return resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(214, 80%, 55%)"; // Color principal para el jugador
         }
@@ -960,21 +886,6 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
 
         return positionColors[data.position as keyof typeof positionColors] || "hsl(0, 0%, 50%)";
     };
-
-    // Add the gauge chart data processing
-    const gaugeData = lebronImpact ? [
-        {
-            name: "LEBRON Score",
-            value: lebronImpact.lebron_score,
-            fill: (() => {
-                const score = lebronImpact.lebron_score;
-                if (score >= 6) return resolvedTheme === "dark" ? "hsl(120, 70%, 60%)" : "hsl(120, 70%, 50%)"; // Elite - Green
-                if (score >= 2) return resolvedTheme === "dark" ? "hsl(43, 70%, 60%)" : "hsl(43, 70%, 50%)"; // Good - Yellow
-                if (score >= -2) return resolvedTheme === "dark" ? "hsl(30, 70%, 60%)" : "hsl(30, 70%, 50%)"; // Average - Orange
-                return resolvedTheme === "dark" ? "hsl(0, 70%, 60%)" : "hsl(0, 70%, 50%)"; // Poor - Red
-            })()
-        }
-    ] : [];
 
     const pipmpScatterData = useMemo(() => {
         const data = [];
@@ -1021,7 +932,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     }, [pipmpPositionAverages, pipmpImpact, player.name]);
 
     // Tooltip del scatter plot PIPM (actualizar el existente)
-    const PipmpScatterTooltip = ({ active, payload }: any) => {
+    const PipmpScatterTooltip = ({ active, payload }: TooltipProps<ValueType, NameType>) => {
         if (active && payload && payload.length) {
             const data = payload[0].payload;
             return (
@@ -1120,7 +1031,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
     }, [fatiguePerformanceCurve]);
 
     // Tooltip para Fatigue Performance Chart (después de PaceImpactTooltip)
-    function FatiguePerformanceTooltip({ active, payload, label }: any) {
+    function FatiguePerformanceTooltip({ active, payload, label }: TooltipProps<ValueType, NameType>) {
         if (active && payload && payload.length) {
             return (
                 <div className="rounded-lg border bg-card p-3 shadow-md">
@@ -1136,7 +1047,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                         </div>
                         <div className="flex justify-between items-center">
                             <span className="text-muted-foreground">Difference:</span>
-                            <span className="font-medium text-red-500">-{payload[0]?.value - payload[1]?.value}%</span>
+                            <span className="font-medium text-red-500">-{((payload[0]?.value as number) || 0) - ((payload[1]?.value as number) || 0)}%</span>
                         </div>
                     </div>
                 </div>
@@ -2034,7 +1945,8 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                     position: "insideStart",
                                                     fill: "#fff",
                                                     fontSize: 12,
-                                                    formatter: (value, entry) => entry?.label || "" // Solo muestra labels no vacías
+                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                    formatter: (value: any, entry: any) => entry?.label || "" // Solo muestra labels no vacías
                                                 }}
                                             />
                                         </RadialBarChart>
@@ -2246,7 +2158,8 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 dataKey="win_shares"
                                                 data={scatterData.filter(d => !d.is_player)}
                                                 fill="#8884d8"
-                                                shape={(props) => {
+                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                shape={(props: any) => {
                                                     const { cx, cy, payload } = props;
                                                     return (
                                                         <circle
@@ -2270,7 +2183,8 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 dataKey="win_shares"
                                                 data={scatterData.filter(d => d.is_player)}
                                                 fill="#8884d8"
-                                                shape={(props) => {
+                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                shape={(props: any) => {
                                                     const { cx, cy, payload } = props;
                                                     return (
                                                         <circle
@@ -2319,7 +2233,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             backgroundColor: resolvedTheme === "dark" ? "#0f172a" : "#f8fafc",
                                             borderColor: resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(0, 80%, 50%)"
                                         }}></div>
-                                        <span>Player's Position Average</span>
+                                        <span>{`Player's Position Average`}</span>
                                     </div>
                                 </div>
                             </div>
@@ -2445,7 +2359,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             />
 
                                             {/* Tooltip restaurado */}
-                                            <Tooltip content={({ active, payload, label }) => {
+                                            <Tooltip content={({ active }) => {
                                                 if (active && lebronImpact) {
                                                     return (
                                                         <div className="rounded-lg border bg-card p-3 shadow-md">
@@ -2749,7 +2663,8 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                     dataKey="offensive_pimp"
                                                     data={pipmpScatterData.filter(d => !d.is_player)}
                                                     fill="#8884d8"
-                                                    shape={(props) => {
+                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                    shape={(props: any) => {
                                                         const { cx, cy, payload } = props;
                                                         return (
                                                             <circle
@@ -2773,7 +2688,8 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                     dataKey="offensive_pimp"
                                                     data={pipmpScatterData.filter(d => d.is_player)}
                                                     fill="#8884d8"
-                                                    shape={(props) => {
+                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                    shape={(props: any) => {
                                                         const { cx, cy, payload } = props;
                                                         return (
                                                             <circle
@@ -2828,7 +2744,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             backgroundColor: resolvedTheme === "dark" ? "#0f172a" : "#f8fafc",
                                             borderColor: resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(0, 80%, 50%)"
                                         }}></div>
-                                        <span>Player's Position Average</span>
+                                        <span>{`Player's Position Average`}</span>
                                     </div>
                                 </div>
                             </div>
@@ -3006,7 +2922,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                     }}
                                                 />
                                                 <Legend
-                                                    content={({ payload }) => (
+                                                    content={({ }) => (
                                                         <div className="flex justify-center gap-6 mt-4">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: resolvedTheme === "dark" ? "hsl(0, 80%, 60%)" : "hsl(214, 80%, 55%)" }}></div>
@@ -3165,7 +3081,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                                 <Tooltip content={<PaceImpactTooltip />} />
                                                 {/* AÑADIR LEYENDA DESPUÉS DEL TOOLTIP */}
                                                 <Legend
-                                                    content={({ payload }) => (
+                                                    content={({ }) => (
                                                         <div className="flex justify-center gap-6 mt-4">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="w-4 h-3 rounded" style={{
@@ -3353,7 +3269,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
 
                                                 {/* Leyenda personalizada */}
                                                 <Legend
-                                                    content={({ payload }) => (
+                                                    content={({ }) => (
                                                         <div className="flex justify-center gap-6 mt-4">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="w-4 h-0.5 rounded" style={{

@@ -15,9 +15,9 @@ export default function PrivacyPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <p>
-                            HoopMetrics ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy 
+                            {`HoopMetrics ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy 
                             explains how we collect, use, disclose, and safeguard your information when you visit our website 
-                            and use our services.
+                            and use our services.`}
                         </p>
                         <p>
                             Please read this Privacy Policy carefully. If you do not agree with the terms of this Privacy Policy, 
@@ -168,7 +168,7 @@ export default function PrivacyPage() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>8. Children's Privacy</CardTitle>
+                        <CardTitle>{`8. Children's Privacy`}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <p>

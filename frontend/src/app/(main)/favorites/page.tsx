@@ -216,7 +216,11 @@ interface PlayerFavoriteCardProps {
         position?: string
         team?: { full_name: string }
         url_pic?: string
-        average_stats?: any
+        average_stats?: {
+            points?: number
+            rebounds?: number
+            assists?: number
+        }
     }
     isFavorite: boolean
     onToggleFavorite: () => Promise<boolean>

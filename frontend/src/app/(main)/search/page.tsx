@@ -2,14 +2,13 @@
 
 import { useState, useEffect, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
-import { Search, Filter, Users, MapPin, ChevronLeft, ChevronRight } from "lucide-react"
+import { Search, Users, MapPin, ChevronLeft, ChevronRight } from "lucide-react"
 import { SearchResults, SearchTeamResult, SearchPlayerResult } from "@/types/search"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getNBALogo } from "@/lib/utils"
-import { cn } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
 import { PlayerFavoriteWrapper } from "@/components/client-wrappers/player-favorite-wrapper"
@@ -109,7 +108,7 @@ function SearchContent() {
                         <p className="text-muted-foreground">
                             Found <span className="font-medium">{results.total_teams}</span> teams and{" "}
                             <span className="font-medium">{results.total_players}</span> players for{" "}
-                            <span className="font-medium">"{results.query}"</span>
+                            <span className="font-medium">{`"${results.query}"`}</span>
                         </p>
                     </div>
 
@@ -342,7 +341,7 @@ function NoResultsState({ query }: { query: string }) {
             <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">No results found</h3>
             <p className="text-muted-foreground mb-4">
-                We couldn't find any players or teams matching <span className="font-medium">"{query}"</span>
+                {`We couldn't find any players or teams matching `}<span className="font-medium">{`"${query}"`}</span>	
             </p>
             <p className="text-sm text-muted-foreground">
                 Try searching with different keywords or check your spelling.

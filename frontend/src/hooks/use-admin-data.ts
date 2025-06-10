@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Cookies from 'js-cookie'
-import { toast } from 'sonner'
 import { APIMetrics, AdminDashboardData, SystemHealthMetrics, DatabaseMetrics, UserMetrics, SubscriptionMetrics, AdminUser, AdminLog } from '@/types/admin'
 
 interface UseAdminDataReturn {

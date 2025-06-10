@@ -510,6 +510,7 @@ interface PlanButtonProps {
 }
 
 function PlanButton({ plan, variant, text, canUpgrade, billingCycle }: PlanButtonProps) {
+    console.log(canUpgrade, variant, text, plan, billingCycle)
     if (variant === "current") {
         return (
             <motion.button

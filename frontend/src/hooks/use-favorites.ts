@@ -10,7 +10,19 @@ interface FavoritePlayer {
     position?: string
     team?: { full_name: string }
     url_pic?: string
-    average_stats?: any
+    average_stats?: {
+        points?: number
+        rebounds?: number
+        assists?: number
+        steals?: number
+        blocks?: number
+        turnovers?: number
+        field_goal_percentage?: number
+        three_point_percentage?: number
+        free_throw_percentage?: number
+        games_played?: number
+        minutes?: number
+    }
 }
 
 interface FavoriteTeam {
@@ -161,6 +173,7 @@ export function useFavorites() {
                 return false
             }
         } catch (error) {
+            console.error('Error adding player to favorites:', error)
             // ✅ REVERTIR en caso de error
             if (favorites) {
                 setFavorites(prev => prev ? {
@@ -221,6 +234,7 @@ export function useFavorites() {
                 return false
             }
         } catch (error) {
+            console.error('Error removing player from favorites:', error)
             if (favorites && originalPlayer) {
                 setFavorites(prev => prev ? {
                     ...prev,
@@ -282,6 +296,7 @@ export function useFavorites() {
                 return false
             }
         } catch (error) {
+            console.error('Error adding team to favorites:', error)
             if (favorites) {
                 setFavorites(prev => prev ? {
                     ...prev,
@@ -337,6 +352,7 @@ export function useFavorites() {
                 return false
             }
         } catch (error) {
+            console.error('Error removing team from favorites:', error)
             if (favorites && originalTeam) {
                 setFavorites(prev => prev ? {
                     ...prev,

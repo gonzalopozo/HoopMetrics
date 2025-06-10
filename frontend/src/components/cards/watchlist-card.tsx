@@ -28,7 +28,6 @@ export function WatchlistCard() {
     const {
         favorites,
         loading,
-        initialLoadComplete,
         addPlayerToFavorites,
         removePlayerFromFavorites,
         addTeamToFavorites,

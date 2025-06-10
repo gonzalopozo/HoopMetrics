@@ -32247,3 +32247,887 @@ birth_date
 2025-06-10 09:10:57,132 - backend.main - INFO - 📥 Request: GET /favorites/
 2025-06-10 09:10:57,133 - backend.main - INFO - 📤 Response: 401 - 0.87ms - /favorites/
 2025-06-10 09:10:57,355 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:04,479 - backend.main - INFO - 📥 Request: OPTIONS /auth/login
+2025-06-10 09:25:04,479 - backend.main - INFO - 📤 Response: 200 - 0.53ms - /auth/login
+2025-06-10 09:25:04,482 - backend.main - INFO - 📥 Request: POST /auth/login
+2025-06-10 09:25:04,666 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:05,446 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-06-10 09:25:05,676 - backend.main - INFO - 📤 Response: 200 - 1194.83ms - /auth/login
+2025-06-10 09:25:05,868 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:07,681 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics/refresh
+2025-06-10 09:25:07,682 - backend.main - INFO - 📤 Response: 200 - 0.40ms - /admin/api-metrics/refresh
+2025-06-10 09:25:07,683 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics/refresh
+2025-06-10 09:25:07,684 - backend.main - INFO - 📤 Response: 200 - 0.39ms - /admin/api-metrics/refresh
+2025-06-10 09:25:07,685 - backend.main - INFO - 📥 Request: POST /admin/api-metrics/refresh
+2025-06-10 09:25:07,968 - backend.main - INFO - 📥 Request: POST /admin/api-metrics/refresh
+2025-06-10 09:25:07,970 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:08,502 - backend.routers.admin - INFO - 🧹 Cache cleared for critical metrics
+2025-06-10 09:25:08,538 - backend.main - INFO - 📤 Response: 200 - 853.05ms - /admin/api-metrics/refresh
+2025-06-10 09:25:08,542 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-10 09:25:08,542 - backend.main - INFO - 📤 Response: 200 - 0.21ms - /admin/dashboard
+2025-06-10 09:25:08,544 - backend.main - INFO - 📥 Request: OPTIONS /admin/system-health
+2025-06-10 09:25:08,544 - backend.main - INFO - 📤 Response: 200 - 0.21ms - /admin/system-health
+2025-06-10 09:25:08,545 - backend.main - INFO - 📥 Request: OPTIONS /admin/database-metrics
+2025-06-10 09:25:08,545 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/database-metrics
+2025-06-10 09:25:08,546 - backend.main - INFO - 📥 Request: OPTIONS /admin/users
+2025-06-10 09:25:08,547 - backend.main - INFO - 📤 Response: 200 - 0.20ms - /admin/users
+2025-06-10 09:25:08,548 - backend.main - INFO - 📥 Request: OPTIONS /admin/logs/recent
+2025-06-10 09:25:08,548 - backend.main - INFO - 📤 Response: 200 - 0.21ms - /admin/logs/recent
+2025-06-10 09:25:08,550 - backend.main - INFO - 📥 Request: OPTIONS /admin/user-metrics
+2025-06-10 09:25:08,550 - backend.main - INFO - 📤 Response: 200 - 0.18ms - /admin/user-metrics
+2025-06-10 09:25:08,551 - backend.main - INFO - 📥 Request: OPTIONS /admin/subscription-metrics
+2025-06-10 09:25:08,551 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/subscription-metrics
+2025-06-10 09:25:08,552 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:25:08,552 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/api-metrics
+2025-06-10 09:25:08,553 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-10 09:25:08,771 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:08,824 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-10 09:25:08,826 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-10 09:25:08,827 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-10 09:25:08,827 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-10 09:25:08,927 - backend.routers.admin - INFO - 🧹 Cache cleared for critical metrics
+2025-06-10 09:25:08,968 - backend.main - INFO - 📤 Response: 200 - 999.83ms - /admin/api-metrics/refresh
+2025-06-10 09:25:08,969 - backend.main - INFO - 📥 Request: GET /admin/user-metrics
+2025-06-10 09:25:09,095 - backend.main - INFO - 📤 Response: 200 - 268.17ms - /admin/logs/recent
+2025-06-10 09:25:09,098 - backend.main - INFO - 📥 Request: GET /admin/subscription-metrics
+2025-06-10 09:25:09,175 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh user metrics from database
+2025-06-10 09:25:09,314 - backend.services.admin_metrics - INFO - 📊 Real users by role: {'premium': 5, 'admin': 7, 'ultimate': 20, 'free': 16}
+2025-06-10 09:25:09,325 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh subscription metrics from database
+2025-06-10 09:25:09,401 - backend.services.admin_metrics - INFO - 📊 Raw role counts: {'premium': 5, 'admin': 7, 'ultimate': 20, 'free': 16}
+2025-06-10 09:25:09,401 - backend.services.admin_metrics - INFO - Subscription metrics: premium=5, ultimate=20, revenue_month=449.74999999999994
+2025-06-10 09:25:09,401 - backend.services.admin_metrics - INFO - ✅ Subscription metrics cached: {'free': 16, 'premium': 5, 'ultimate': 20}
+2025-06-10 09:25:09,404 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh dashboard data
+2025-06-10 09:25:09,572 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:10,412 - backend.main - INFO - 📤 Response: 200 - 1314.40ms - /admin/subscription-metrics
+2025-06-10 09:25:10,414 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:25:10,621 - backend.services.admin_metrics - INFO - User metrics calculated: total=48, active_24h=2, active_7d=19
+2025-06-10 09:25:10,621 - backend.services.admin_metrics - INFO - ✅ User metrics cached: {'premium': 5, 'admin': 7, 'ultimate': 20, 'free': 16}
+2025-06-10 09:25:10,655 - backend.main - INFO - 📤 Response: 200 - 1686.10ms - /admin/user-metrics
+2025-06-10 09:25:10,658 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-10 09:25:10,658 - backend.main - INFO - 📤 Response: 200 - 0.33ms - /admin/dashboard
+2025-06-10 09:25:10,660 - backend.main - INFO - 📥 Request: OPTIONS /admin/system-health
+2025-06-10 09:25:10,661 - backend.main - INFO - 📤 Response: 200 - 0.24ms - /admin/system-health
+2025-06-10 09:25:10,662 - backend.main - INFO - 📥 Request: OPTIONS /admin/database-metrics
+2025-06-10 09:25:10,662 - backend.main - INFO - 📤 Response: 200 - 0.22ms - /admin/database-metrics
+2025-06-10 09:25:10,663 - backend.main - INFO - 📥 Request: OPTIONS /admin/users
+2025-06-10 09:25:10,664 - backend.main - INFO - 📤 Response: 200 - 0.18ms - /admin/users
+2025-06-10 09:25:10,665 - backend.main - INFO - 📥 Request: OPTIONS /admin/logs/recent
+2025-06-10 09:25:10,665 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/logs/recent
+2025-06-10 09:25:10,666 - backend.main - INFO - 📥 Request: OPTIONS /admin/user-metrics
+2025-06-10 09:25:10,666 - backend.main - INFO - 📤 Response: 200 - 0.16ms - /admin/user-metrics
+2025-06-10 09:25:10,668 - backend.main - INFO - 📥 Request: OPTIONS /admin/subscription-metrics
+2025-06-10 09:25:10,668 - backend.main - INFO - 📤 Response: 200 - 0.15ms - /admin/subscription-metrics
+2025-06-10 09:25:10,669 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:25:10,669 - backend.main - INFO - 📤 Response: 200 - 0.14ms - /admin/api-metrics
+2025-06-10 09:25:10,670 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-10 09:25:10,680 - backend.main - INFO - 📤 Response: 200 - 1853.77ms - /admin/users
+2025-06-10 09:25:10,682 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-10 09:25:10,720 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-10 09:25:10,721 - backend.services.admin_metrics - INFO - ✅ Using cached user metrics
+2025-06-10 09:25:10,721 - backend.services.admin_metrics - INFO - ✅ Using cached subscription metrics
+2025-06-10 09:25:10,721 - backend.services.admin_metrics - INFO - ✅ Dashboard data cached
+2025-06-10 09:25:10,759 - backend.main - INFO - 📤 Response: 200 - 2205.41ms - /admin/dashboard
+2025-06-10 09:25:10,761 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-10 09:25:10,773 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:10,841 - backend.main - INFO - 📤 Response: 200 - 2016.27ms - /admin/system-health
+2025-06-10 09:25:10,842 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-10 09:25:10,859 - backend.services.admin_metrics - INFO - ✅ Using cached dashboard data
+2025-06-10 09:25:10,888 - backend.main - INFO - 📤 Response: 200 - 205.58ms - /admin/system-health
+2025-06-10 09:25:10,889 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-10 09:25:10,897 - backend.main - INFO - 📤 Response: 200 - 227.30ms - /admin/dashboard
+2025-06-10 09:25:10,899 - backend.main - INFO - 📥 Request: GET /admin/user-metrics
+2025-06-10 09:25:10,904 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-10 09:25:10,938 - backend.main - INFO - 📤 Response: 200 - 2111.74ms - /admin/database-metrics
+2025-06-10 09:25:10,939 - backend.main - INFO - 📥 Request: GET /admin/subscription-metrics
+2025-06-10 09:25:11,070 - backend.services.admin_metrics - INFO - ✅ Using cached user metrics
+2025-06-10 09:25:11,105 - backend.main - INFO - 📤 Response: 200 - 205.89ms - /admin/user-metrics
+2025-06-10 09:25:11,106 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:25:11,129 - backend.services.admin_metrics - INFO - ✅ Using cached subscription metrics
+2025-06-10 09:25:11,157 - backend.main - INFO - 📤 Response: 200 - 267.68ms - /admin/logs/recent
+2025-06-10 09:25:11,167 - backend.main - INFO - 📤 Response: 200 - 227.73ms - /admin/subscription-metrics
+2025-06-10 09:25:11,174 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:11,184 - backend.main - INFO - 📤 Response: 200 - 341.75ms - /admin/users
+2025-06-10 09:25:11,211 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-10 09:25:11,243 - backend.main - INFO - 📤 Response: 200 - 482.56ms - /admin/database-metrics
+2025-06-10 09:25:11,285 - backend.main - INFO - 📤 Response: 200 - 871.43ms - /admin/api-metrics
+2025-06-10 09:25:11,347 - backend.main - INFO - 📤 Response: 200 - 240.32ms - /admin/api-metrics
+2025-06-10 09:25:12,456 - backend.main - INFO - 📥 Request: POST /admin/api-metrics/refresh
+2025-06-10 09:25:12,458 - backend.main - INFO - 📥 Request: POST /admin/api-metrics/refresh
+2025-06-10 09:25:12,630 - backend.routers.admin - INFO - 🧹 Cache cleared for critical metrics
+2025-06-10 09:25:12,649 - backend.routers.admin - INFO - 🧹 Cache cleared for critical metrics
+2025-06-10 09:25:12,667 - backend.main - INFO - 📤 Response: 200 - 210.99ms - /admin/api-metrics/refresh
+2025-06-10 09:25:12,671 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-10 09:25:12,671 - backend.main - INFO - 📥 Request: OPTIONS /admin/system-health
+2025-06-10 09:25:12,671 - backend.main - INFO - 📤 Response: 200 - 0.73ms - /admin/dashboard
+2025-06-10 09:25:12,672 - backend.main - INFO - 📥 Request: OPTIONS /admin/database-metrics
+2025-06-10 09:25:12,672 - backend.main - INFO - 📥 Request: OPTIONS /admin/users
+2025-06-10 09:25:12,672 - backend.main - INFO - 📥 Request: OPTIONS /admin/logs/recent
+2025-06-10 09:25:12,672 - backend.main - INFO - 📤 Response: 200 - 0.98ms - /admin/system-health
+2025-06-10 09:25:12,672 - backend.main - INFO - 📤 Response: 200 - 0.67ms - /admin/database-metrics
+2025-06-10 09:25:12,673 - backend.main - INFO - 📤 Response: 200 - 0.99ms - /admin/users
+2025-06-10 09:25:12,673 - backend.main - INFO - 📤 Response: 200 - 0.99ms - /admin/logs/recent
+2025-06-10 09:25:12,677 - backend.main - INFO - 📥 Request: OPTIONS /admin/user-metrics
+2025-06-10 09:25:12,677 - backend.main - INFO - 📤 Response: 200 - 0.36ms - /admin/user-metrics
+2025-06-10 09:25:12,679 - backend.main - INFO - 📥 Request: OPTIONS /admin/subscription-metrics
+2025-06-10 09:25:12,679 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/subscription-metrics
+2025-06-10 09:25:12,680 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:25:12,680 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/api-metrics
+2025-06-10 09:25:12,682 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-10 09:25:12,689 - backend.main - INFO - 📤 Response: 200 - 230.98ms - /admin/api-metrics/refresh
+2025-06-10 09:25:12,690 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-10 09:25:12,826 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:12,871 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh dashboard data
+2025-06-10 09:25:12,918 - backend.main - INFO - 📤 Response: 200 - 227.53ms - /admin/system-health
+2025-06-10 09:25:12,919 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-10 09:25:12,955 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-10 09:25:12,956 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-10 09:25:12,957 - backend.main - INFO - 📥 Request: GET /admin/user-metrics
+2025-06-10 09:25:12,958 - backend.main - INFO - 📥 Request: GET /admin/subscription-metrics
+2025-06-10 09:25:13,147 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh subscription metrics from database
+2025-06-10 09:25:13,179 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-10 09:25:13,179 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh user metrics from database
+2025-06-10 09:25:13,198 - backend.main - INFO - 📤 Response: 200 - 242.69ms - /admin/logs/recent
+2025-06-10 09:25:13,200 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:25:13,224 - backend.services.admin_metrics - INFO - 📊 Raw role counts: {'premium': 5, 'admin': 7, 'ultimate': 20, 'free': 16}
+2025-06-10 09:25:13,224 - backend.services.admin_metrics - INFO - Subscription metrics: premium=5, ultimate=20, revenue_month=449.74999999999994
+2025-06-10 09:25:13,224 - backend.services.admin_metrics - INFO - ✅ Subscription metrics cached: {'free': 16, 'premium': 5, 'ultimate': 20}
+2025-06-10 09:25:13,226 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:13,232 - backend.main - INFO - 📤 Response: 200 - 275.74ms - /admin/users
+2025-06-10 09:25:13,234 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-10 09:25:13,234 - backend.main - INFO - 📤 Response: 200 - 0.19ms - /admin/dashboard
+2025-06-10 09:25:13,235 - backend.main - INFO - 📥 Request: OPTIONS /admin/system-health
+2025-06-10 09:25:13,235 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/system-health
+2025-06-10 09:25:13,237 - backend.main - INFO - 📥 Request: OPTIONS /admin/database-metrics
+2025-06-10 09:25:13,237 - backend.main - INFO - 📤 Response: 200 - 0.16ms - /admin/database-metrics
+2025-06-10 09:25:13,238 - backend.main - INFO - 📥 Request: OPTIONS /admin/users
+2025-06-10 09:25:13,238 - backend.main - INFO - 📤 Response: 200 - 0.16ms - /admin/users
+2025-06-10 09:25:13,239 - backend.main - INFO - 📥 Request: OPTIONS /admin/logs/recent
+2025-06-10 09:25:13,239 - backend.main - INFO - 📤 Response: 200 - 0.16ms - /admin/logs/recent
+2025-06-10 09:25:13,241 - backend.main - INFO - 📥 Request: OPTIONS /admin/user-metrics
+2025-06-10 09:25:13,241 - backend.main - INFO - 📤 Response: 200 - 0.16ms - /admin/user-metrics
+2025-06-10 09:25:13,242 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-10 09:25:13,243 - backend.main - INFO - 📥 Request: OPTIONS /admin/subscription-metrics
+2025-06-10 09:25:13,243 - backend.main - INFO - 📤 Response: 200 - 0.18ms - /admin/subscription-metrics
+2025-06-10 09:25:13,244 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:25:13,244 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/api-metrics
+2025-06-10 09:25:13,246 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-10 09:25:13,255 - backend.services.admin_metrics - ERROR - Error getting user metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT count(users.id) AS count_1 
+FROM users]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-10 09:25:13,255 - backend.services.admin_metrics - INFO - ✅ Using cached subscription metrics
+2025-06-10 09:25:13,256 - backend.services.admin_metrics - INFO - ✅ Dashboard data cached
+2025-06-10 09:25:13,263 - backend.main - INFO - 📤 Response: 200 - 304.93ms - /admin/subscription-metrics
+2025-06-10 09:25:13,265 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-10 09:25:13,275 - backend.main - INFO - 📤 Response: 200 - 355.26ms - /admin/database-metrics
+2025-06-10 09:25:13,276 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-10 09:25:13,293 - backend.main - INFO - 📤 Response: 200 - 611.88ms - /admin/dashboard
+2025-06-10 09:25:13,295 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-10 09:25:13,417 - backend.services.admin_metrics - INFO - ✅ Using cached dashboard data
+2025-06-10 09:25:13,428 - backend.main - INFO - 📤 Response: 200 - 228.69ms - /admin/api-metrics
+2025-06-10 09:25:13,430 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-10 09:25:13,452 - backend.main - INFO - 📤 Response: 200 - 206.51ms - /admin/dashboard
+2025-06-10 09:25:13,454 - backend.main - INFO - 📥 Request: GET /admin/user-metrics
+2025-06-10 09:25:13,471 - backend.main - INFO - 📤 Response: 200 - 206.55ms - /admin/system-health
+2025-06-10 09:25:13,473 - backend.main - INFO - 📥 Request: GET /admin/subscription-metrics
+2025-06-10 09:25:13,519 - backend.main - INFO - 📤 Response: 200 - 224.19ms - /admin/users
+2025-06-10 09:25:13,521 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:25:13,643 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh user metrics from database
+2025-06-10 09:25:13,644 - backend.services.admin_metrics - INFO - ✅ Using cached subscription metrics
+2025-06-10 09:25:13,678 - backend.main - INFO - 📤 Response: 200 - 205.42ms - /admin/subscription-metrics
+2025-06-10 09:25:13,726 - backend.main - INFO - 📤 Response: 200 - 205.16ms - /admin/api-metrics
+2025-06-10 09:25:13,773 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-10 09:25:13,796 - backend.services.admin_metrics - INFO - 📊 Real users by role: {'premium': 5, 'admin': 7, 'ultimate': 20, 'free': 16}
+2025-06-10 09:25:13,811 - backend.main - INFO - 📤 Response: 200 - 535.17ms - /admin/database-metrics
+2025-06-10 09:25:13,845 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh user metrics from database
+2025-06-10 09:25:13,999 - backend.services.admin_metrics - INFO - 📊 Real users by role: {'premium': 5, 'admin': 7, 'ultimate': 20, 'free': 16}
+2025-06-10 09:25:14,141 - backend.services.admin_metrics - INFO - User metrics calculated: total=48, active_24h=2, active_7d=19
+2025-06-10 09:25:14,141 - backend.services.admin_metrics - INFO - ✅ User metrics cached: {'premium': 5, 'admin': 7, 'ultimate': 20, 'free': 16}
+2025-06-10 09:25:14,179 - backend.main - INFO - 📤 Response: 200 - 725.26ms - /admin/user-metrics
+2025-06-10 09:25:14,217 - backend.main - INFO - 📤 Response: 200 - 786.85ms - /admin/logs/recent
+2025-06-10 09:25:14,345 - backend.services.admin_metrics - INFO - User metrics calculated: total=48, active_24h=2, active_7d=19
+2025-06-10 09:25:14,345 - backend.services.admin_metrics - INFO - ✅ User metrics cached: {'premium': 5, 'admin': 7, 'ultimate': 20, 'free': 16}
+2025-06-10 09:25:14,384 - backend.main - INFO - 📤 Response: 200 - 1426.53ms - /admin/user-metrics
+2025-06-10 09:25:14,428 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:16,847 - backend.main - INFO - 📥 Request: POST /admin/api-metrics/refresh
+2025-06-10 09:25:16,848 - backend.main - INFO - 📥 Request: POST /admin/api-metrics/refresh
+2025-06-10 09:25:17,335 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:17,572 - backend.routers.admin - INFO - 🧹 Cache cleared for critical metrics
+2025-06-10 09:25:17,606 - backend.main - INFO - 📤 Response: 200 - 759.00ms - /admin/api-metrics/refresh
+2025-06-10 09:25:17,609 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-10 09:25:17,610 - backend.main - INFO - 📥 Request: OPTIONS /admin/system-health
+2025-06-10 09:25:17,610 - backend.main - INFO - 📤 Response: 200 - 0.83ms - /admin/dashboard
+2025-06-10 09:25:17,610 - backend.main - INFO - 📥 Request: OPTIONS /admin/database-metrics
+2025-06-10 09:25:17,611 - backend.main - INFO - 📤 Response: 200 - 0.90ms - /admin/system-health
+2025-06-10 09:25:17,611 - backend.main - INFO - 📥 Request: OPTIONS /admin/users
+2025-06-10 09:25:17,611 - backend.main - INFO - 📥 Request: OPTIONS /admin/logs/recent
+2025-06-10 09:25:17,611 - backend.main - INFO - 📤 Response: 200 - 0.71ms - /admin/database-metrics
+2025-06-10 09:25:17,612 - backend.main - INFO - 📤 Response: 200 - 0.87ms - /admin/users
+2025-06-10 09:25:17,612 - backend.main - INFO - 📤 Response: 200 - 0.86ms - /admin/logs/recent
+2025-06-10 09:25:17,615 - backend.main - INFO - 📥 Request: OPTIONS /admin/user-metrics
+2025-06-10 09:25:17,615 - backend.main - INFO - 📤 Response: 200 - 0.19ms - /admin/user-metrics
+2025-06-10 09:25:17,617 - backend.main - INFO - 📥 Request: OPTIONS /admin/subscription-metrics
+2025-06-10 09:25:17,617 - backend.main - INFO - 📤 Response: 200 - 0.16ms - /admin/subscription-metrics
+2025-06-10 09:25:17,618 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:25:17,618 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/api-metrics
+2025-06-10 09:25:17,619 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-10 09:25:17,629 - backend.routers.admin - INFO - 🧹 Cache cleared for critical metrics
+2025-06-10 09:25:17,666 - backend.main - INFO - 📤 Response: 200 - 817.63ms - /admin/api-metrics/refresh
+2025-06-10 09:25:17,668 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-10 09:25:17,735 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:17,902 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-10 09:25:17,904 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-10 09:25:17,904 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-10 09:25:17,905 - backend.main - INFO - 📥 Request: GET /admin/user-metrics
+2025-06-10 09:25:18,093 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh user metrics from database
+2025-06-10 09:25:18,172 - backend.main - INFO - 📤 Response: 200 - 267.60ms - /admin/logs/recent
+2025-06-10 09:25:18,174 - backend.main - INFO - 📥 Request: GET /admin/subscription-metrics
+2025-06-10 09:25:18,189 - backend.main - INFO - 📤 Response: 200 - 285.57ms - /admin/users
+2025-06-10 09:25:18,191 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:25:18,221 - backend.services.admin_metrics - INFO - 📊 Real users by role: {'premium': 5, 'admin': 7, 'ultimate': 20, 'free': 16}
+2025-06-10 09:25:18,292 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh dashboard data
+2025-06-10 09:25:18,380 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh subscription metrics from database
+2025-06-10 09:25:18,449 - backend.services.admin_metrics - INFO - 📊 Raw role counts: {'premium': 5, 'admin': 7, 'ultimate': 20, 'free': 16}
+2025-06-10 09:25:18,449 - backend.services.admin_metrics - INFO - Subscription metrics: premium=5, ultimate=20, revenue_month=449.74999999999994
+2025-06-10 09:25:18,449 - backend.services.admin_metrics - INFO - ✅ Subscription metrics cached: {'free': 16, 'premium': 5, 'ultimate': 20}
+2025-06-10 09:25:18,483 - backend.main - INFO - 📤 Response: 200 - 309.48ms - /admin/subscription-metrics
+2025-06-10 09:25:18,485 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-10 09:25:18,485 - backend.main - INFO - 📤 Response: 200 - 0.31ms - /admin/dashboard
+2025-06-10 09:25:18,485 - backend.main - INFO - 📤 Response: 200 - 817.78ms - /admin/system-health
+2025-06-10 09:25:18,488 - backend.main - INFO - 📥 Request: OPTIONS /admin/system-health
+2025-06-10 09:25:18,488 - backend.main - INFO - 📥 Request: OPTIONS /admin/database-metrics
+2025-06-10 09:25:18,488 - backend.main - INFO - 📤 Response: 200 - 0.38ms - /admin/system-health
+2025-06-10 09:25:18,488 - backend.main - INFO - 📤 Response: 200 - 0.29ms - /admin/database-metrics
+2025-06-10 09:25:18,490 - backend.main - INFO - 📥 Request: OPTIONS /admin/users
+2025-06-10 09:25:18,490 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/users
+2025-06-10 09:25:18,491 - backend.main - INFO - 📥 Request: OPTIONS /admin/logs/recent
+2025-06-10 09:25:18,492 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/logs/recent
+2025-06-10 09:25:18,493 - backend.main - INFO - 📥 Request: OPTIONS /admin/user-metrics
+2025-06-10 09:25:18,493 - backend.main - INFO - 📤 Response: 200 - 0.19ms - /admin/user-metrics
+2025-06-10 09:25:18,494 - backend.main - INFO - 📥 Request: OPTIONS /admin/subscription-metrics
+2025-06-10 09:25:18,494 - backend.main - INFO - 📤 Response: 200 - 0.16ms - /admin/subscription-metrics
+2025-06-10 09:25:18,495 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:25:18,496 - backend.main - INFO - 📤 Response: 200 - 0.17ms - /admin/api-metrics
+2025-06-10 09:25:18,497 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-10 09:25:18,508 - backend.services.admin_metrics - INFO - User metrics calculated: total=48, active_24h=2, active_7d=19
+2025-06-10 09:25:18,509 - backend.services.admin_metrics - INFO - ✅ User metrics cached: {'premium': 5, 'admin': 7, 'ultimate': 20, 'free': 16}
+2025-06-10 09:25:18,525 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-10 09:25:18,525 - backend.services.admin_metrics - INFO - ✅ Using cached user metrics
+2025-06-10 09:25:18,525 - backend.services.admin_metrics - INFO - ✅ Using cached subscription metrics
+2025-06-10 09:25:18,525 - backend.services.admin_metrics - INFO - ✅ Dashboard data cached
+2025-06-10 09:25:18,536 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:18,540 - backend.main - INFO - 📤 Response: 200 - 635.28ms - /admin/user-metrics
+2025-06-10 09:25:18,542 - backend.main - INFO - 📥 Request: GET /admin/system-health
+2025-06-10 09:25:18,554 - backend.main - INFO - 📤 Response: 200 - 934.20ms - /admin/dashboard
+2025-06-10 09:25:18,555 - backend.main - INFO - 📥 Request: GET /admin/database-metrics
+2025-06-10 09:25:18,748 - backend.main - INFO - 📤 Response: 200 - 205.73ms - /admin/system-health
+2025-06-10 09:25:18,749 - backend.main - INFO - 📥 Request: GET /admin/users
+2025-06-10 09:25:18,781 - backend.main - INFO - 📥 Request: GET /admin/logs/recent
+2025-06-10 09:25:18,980 - backend.main - INFO - 📤 Response: 200 - 198.83ms - /admin/logs/recent
+2025-06-10 09:25:18,981 - backend.main - INFO - 📥 Request: GET /admin/user-metrics
+2025-06-10 09:25:19,003 - backend.main - INFO - 📤 Response: 200 - 254.00ms - /admin/users
+2025-06-10 09:25:19,005 - backend.main - INFO - 📥 Request: GET /admin/subscription-metrics
+2025-06-10 09:25:19,040 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-10 09:25:19,044 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-10 09:25:19,075 - backend.main - INFO - 📤 Response: 200 - 519.63ms - /admin/database-metrics
+2025-06-10 09:25:19,077 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:25:19,078 - backend.main - INFO - 📤 Response: 200 - 1175.74ms - /admin/database-metrics
+2025-06-10 09:25:19,116 - backend.main - INFO - 📤 Response: 200 - 925.14ms - /admin/api-metrics
+2025-06-10 09:25:19,144 - backend.services.admin_metrics - INFO - ✅ Using cached subscription metrics
+2025-06-10 09:25:19,153 - backend.services.admin_metrics - INFO - ✅ Using cached user metrics
+2025-06-10 09:25:19,172 - backend.main - INFO - 📤 Response: 200 - 167.44ms - /admin/subscription-metrics
+2025-06-10 09:25:19,187 - backend.main - INFO - 📤 Response: 200 - 206.26ms - /admin/user-metrics
+2025-06-10 09:25:19,266 - backend.main - INFO - 📤 Response: 200 - 189.47ms - /admin/api-metrics
+2025-06-10 09:25:19,337 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:19,350 - backend.services.admin_metrics - INFO - ✅ Using cached dashboard data
+2025-06-10 09:25:19,389 - backend.main - INFO - 📤 Response: 200 - 892.53ms - /admin/dashboard
+2025-06-10 09:25:52,692 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:25:52,692 - backend.main - INFO - 📤 Response: 200 - 0.36ms - /admin/api-metrics
+2025-06-10 09:25:52,694 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:25:52,889 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:53,630 - backend.main - INFO - 📤 Response: 200 - 935.50ms - /admin/api-metrics
+2025-06-10 09:25:54,091 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:25:54,491 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:26:24,682 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:26:24,683 - backend.main - INFO - 📤 Response: 200 - 0.30ms - /admin/api-metrics
+2025-06-10 09:26:24,684 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:26:24,956 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:26:25,491 - backend.main - INFO - 📤 Response: 200 - 807.01ms - /admin/api-metrics
+2025-06-10 09:26:25,757 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:26:57,226 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:26:57,227 - backend.main - INFO - 📤 Response: 200 - 0.25ms - /admin/api-metrics
+2025-06-10 09:26:57,228 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:26:57,674 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:26:58,017 - backend.main - INFO - 📤 Response: 200 - 788.67ms - /admin/api-metrics
+2025-06-10 09:26:58,275 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:27:29,209 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:27:29,209 - backend.main - INFO - 📤 Response: 200 - 0.29ms - /admin/api-metrics
+2025-06-10 09:27:29,211 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:27:29,692 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:27:30,130 - backend.main - INFO - 📤 Response: 200 - 918.76ms - /admin/api-metrics
+2025-06-10 09:27:30,493 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:28:01,757 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:28:01,757 - backend.main - INFO - 📤 Response: 200 - 0.26ms - /admin/api-metrics
+2025-06-10 09:28:01,760 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:28:01,859 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:28:02,589 - backend.main - INFO - 📤 Response: 200 - 829.25ms - /admin/api-metrics
+2025-06-10 09:28:03,061 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:28:03,461 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:28:30,815 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:28:30,815 - backend.main - INFO - 📤 Response: 200 - 0.51ms - /admin/api-metrics
+2025-06-10 09:28:30,818 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:28:31,293 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:28:31,532 - backend.main - INFO - 📤 Response: 200 - 713.93ms - /admin/api-metrics
+2025-06-10 09:28:31,694 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:29:03,364 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:29:03,364 - backend.main - INFO - 📤 Response: 200 - 0.31ms - /admin/api-metrics
+2025-06-10 09:29:03,366 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:29:03,612 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:29:04,216 - backend.main - INFO - 📤 Response: 200 - 850.16ms - /admin/api-metrics
+2025-06-10 09:29:04,663 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:29:35,345 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:29:35,346 - backend.main - INFO - 📤 Response: 200 - 0.28ms - /admin/api-metrics
+2025-06-10 09:29:35,347 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:29:35,528 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:29:36,203 - backend.main - INFO - 📤 Response: 200 - 855.44ms - /admin/api-metrics
+2025-06-10 09:29:36,329 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:30:07,886 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:30:07,886 - backend.main - INFO - 📤 Response: 200 - 0.25ms - /admin/api-metrics
+2025-06-10 09:30:07,888 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:30:08,397 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:30:08,680 - backend.main - INFO - 📤 Response: 200 - 791.86ms - /admin/api-metrics
+2025-06-10 09:30:08,748 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:30:23,378 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-10 09:30:23,378 - backend.main - INFO - 📤 Response: 200 - 0.27ms - /admin/dashboard
+2025-06-10 09:30:23,380 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-10 09:30:23,696 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:30:24,194 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh dashboard data
+2025-06-10 09:30:24,497 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:30:25,480 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-10 09:30:25,480 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh user metrics from database
+2025-06-10 09:30:25,552 - backend.services.admin_metrics - ERROR - Error getting user metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT count(users.id) AS count_1 
+FROM users]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-10 09:30:25,552 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh subscription metrics from database
+2025-06-10 09:30:25,621 - backend.services.admin_metrics - ERROR - Error getting subscription role counts: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT users.role, count(users.id) AS count_1 
+FROM users GROUP BY users.role]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-10 09:30:25,621 - backend.services.admin_metrics - INFO - Subscription metrics: premium=0, ultimate=0, revenue_month=0.0
+2025-06-10 09:30:25,621 - backend.services.admin_metrics - INFO - ✅ Subscription metrics cached: {'free': 0, 'premium': 0, 'ultimate': 0}
+2025-06-10 09:30:25,621 - backend.services.admin_metrics - INFO - ✅ Dashboard data cached
+2025-06-10 09:30:25,656 - backend.main - INFO - 📤 Response: 200 - 2276.94ms - /admin/dashboard
+2025-06-10 09:30:25,698 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:30:40,159 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:30:40,160 - backend.main - INFO - 📤 Response: 200 - 0.26ms - /admin/api-metrics
+2025-06-10 09:30:40,161 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:30:40,515 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:30:41,068 - backend.main - INFO - 📤 Response: 200 - 906.88ms - /admin/api-metrics
+2025-06-10 09:30:41,316 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:31:12,138 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:31:12,138 - backend.main - INFO - 📤 Response: 200 - 0.30ms - /admin/api-metrics
+2025-06-10 09:31:12,140 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:31:12,281 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:31:13,021 - backend.main - INFO - 📤 Response: 200 - 880.95ms - /admin/api-metrics
+2025-06-10 09:31:13,483 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:31:44,694 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:31:44,695 - backend.main - INFO - 📤 Response: 200 - 0.26ms - /admin/api-metrics
+2025-06-10 09:31:44,696 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:31:45,401 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:31:45,616 - backend.main - INFO - 📤 Response: 200 - 920.03ms - /admin/api-metrics
+2025-06-10 09:31:45,751 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:32:16,678 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:32:16,679 - backend.main - INFO - 📤 Response: 200 - 0.43ms - /admin/api-metrics
+2025-06-10 09:32:16,681 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:32:17,017 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:32:17,417 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:32:17,477 - backend.main - INFO - 📤 Response: 200 - 796.17ms - /admin/api-metrics
+2025-06-10 09:32:49,226 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:32:49,226 - backend.main - INFO - 📤 Response: 200 - 0.24ms - /admin/api-metrics
+2025-06-10 09:32:49,228 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:32:49,333 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:32:50,100 - backend.main - INFO - 📤 Response: 200 - 871.94ms - /admin/api-metrics
+2025-06-10 09:32:50,534 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:33:21,211 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:33:21,211 - backend.main - INFO - 📤 Response: 200 - 0.28ms - /admin/api-metrics
+2025-06-10 09:33:21,213 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:33:21,600 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:33:21,976 - backend.main - INFO - 📤 Response: 200 - 763.70ms - /admin/api-metrics
+2025-06-10 09:33:53,755 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:33:53,755 - backend.main - INFO - 📤 Response: 200 - 0.36ms - /admin/api-metrics
+2025-06-10 09:33:53,757 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:33:54,168 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:33:54,569 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:33:54,723 - backend.main - INFO - 📤 Response: 200 - 966.17ms - /admin/api-metrics
+2025-06-10 09:34:22,807 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:34:22,807 - backend.main - INFO - 📤 Response: 200 - 0.30ms - /admin/api-metrics
+2025-06-10 09:34:22,809 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:34:22,953 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:34:23,753 - backend.main - INFO - 📤 Response: 200 - 943.81ms - /admin/api-metrics
+2025-06-10 09:34:24,205 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:34:24,605 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:34:55,352 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:34:55,352 - backend.main - INFO - 📤 Response: 200 - 0.25ms - /admin/api-metrics
+2025-06-10 09:34:55,354 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:34:55,621 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:34:56,212 - backend.main - INFO - 📤 Response: 200 - 857.91ms - /admin/api-metrics
+2025-06-10 09:34:56,421 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:35:25,497 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-10 09:35:25,498 - backend.main - INFO - 📤 Response: 200 - 0.27ms - /admin/dashboard
+2025-06-10 09:35:25,499 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-10 09:35:25,835 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:35:26,266 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh dashboard data
+2025-06-10 09:35:26,586 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:35:27,534 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-10 09:35:27,534 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh user metrics from database
+2025-06-10 09:35:27,597 - backend.services.admin_metrics - ERROR - Error getting user metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT count(users.id) AS count_1 
+FROM users]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-10 09:35:27,597 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh subscription metrics from database
+2025-06-10 09:35:27,628 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:35:27,628 - backend.main - INFO - 📤 Response: 200 - 0.22ms - /admin/api-metrics
+2025-06-10 09:35:27,630 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:35:27,662 - backend.services.admin_metrics - ERROR - Error getting subscription role counts: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT users.role, count(users.id) AS count_1 
+FROM users GROUP BY users.role]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-10 09:35:27,662 - backend.services.admin_metrics - INFO - Subscription metrics: premium=0, ultimate=0, revenue_month=0.0
+2025-06-10 09:35:27,662 - backend.services.admin_metrics - INFO - ✅ Subscription metrics cached: {'free': 0, 'premium': 0, 'ultimate': 0}
+2025-06-10 09:35:27,664 - backend.services.admin_metrics - INFO - ✅ Dashboard data cached
+2025-06-10 09:35:27,696 - backend.main - INFO - 📤 Response: 200 - 2196.73ms - /admin/dashboard
+2025-06-10 09:35:27,788 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:35:28,415 - backend.main - INFO - 📤 Response: 200 - 784.85ms - /admin/api-metrics
+2025-06-10 09:35:28,589 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:35:59,884 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:35:59,884 - backend.main - INFO - 📤 Response: 200 - 0.26ms - /admin/api-metrics
+2025-06-10 09:35:59,886 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:36:00,055 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:36:00,456 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:36:00,608 - backend.main - INFO - 📤 Response: 200 - 721.59ms - /admin/api-metrics
+2025-06-10 09:36:31,876 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:36:31,876 - backend.main - INFO - 📤 Response: 200 - 0.30ms - /admin/api-metrics
+2025-06-10 09:36:31,878 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:36:32,175 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:36:32,575 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:36:32,678 - backend.main - INFO - 📤 Response: 200 - 799.51ms - /admin/api-metrics
+2025-06-10 09:37:04,427 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:37:04,427 - backend.main - INFO - 📤 Response: 200 - 0.25ms - /admin/api-metrics
+2025-06-10 09:37:04,429 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:37:04,741 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:37:05,285 - backend.main - INFO - 📤 Response: 200 - 856.32ms - /admin/api-metrics
+2025-06-10 09:37:05,492 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:37:36,408 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:37:36,409 - backend.main - INFO - 📤 Response: 200 - 0.31ms - /admin/api-metrics
+2025-06-10 09:37:36,410 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:37:36,608 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:37:37,129 - backend.main - INFO - 📤 Response: 200 - 718.89ms - /admin/api-metrics
+2025-06-10 09:37:37,459 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:38:08,950 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:38:08,950 - backend.main - INFO - 📤 Response: 200 - 0.29ms - /admin/api-metrics
+2025-06-10 09:38:08,952 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:38:09,025 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:38:09,425 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:38:09,817 - backend.main - INFO - 📤 Response: 200 - 864.86ms - /admin/api-metrics
+2025-06-10 09:38:40,935 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:38:40,935 - backend.main - INFO - 📤 Response: 200 - 0.26ms - /admin/api-metrics
+2025-06-10 09:38:40,937 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:38:41,341 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:38:41,691 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:38:41,730 - backend.main - INFO - 📤 Response: 200 - 793.67ms - /admin/api-metrics
+2025-06-10 09:39:13,489 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:39:13,490 - backend.main - INFO - 📤 Response: 200 - 0.40ms - /admin/api-metrics
+2025-06-10 09:39:13,491 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:39:13,857 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:39:14,285 - backend.main - INFO - 📤 Response: 200 - 793.21ms - /admin/api-metrics
+2025-06-10 09:39:14,708 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:39:45,476 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:39:45,476 - backend.main - INFO - 📤 Response: 200 - 0.29ms - /admin/api-metrics
+2025-06-10 09:39:45,478 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:39:45,576 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:39:46,267 - backend.main - INFO - 📤 Response: 200 - 789.10ms - /admin/api-metrics
+2025-06-10 09:39:46,427 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:40:15,090 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:40:15,090 - backend.main - INFO - 📤 Response: 200 - 0.25ms - /admin/api-metrics
+2025-06-10 09:40:15,091 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:40:15,362 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:40:16,025 - backend.main - INFO - 📤 Response: 200 - 934.03ms - /admin/api-metrics
+2025-06-10 09:40:16,163 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:40:29,644 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-10 09:40:29,644 - backend.main - INFO - 📤 Response: 200 - 0.29ms - /admin/dashboard
+2025-06-10 09:40:29,646 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-10 09:40:29,907 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:40:30,457 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh dashboard data
+2025-06-10 09:40:30,708 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:40:31,744 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-10 09:40:31,744 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh user metrics from database
+2025-06-10 09:40:31,813 - backend.services.admin_metrics - ERROR - Error getting user metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT count(users.id) AS count_1 
+FROM users]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-10 09:40:31,813 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh subscription metrics from database
+2025-06-10 09:40:31,882 - backend.services.admin_metrics - ERROR - Error getting subscription role counts: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT users.role, count(users.id) AS count_1 
+FROM users GROUP BY users.role]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-10 09:40:31,882 - backend.services.admin_metrics - INFO - Subscription metrics: premium=0, ultimate=0, revenue_month=0.0
+2025-06-10 09:40:31,882 - backend.services.admin_metrics - INFO - ✅ Subscription metrics cached: {'free': 0, 'premium': 0, 'ultimate': 0}
+2025-06-10 09:40:31,885 - backend.services.admin_metrics - INFO - ✅ Dashboard data cached
+2025-06-10 09:40:31,910 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:40:31,919 - backend.main - INFO - 📤 Response: 200 - 2273.59ms - /admin/dashboard
+2025-06-10 09:40:47,348 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:40:47,349 - backend.main - INFO - 📤 Response: 200 - 0.27ms - /admin/api-metrics
+2025-06-10 09:40:47,350 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:40:47,729 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:40:48,268 - backend.main - INFO - 📤 Response: 200 - 917.06ms - /admin/api-metrics
+2025-06-10 09:40:48,530 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:41:19,339 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:41:19,340 - backend.main - INFO - 📤 Response: 200 - 0.30ms - /admin/api-metrics
+2025-06-10 09:41:19,341 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:41:19,548 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:41:20,060 - backend.main - INFO - 📤 Response: 200 - 719.30ms - /admin/api-metrics
+2025-06-10 09:41:20,349 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:41:51,892 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:41:51,892 - backend.main - INFO - 📤 Response: 200 - 0.26ms - /admin/api-metrics
+2025-06-10 09:41:51,894 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:41:52,268 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:41:52,617 - backend.main - INFO - 📤 Response: 200 - 723.42ms - /admin/api-metrics
+2025-06-10 09:41:52,618 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:42:23,862 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:42:23,862 - backend.main - INFO - 📤 Response: 200 - 0.26ms - /admin/api-metrics
+2025-06-10 09:42:23,864 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:42:24,233 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:42:24,634 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:42:24,657 - backend.main - INFO - 📤 Response: 200 - 793.84ms - /admin/api-metrics
+2025-06-10 09:42:56,419 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:42:56,419 - backend.main - INFO - 📤 Response: 200 - 0.27ms - /admin/api-metrics
+2025-06-10 09:42:56,421 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:42:56,503 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:42:57,266 - backend.main - INFO - 📤 Response: 200 - 845.62ms - /admin/api-metrics
+2025-06-10 09:42:57,705 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:43:28,404 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:43:28,404 - backend.main - INFO - 📤 Response: 200 - 0.25ms - /admin/api-metrics
+2025-06-10 09:43:28,406 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:43:28,870 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:43:29,283 - backend.main - INFO - 📤 Response: 200 - 877.68ms - /admin/api-metrics
+2025-06-10 09:43:29,671 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:44:00,953 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:44:00,953 - backend.main - INFO - 📤 Response: 200 - 0.24ms - /admin/api-metrics
+2025-06-10 09:44:00,955 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:44:01,137 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:44:01,537 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:44:01,743 - backend.main - INFO - 📤 Response: 200 - 788.22ms - /admin/api-metrics
+2025-06-10 09:44:32,936 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:44:32,937 - backend.main - INFO - 📤 Response: 200 - 0.29ms - /admin/api-metrics
+2025-06-10 09:44:32,938 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:44:33,055 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:44:33,455 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:44:33,790 - backend.main - INFO - 📤 Response: 200 - 851.54ms - /admin/api-metrics
+2025-06-10 09:45:05,479 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:45:05,479 - backend.main - INFO - 📤 Response: 200 - 0.25ms - /admin/api-metrics
+2025-06-10 09:45:05,481 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:45:05,722 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:45:06,401 - backend.main - INFO - 📤 Response: 200 - 920.45ms - /admin/api-metrics
+2025-06-10 09:45:06,523 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:45:31,786 - backend.main - INFO - 📥 Request: OPTIONS /admin/dashboard
+2025-06-10 09:45:31,786 - backend.main - INFO - 📤 Response: 200 - 0.30ms - /admin/dashboard
+2025-06-10 09:45:31,788 - backend.main - INFO - 📥 Request: GET /admin/dashboard
+2025-06-10 09:45:32,054 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:45:32,404 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:45:32,533 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh dashboard data
+2025-06-10 09:45:33,798 - backend.services.admin_metrics - ERROR - Error getting database metrics: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedTableError'>: relation "pg_stat_statements" does not exist
+[SQL: 
+                SELECT 
+                    SUM(calls) as total_queries,
+                    AVG(mean_exec_time) as avg_time,
+                    COUNT(CASE WHEN mean_exec_time > 1000 THEN 1 END) as slow_queries
+                FROM pg_stat_statements 
+                WHERE dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-06-10 09:45:33,798 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh user metrics from database
+2025-06-10 09:45:33,861 - backend.services.admin_metrics - ERROR - Error getting user metrics: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT count(users.id) AS count_1 
+FROM users]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-10 09:45:33,861 - backend.services.admin_metrics - INFO - 🔄 Fetching fresh subscription metrics from database
+2025-06-10 09:45:33,925 - backend.services.admin_metrics - ERROR - Error getting subscription role counts: (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: SELECT users.role, count(users.id) AS count_1 
+FROM users GROUP BY users.role]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+2025-06-10 09:45:33,925 - backend.services.admin_metrics - INFO - Subscription metrics: premium=0, ultimate=0, revenue_month=0.0
+2025-06-10 09:45:33,925 - backend.services.admin_metrics - INFO - ✅ Subscription metrics cached: {'free': 0, 'premium': 0, 'ultimate': 0}
+2025-06-10 09:45:33,925 - backend.services.admin_metrics - INFO - ✅ Dashboard data cached
+2025-06-10 09:45:33,957 - backend.main - INFO - 📤 Response: 200 - 2169.73ms - /admin/dashboard
+2025-06-10 09:45:36,939 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:45:37,339 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:45:37,459 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:45:37,460 - backend.main - INFO - 📤 Response: 200 - 0.36ms - /admin/api-metrics
+2025-06-10 09:45:37,462 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:45:37,740 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:45:38,175 - backend.main - INFO - 📤 Response: 200 - 713.73ms - /admin/api-metrics
+2025-06-10 09:45:38,541 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:46:07,081 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:46:07,081 - backend.main - INFO - 📤 Response: 200 - 0.24ms - /admin/api-metrics
+2025-06-10 09:46:07,083 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:46:07,376 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:46:07,801 - backend.main - INFO - 📤 Response: 200 - 718.20ms - /admin/api-metrics
+2025-06-10 09:46:39,060 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:46:39,060 - backend.main - INFO - 📤 Response: 200 - 0.26ms - /admin/api-metrics
+2025-06-10 09:46:39,062 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:46:39,292 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:46:39,877 - backend.main - INFO - 📤 Response: 200 - 814.91ms - /admin/api-metrics
+2025-06-10 09:47:11,610 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:47:11,610 - backend.main - INFO - 📤 Response: 200 - 0.36ms - /admin/api-metrics
+2025-06-10 09:47:11,612 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:47:11,858 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:47:12,492 - backend.main - INFO - 📤 Response: 200 - 879.87ms - /admin/api-metrics
+2025-06-10 09:47:12,710 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:47:43,454 - backend.main - INFO - 📥 Request: OPTIONS /admin/api-metrics
+2025-06-10 09:47:43,454 - backend.main - INFO - 📤 Response: 200 - 0.26ms - /admin/api-metrics
+2025-06-10 09:47:43,456 - backend.main - INFO - 📥 Request: GET /admin/api-metrics
+2025-06-10 09:47:43,675 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:47:44,200 - backend.main - INFO - 📤 Response: 200 - 744.49ms - /admin/api-metrics
+2025-06-10 09:47:44,476 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:47:51,794 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-10 09:47:51,799 - backend.main - INFO - 📥 Request: GET /home/top-performers
+2025-06-10 09:47:51,937 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:47:52,428 - backend.main - INFO - 📥 Request: OPTIONS /profile/me
+2025-06-10 09:47:52,428 - backend.main - INFO - 📤 Response: 200 - 0.35ms - /profile/me
+2025-06-10 09:47:52,431 - backend.main - INFO - 📥 Request: GET /profile/me
+2025-06-10 09:47:52,609 - backend.main - INFO - 📤 Response: 200 - 814.84ms - /home/top-performers
+2025-06-10 09:47:52,622 - backend.main - INFO - 📥 Request: GET /players/117
+2025-06-10 09:47:52,682 - backend.main - INFO - 📤 Response: 200 - 883.29ms - /home/top-performers
+2025-06-10 09:47:52,691 - backend.main - INFO - 📥 Request: GET /players/549
+2025-06-10 09:47:52,738 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:47:53,244 - backend.main - ERROR - ❌ Request failed: /players/549
+2025-06-10 09:47:53,244 - backend.main - ERROR - ❌ Error: 3 validation errors for PlayerRead
+id
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+name
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+birth_date
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2025-06-10 09:47:53,246 - backend.main - ERROR - ❌ Traceback: Traceback (most recent call last):
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 148, in call_next
+    message = await recv_stream.receive()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/main.py", line 85, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 176, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+                                   ^^^^^^^^^^^^^^^^^^^^
+  File "/home/linuxbrew/.linuxbrew/opt/python@3.12/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/_utils.py", line 82, in collapse_excgroups
+    raise exc
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 178, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/main.py", line 57, in metrics_middleware
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/routers/players.py", line 102, in read_players_by_id
+    return PlayerRead()
+           ^^^^^^^^^^^^
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/sqlmodel/main.py", line 814, in __init__
+    sqlmodel_init(self=__pydantic_self__, data=data)
+  File "/home/gonzalo/gonzaloProyects/HoopMetrics/backend/.venv/lib/python3.12/site-packages/sqlmodel/_compat.py", line 351, in sqlmodel_init
+    self.__pydantic_validator__.validate_python(
+pydantic_core._pydantic_core.ValidationError: 3 validation errors for PlayerRead
+id
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+name
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+birth_date
+  Field required [type=missing, input_value={}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+
+2025-06-10 09:47:53,275 - backend.main - INFO - 📥 Request: GET /players/369
+2025-06-10 09:47:53,324 - backend.main - INFO - 📤 Response: 200 - 702.20ms - /players/117
+2025-06-10 09:47:53,355 - backend.main - INFO - 📤 Response: 200 - 923.79ms - /profile/me
+2025-06-10 09:47:53,397 - backend.main - INFO - 📥 Request: OPTIONS /favorites/
+2025-06-10 09:47:53,397 - backend.main - INFO - 📤 Response: 200 - 0.31ms - /favorites/
+2025-06-10 09:47:53,399 - backend.main - INFO - 📥 Request: OPTIONS /favorites/
+2025-06-10 09:47:53,399 - backend.main - INFO - 📤 Response: 200 - 0.31ms - /favorites/
+2025-06-10 09:47:53,402 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-10 09:47:53,539 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:47:54,064 - backend.main - INFO - 📤 Response: 200 - 788.83ms - /players/369
+2025-06-10 09:47:54,341 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:47:54,457 - backend.main - INFO - 📤 Response: 200 - 1055.71ms - /favorites/
+2025-06-10 09:47:54,459 - backend.main - INFO - 📥 Request: GET /favorites/
+2025-06-10 09:47:57,916 - backend.main - INFO - 📤 Response: 200 - 3457.49ms - /favorites/
+2025-06-10 09:47:58,076 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:47:58,237 - backend.main - INFO - 📥 Request: GET /search/suggestions
+2025-06-10 09:47:58,476 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:47:59,041 - backend.main - INFO - 📤 Response: 200 - 803.89ms - /search/suggestions
+2025-06-10 09:47:59,277 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:48:00,854 - backend.main - INFO - 📥 Request: GET /search/results
+2025-06-10 09:48:00,930 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:48:01,766 - backend.main - INFO - 📤 Response: 200 - 912.30ms - /search/results
+2025-06-10 09:48:02,131 - watchfiles.main - INFO - 1 change detected
+2025-06-10 09:48:02,532 - watchfiles.main - INFO - 1 change detected

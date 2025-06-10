@@ -69,32 +69,6 @@ export default function AdminUsersPage() {
         }
     }
 
-    const getRoleIcon = (role: string) => {
-        switch (role.toLowerCase()) {
-            case 'admin':
-                return <Crown className="h-4 w-4 text-purple-600" />
-            case 'premium':
-                return <Shield className="h-4 w-4 text-blue-600" />
-            case 'ultimate':
-                return <Crown className="h-4 w-4 text-yellow-600" />
-            default:
-                return <User className="h-4 w-4 text-gray-600" />
-        }
-    }
-
-    const getRoleBadgeVariant = (role: string) => {
-        switch (role.toLowerCase()) {
-            case 'admin':
-                return 'destructive'
-            case 'premium':
-                return 'default'
-            case 'ultimate':
-                return 'secondary'
-            default:
-                return 'outline'
-        }
-    }
-
     // Filter users based on search and role
     const filteredUsers = users.filter(user => {
         const matchesSearch = 
@@ -268,7 +242,7 @@ function UserRow({ user, onRoleUpdate, onDeleteUser }: UserRowProps) {
         }
     }
 
-    const getRoleBadgeVariant = (role: string) => {
+    const getRoleBadgeVariant = (role: string): "default" | "secondary" | "destructive" | "outline" => {
         switch (role.toLowerCase()) {
             case 'admin':
                 return 'destructive'
@@ -294,7 +268,7 @@ function UserRow({ user, onRoleUpdate, onDeleteUser }: UserRowProps) {
                 <div>
                     <div className="flex items-center gap-2">
                         <h3 className="font-medium">{user.username}</h3>
-                        <Badge variant={getRoleBadgeVariant(user.role) as any}>
+                        <Badge variant={getRoleBadgeVariant(user.role)}>
                             <span className="flex items-center gap-1">
                                 {getRoleIcon(user.role)}
                                 {user.role}
@@ -349,7 +323,7 @@ function UserRow({ user, onRoleUpdate, onDeleteUser }: UserRowProps) {
                         <AlertDialogHeader>
                             <AlertDialogTitle>Delete User</AlertDialogTitle>
                             <AlertDialogDescription>
-                                Are you sure you want to delete user "{user.username}"? 
+                                {`Are you sure you want to delete user "${user.username}"?`}	
                                 This action cannot be undone. All user data, including favorites and profile information, will be permanently removed.
                             </AlertDialogDescription>
                         </AlertDialogHeader>

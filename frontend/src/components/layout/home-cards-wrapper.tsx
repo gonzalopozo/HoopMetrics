@@ -2,7 +2,6 @@ import { TrendingQueriesCard } from "@/components/cards/trending-queries-card"
 import { TopPerformersCard } from "@/components/cards/top-performers-card"
 import { QuickStatsCard } from "@/components/cards/quick-stats-card"
 import { WatchlistCard } from "@/components/cards/watchlist-card"
-import { SeasonalMilestonesCard } from "@/components/cards/seasonal-milestones-card"
 import axios from "axios"
 import { TopPerformer } from "@/types"
 

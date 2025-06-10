@@ -15,26 +15,15 @@ import {
     Users, 
     DollarSign, 
     Globe,
-    TrendingUp,
-    BarChart2,
     AlertTriangle
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
     Tooltip,
-    Legend,
     ResponsiveContainer,
     PieChart,
     Pie,
     Cell,
-    LineChart,
-    Line,
-    ComposedChart
 } from 'recharts'
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
@@ -128,20 +117,9 @@ export default function AdminDashboardPage() {
         return "text-green-600";
     };
 
-    // Prepare chart data
-    const requestsData = api_metrics.requests_by_hour.map(item => ({
-        hour: item.hour,
-        requests: item.requests
-    }));
-
-    const statusCodesData = Object.entries(api_metrics.status_codes_distribution).map(([code, count]) => ({
-        name: code,
-        value: count
-    }));
-
     const userRoleData = user_metrics?.users_by_role ? 
         Object.entries(user_metrics.users_by_role)
-            .filter(([role, count]) => count > 0) // Solo roles con usuarios
+            .filter(([, count]) => count > 0) // Solo roles con usuarios
             .map(([role, count]) => ({
                 name: role,
                 value: count
@@ -149,15 +127,11 @@ export default function AdminDashboardPage() {
 
     const subscriptionData = subscription_metrics?.subscriptions_by_plan ?
         Object.entries(subscription_metrics.subscriptions_by_plan)
-            .filter(([plan, count]) => count > 0) // Solo planes con usuarios
+            .filter(([, count]) => count > 0) // Solo planes con usuarios
             .map(([plan, count]) => ({
                 name: plan,
                 value: count
             })) : [];
-
-    // Preparar datos para gráficos
-    const dailyRequestsData = api_metrics.daily_requests_trend || [];
-    const featureUsageData = api_metrics.feature_usage_stats || [];
 
     console.log('📈 Chart data prepared:', {
         userRoles: userRoleData,

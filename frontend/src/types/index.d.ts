@@ -80,37 +80,6 @@ export interface Team {
     }
 }
 
-interface TeamDetails {
-    id: number
-    full_name: string
-    abbreviation: string
-    conference: string
-    division: string
-    stadium: string
-    city: string
-    logo: string
-    stats: {
-        wins: number
-        losses: number
-        conference_rank: number | null
-        ppg: number
-        oppg: number
-        rpg: number
-        apg: number
-        spg: number
-        bpg: number
-        topg: number
-        fgp: number
-        tpp: number
-        ftp: number
-    }
-    players: TeamPlayer[]
-    recent_games: TeamGame[]
-    upcoming_games: TeamGame[]
-    championships: number[] | null
-    founded: number | null
-}
-
 interface TeamPlayer {
     id: number
     name: string
@@ -145,4 +114,4 @@ interface TeamGame {
     status: "completed" | "scheduled"
 }
 
-export * from './search'
+export { type TeamDetails } from './search'

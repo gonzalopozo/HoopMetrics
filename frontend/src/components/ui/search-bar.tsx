@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils"
 import { SearchSuggestions, SearchTeamResult, SearchPlayerResult } from "@/types/search"
 import { getNBALogo } from "@/lib/utils"
 import Image from "next/image"
-import Link from "next/link"
 
 export function SearchBar() {
     const [query, setQuery] = useState("")
@@ -18,7 +17,7 @@ export function SearchBar() {
     const router = useRouter()
     const searchRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
-    const debounceRef = useRef<NodeJS.Timeout>()
+    const debounceRef = useRef<NodeJS.Timeout>(null)
 
 
     // Fetch suggestions
@@ -146,12 +145,6 @@ export function SearchBar() {
         inputRef.current?.focus()
     }
 
-    // Get all items for navigation
-    const getAllItems = () => {
-        if (!suggestions) return []
-        return [...suggestions.teams, ...suggestions.players]
-    }
-
     return (
         <div ref={searchRef} className="relative mx-4 flex-1 max-w-md">
             <div className="relative">
@@ -244,14 +237,14 @@ export function SearchBar() {
                                         onClick={handleSubmit}
                                         className="w-full px-3 py-3 text-sm text-center text-primary hover:bg-muted/50 transition-colors"
                                     >
-                                        View all results for "{query}"
+                                        {`View all results for "${query}"`}
                                     </button>
                                 </div>
                             )}
                         </div>
                     ) : query.length >= 2 ? (
                         <div className="p-4 text-center">
-                            <p className="text-sm text-muted-foreground">No results found for "{query}"</p>
+                            <p className="text-sm text-muted-foreground">{`No results found for "${query}"`}</p>
                         </div>
                     ) : null}
                 </div>

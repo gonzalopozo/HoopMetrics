@@ -61,6 +61,7 @@ async function getRandomPlayer(): Promise<PlayerStats> {
             )
             return response.data
         } catch (error) {
+            console.error(`Attempt ${attempts + 1} failed:`, error)            
             attempts++
             if (attempts === maxAttempts) {
                 // Fallback to a known working player ID if all attempts fail
