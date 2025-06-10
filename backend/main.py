@@ -126,15 +126,9 @@ async def health_check():
     return JSONResponse(content={"status": "ok", "message": "API is running"})
 
 @app.get("/health/db")
-async def db_health_check():
+async def db_health_check(session: AsyncSession = Depends(get_db)):
     """Test database connection using a proper session lifecycle."""
-    session = None
     try:
-        # Import the db module
-        from .database import SessionLocal
-        
-        # Create a session specifically for this check
-        session = SessionLocal()
         result = await session.execute(select(1))
         value = result.scalar_one()
         return JSONResponse(content={"status": "ok", "database": "connected", "test_value": value})
