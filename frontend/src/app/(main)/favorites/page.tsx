@@ -236,6 +236,7 @@ function PlayerFavoriteCard({ player, isFavorite, onToggleFavorite }: PlayerFavo
                         isFavorite={isFavorite}
                         onToggle={onToggleFavorite}
                         size="sm"
+                        forceLightBorder
                     />
                 </div>
 
@@ -302,6 +303,7 @@ function TeamFavoriteCard({ team, isFavorite, onToggleFavorite }: TeamFavoriteCa
                         isFavorite={isFavorite}
                         onToggle={onToggleFavorite}
                         size="sm"
+                        forceLightBorder
                     />
                 </div>
 

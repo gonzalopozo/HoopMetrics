@@ -294,6 +294,7 @@ function PlayerMiniCard({ player, isFavorite, onToggleFavorite }: PlayerMiniCard
                         onToggle={onToggleFavorite}
                         size="sm"
                         className="p-0.5"
+                        forceLightBorder
                     />
                 </div>
 
@@ -348,6 +349,7 @@ function TeamMiniCard({ team, isFavorite, onToggleFavorite }: TeamMiniCardProps)
                         onToggle={onToggleFavorite}
                         size="sm"
                         className="p-0.5"
+                        forceLightBorder
                     />
                 </div>
 

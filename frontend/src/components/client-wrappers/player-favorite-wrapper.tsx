@@ -37,6 +37,7 @@ export function PlayerFavoriteWrapper({ playerId, className, size = 'lg' }: Play
                 size={size}
                 isLoading={!initialLoadComplete}
                 key={`${playerId}-${updateTrigger}`} // ✅ Force re-render con key
+                forceLightBorder
             />
         </div>
     )
