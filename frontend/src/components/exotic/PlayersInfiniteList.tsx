@@ -91,8 +91,7 @@ function InfiniteListCore() {
                         position={player.position}
                         team={{
                             name: player.team.full_name,
-                            // Si tu API no devuelve logo_url, usa el placeholder:
-                            logo: player.team['logo_url'] as string | undefined ?? '/placeholder.svg'
+                            logo: '/placeholder.svg' // Ya no necesitamos esto, se maneja en PlayerCard
                         }}
                         image={player.url_pic ?? '/placeholder.svg'}
                         stats={{

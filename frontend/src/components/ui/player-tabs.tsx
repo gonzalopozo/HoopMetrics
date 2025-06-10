@@ -1226,7 +1226,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             />
                                         </div>
                                     </div>
-                                    <div className="w-16 h-16 rounded-full border-4 border-primary flex items-center justify-center">
+                                    <div className="flex items-center justify-center">
                                         <span className="text-lg font-bold">{shootingPercentages?.fg}%</span>
                                     </div>
                                 </div>
@@ -1256,7 +1256,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             />
                                         </div>
                                     </div>
-                                    <div className="w-16 h-16 rounded-full border-4 border-primary flex items-center justify-center">
+                                    <div className="flex items-center justify-center">
                                         <span className="text-lg font-bold">{shootingPercentages?.threePoint}%</span>
                                     </div>
                                 </div>
@@ -1285,7 +1285,7 @@ export default function PlayerTabs({ player, careerHighs, shootingPercentages }:
                                             />
                                         </div>
                                     </div>
-                                    <div className="w-16 h-16 rounded-full border-4 border-primary flex items-center justify-center">
+                                    <div className="flex items-center justify-center">
                                         <span className="text-lg font-bold">{shootingPercentages?.ft}%</span>
                                     </div>
                                 </div>

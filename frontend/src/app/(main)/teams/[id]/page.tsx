@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 import {
     ArrowLeft,
@@ -78,15 +77,6 @@ export default async function TeamDetailPage({ params, searchParams }: TeamPageP
                     className="absolute top-4 right-4 z-10 bg-black/50 rounded-full"
                     size="lg"
                 />
-
-                <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-10 pointer-events-none">
-                    <Image
-                        src={team.logo || "/placeholder.svg"}
-                        alt={team.full_name}
-                        fill
-                        className="object-contain object-right"
-                    />
-                </div>
 
                 <div className="flex flex-col md:flex-row items-center p-6 md:p-8">
                     {/* Team Logo */}

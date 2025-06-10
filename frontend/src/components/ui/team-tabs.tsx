@@ -909,51 +909,7 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                         </CardContent>
                     </Card>
 
-                    {/* Team Achievements */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Trophy className="h-5 w-5 text-primary" />
-                                Team Achievements
-                            </CardTitle>
-                            <CardDescription>Championships and accolades</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                <div className="rounded-lg border border-border p-4">
-                                    <h3 className="text-lg font-bold mb-2">Championships</h3>
-                                    {team.championships && team.championships.length > 0 ? (
-                                        <div className="flex flex-wrap gap-2">
-                                            {team.championships.map((year: number) => (
-                                                <div
-                                                    key={year}
-                                                    className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary"
-                                                >
-                                                    {year}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p className="text-muted-foreground">No championships yet</p>
-                                    )}
-                                </div>
-
-                                <div className="rounded-lg border border-border p-4">
-                                    <h3 className="text-lg font-bold mb-2">Team History</h3>
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between">
-                                            <span className="text-muted-foreground">Founded</span>
-                                            <span className="font-medium">{team.founded}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-muted-foreground">Conference Rank</span>
-                                            <span className="font-medium">#{team.stats.conference_rank}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    
                 </div>
 
                 {/* Top Players */}

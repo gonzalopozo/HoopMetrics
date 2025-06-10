@@ -7,10 +7,35 @@ import { cn } from "@/lib/utils"
 import type { Player } from "@/types"
 import Link from "next/link"
 import { PlayerFavoriteWrapper } from "@/components/client-wrappers/player-favorite-wrapper"
+import { getNBALogo } from "@/lib/utils"
 
 export function PlayerCard({ id, name, position, team, image, stats }: Player) {
     const [isHovered, setIsHovered] = useState(false)
     const playerId = parseInt(id)
+
+    // Función para renderizar el logo del equipo
+    const renderTeamLogo = () => {
+        const logoComponent = getNBALogo(team.name, { 
+            width: 24, 
+            height: 24,
+            className: "h-full w-full object-contain"
+        })
+        
+        if (logoComponent) {
+            return logoComponent
+        }
+        
+        // Fallback a imagen si no hay componente de logo
+        return (
+            <Image
+                src={team.logo || "/placeholder.svg"}
+                alt={team.name}
+                width={24}
+                height={24}
+                className="h-full w-full object-contain"
+            />
+        )
+    }
 
     return (
         <div
@@ -108,13 +133,7 @@ export function PlayerCard({ id, name, position, team, image, stats }: Player) {
                 <div className="flex items-center justify-between">
                     <h3 className="font-medium line-clamp-1 group-hover:text-primary transition-colors duration-200">{name}</h3>
                     <div className="h-6 w-6 overflow-hidden rounded-full border border-border/50 transition-transform duration-300 group-hover:scale-110">
-                        <Image
-                            src={team.logo || "/placeholder.svg"}
-                            alt={team.name}
-                            width={24}
-                            height={24}
-                            className="h-full w-full object-contain"
-                        />
+                        {renderTeamLogo()}
                     </div>
                 </div>
                 <div className="mt-1 text-sm text-muted-foreground">
