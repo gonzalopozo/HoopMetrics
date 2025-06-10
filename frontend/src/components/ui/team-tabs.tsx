@@ -919,9 +919,9 @@ export default function TeamTabs({ team }: { team: TeamDetails }) {
                             <CardDescription>{`Team's leading players`}</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {/* Cambia la grilla a 2x2 */}
-                            <div className="grid grid-cols-2 gap-4">
-                                {team.players.slice(0, 4).map((player: Player) => (
+                            {/* Cambia la grilla a 2x3 para mostrar 6 jugadores */}
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                {team.players.slice(0, 6).map((player: Player) => (
                                     <Link
                                         href={`/players/${player.id}`}
                                         key={player.id}
