@@ -40,7 +40,7 @@ export function useAdminData(): UseAdminDataReturn {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const getAuthHeaders = () => {
+    const getAuthHeaders = useCallback(() => {
         const token = Cookies.get('token');
         if (!token) {
             throw new Error('No authentication token found');
@@ -49,9 +49,9 @@ export function useAdminData(): UseAdminDataReturn {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
         };
-    };
+    }, []);
 
-    const handleApiCall = async <T>(
+    const handleApiCall = useCallback(async <T>(
         url: string,
         setter: (data: T) => void,
         errorMessage: string
@@ -87,7 +87,7 @@ export function useAdminData(): UseAdminDataReturn {
             setError(err instanceof Error ? err.message : errorMessage);
             throw err;
         }
-    };
+    }, [getAuthHeaders]);
 
     const fetchDashboardData = useCallback(async () => {
         await handleApiCall<AdminDashboardData>(
@@ -95,7 +95,7 @@ export function useAdminData(): UseAdminDataReturn {
             setDashboardData,
             'Failed to fetch dashboard data'
         );
-    }, []);
+    }, [handleApiCall]);
 
     const fetchSystemHealth = useCallback(async () => {
         await handleApiCall<SystemHealthMetrics>(
@@ -103,7 +103,7 @@ export function useAdminData(): UseAdminDataReturn {
             setSystemHealth,
             'Failed to fetch system health data'
         );
-    }, []);
+    }, [handleApiCall]);
 
     const fetchDatabaseMetrics = useCallback(async () => {
         await handleApiCall<DatabaseMetrics>(
@@ -111,7 +111,7 @@ export function useAdminData(): UseAdminDataReturn {
             setDatabaseMetrics,
             'Failed to fetch database metrics'
         );
-    }, []);
+    }, [handleApiCall]);
 
     const fetchUserMetrics = useCallback(async () => {
         await handleApiCall<UserMetrics>(
@@ -119,7 +119,7 @@ export function useAdminData(): UseAdminDataReturn {
             setUserMetrics,
             'Failed to fetch user metrics'
         );
-    }, []);
+    }, [handleApiCall]);
 
     const fetchSubscriptionMetrics = useCallback(async () => {
         await handleApiCall<SubscriptionMetrics>(
@@ -127,7 +127,7 @@ export function useAdminData(): UseAdminDataReturn {
             setSubscriptionMetrics,
             'Failed to fetch subscription metrics'
         );
-    }, []);
+    }, [handleApiCall]);
 
     const fetchAPIMetrics = useCallback(async () => {
         console.log('🔄 Starting fetchAPIMetrics...');
@@ -144,7 +144,7 @@ export function useAdminData(): UseAdminDataReturn {
             },
             'Failed to fetch API metrics'
         );
-    }, []);
+    }, [handleApiCall]);
 
     const fetchUsers = useCallback(async () => {
         await handleApiCall<AdminUser[]>(
@@ -152,7 +152,7 @@ export function useAdminData(): UseAdminDataReturn {
             setUsers,
             'Failed to fetch users'
         );
-    }, []);
+    }, [handleApiCall]);
 
     const fetchLogs = useCallback(async () => {
         await handleApiCall<AdminLog[]>(
@@ -160,9 +160,9 @@ export function useAdminData(): UseAdminDataReturn {
             setLogs,
             'Failed to fetch logs'
         );
-    }, []);
+    }, [handleApiCall]);
 
-    const updateUserRole = async (userId: number, newRole: string): Promise<boolean> => {
+    const updateUserRole = useCallback(async (userId: number, newRole: string): Promise<boolean> => {
         try {
             console.log(`🔄 Updating user ${userId} role to ${newRole}`);
 
@@ -188,9 +188,9 @@ export function useAdminData(): UseAdminDataReturn {
             setError(err instanceof Error ? err.message : 'Failed to update user role');
             return false;
         }
-    };
+    }, [getAuthHeaders, fetchUsers]);
 
-    const deleteUser = async (userId: number): Promise<boolean> => {
+    const deleteUser = useCallback(async (userId: number): Promise<boolean> => {
         try {
             console.log(`🗑️ Deleting user ${userId}`);
 
@@ -215,9 +215,9 @@ export function useAdminData(): UseAdminDataReturn {
             setError(err instanceof Error ? err.message : 'Failed to delete user');
             return false;
         }
-    };
+    }, [getAuthHeaders, fetchUsers]);
 
-    const refreshAll = async () => {
+    const refreshAll = useCallback(async () => {
         console.log('🔄 Starting refreshAll...');
         setLoading(true);
         setError(null);
@@ -251,13 +251,13 @@ export function useAdminData(): UseAdminDataReturn {
         } finally {
             setLoading(false);
         }
-    };
+    }, [getAuthHeaders, fetchDashboardData, fetchSystemHealth, fetchDatabaseMetrics, fetchUsers, fetchLogs, fetchUserMetrics, fetchSubscriptionMetrics, fetchAPIMetrics]);
 
     // Initial data load
     useEffect(() => {
         console.log('🚀 Initial data load starting...');
         refreshAll();
-    }, []);
+    }, [refreshAll]);
 
     // Auto-refresh every 5 minutes for dashboard data
     useEffect(() => {

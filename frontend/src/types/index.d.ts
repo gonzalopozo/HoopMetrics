@@ -80,38 +80,4 @@ export interface Team {
     }
 }
 
-interface TeamPlayer {
-    id: number
-    name: string
-    height: number
-    weight: number
-    position: string
-    number: number
-    url_pic: string
-    stats: {
-        ppg: number
-        rpg: number
-        apg: number
-        spg: number
-        bpg: number
-        mpg: number
-    }
-}
-
-interface TeamGame {
-    id: number
-    date: string
-    season: string | null
-    home_team_id: number
-    home_team_logo?: React.ReactNode
-    away_team_id: number
-    away_team_logo?: React.ReactNode
-    rival_team_abbreviation: string
-    home_team_name: string
-    away_team_name: string
-    home_score: number
-    away_score: number
-    status: "completed" | "scheduled"
-}
-
 export { type TeamDetails } from './search'
