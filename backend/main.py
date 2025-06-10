@@ -7,13 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlmodel import select
 
-# Configurar logging global
+# Configurar logging global - solo a stdout para compatibilidad con despliegues
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler('app.log')  # También guardar en archivo
+        logging.StreamHandler(sys.stdout)
     ]
 )
 
