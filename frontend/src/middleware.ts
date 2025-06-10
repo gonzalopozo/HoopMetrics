@@ -48,6 +48,5 @@ export const config = {
         "/admin/:path*",
         "/profile/:path*", // ✅ Añadir rutas protegidas específicas
         "/favorites/:path*",
-        "/((?!_next/static|_next/image|favicon.ico|api/).*)"
     ] 
 };
