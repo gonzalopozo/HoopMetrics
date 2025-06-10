@@ -156,14 +156,15 @@ export default async function PlayerDetailPage({
 
                 <div className="flex flex-col md:flex-row items-center p-6 md:p-8">
                     {/* Player Image */}
-                    <div className="relative h-64 w-48 md:h-80 md:w-60 mb-6 md:mb-0 md:mr-8">
-                        <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent rounded-lg" />
+                    <div className="relative h-64 w-48 md:h-80 md:w-60 mb-6 md:mb-0 md:mr-8 overflow-hidden rounded-lg">
+                        <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent rounded-lg z-10" />
                         <Image
                             src={player.url_pic || "/placeholder.svg"}
                             alt={player.name}
                             fill
-                            className="object-contain z-10"
+                            className="object-cover" // ✅ Cambiar de object-contain a object-cover
                             priority
+                            sizes="(max-width: 768px) 192px, 240px" // ✅ Agregar sizes para mejor optimización
                         />
                     </div>
 
