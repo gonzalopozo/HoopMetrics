@@ -458,7 +458,7 @@ async def get_team_favorite_status(
 ):
     """Obtiene el estado de favorito de un equipo para el usuario actual"""
     try:
-        from ..crud_favorites import is_team_favorite
+        from crud_favorites import is_team_favorite
         is_favorite = await is_team_favorite(db, current_user.id, id)
         return {"is_favorite": is_favorite}
     except Exception as e:

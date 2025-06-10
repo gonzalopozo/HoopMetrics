@@ -24,12 +24,12 @@ if not logger.handlers:
     logger.addHandler(console_handler)
 
 from sqlmodel import select
-from ..models import (
+from models import (
     User, UserRole, SystemHealthMetrics, DatabaseMetrics, 
     UserMetrics, SubscriptionMetrics, APIMetrics, AdminDashboardData
 )
-from ..database import engine
-from ..config import get_settings
+from database import engine
+from config import get_settings
 
 settings = get_settings()
 

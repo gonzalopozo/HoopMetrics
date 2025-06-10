@@ -176,7 +176,7 @@ async def get_player_favorite_status(
 ):
     """Obtiene el estado de favorito de un jugador para el usuario actual"""
     try:
-        from ..crud_favorites import is_player_favorite
+        from crud_favorites import is_player_favorite
         is_favorite = await is_player_favorite(db, current_user.id, id)
         return {"is_favorite": is_favorite}
     except Exception as e:
