@@ -35,7 +35,8 @@ export function TeamFavoriteWrapper({ teamId, className, size = 'lg' }: TeamFavo
                 onToggle={handleFavoriteToggle}
                 size={size}
                 isLoading={!initialLoadComplete}
-                key={`${teamId}-${updateTrigger}`} // ✅ Force re-render con key
+                key={`${teamId}-${updateTrigger}`}
+                forceLightBorder // <--- SOLO AQUÍ
             />
         </div>
     )

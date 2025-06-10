@@ -3,17 +3,27 @@
 import { Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
+import { useTheme } from "next-themes"
 
 interface FavoriteStarProps {
     isFavorite: boolean
     onToggle: () => Promise<boolean>
     className?: string
     size?: 'sm' | 'md' | 'lg'
-    isLoading?: boolean // ✅ Nuevo prop para estado de carga
+    isLoading?: boolean
+    forceLightBorder?: boolean // <--- NUEVO
 }
 
-export function FavoriteStar({ isFavorite, onToggle, className, size = 'md', isLoading: externalLoading = false }: FavoriteStarProps) {
+export function FavoriteStar({
+    isFavorite,
+    onToggle,
+    className,
+    size = 'md',
+    isLoading: externalLoading = false,
+    forceLightBorder = false // <--- NUEVO
+}: FavoriteStarProps) {
     const [isToggling, setIsToggling] = useState(false)
+    const { resolvedTheme } = useTheme() // <--- NUEVO
 
     const handleClick = async (e: React.MouseEvent) => {
         e.preventDefault()
@@ -51,7 +61,7 @@ export function FavoriteStar({ isFavorite, onToggle, className, size = 'md', isL
             <Star
                 className={cn(
                     sizeClasses[size],
-                    "transition-all duration-150", // ✅ Aumentar a 150ms para que sea más visible
+                    "transition-all duration-150",
                     externalLoading 
                         ? "text-gray-400 animate-pulse"
                         : isFavorite 
@@ -59,6 +69,16 @@ export function FavoriteStar({ isFavorite, onToggle, className, size = 'md', isL
                         : "text-white hover:text-yellow-400",
                     isToggling && "scale-95"
                 )}
+                stroke={
+                    forceLightBorder && resolvedTheme === "light"
+                        ? "black"
+                        : undefined
+                }
+                strokeWidth={
+                    forceLightBorder && resolvedTheme === "light"
+                        ? 1.5
+                        : undefined
+                }
             />
         </button>
     )
