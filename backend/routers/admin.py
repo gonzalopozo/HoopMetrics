@@ -11,7 +11,7 @@ from models import (
     DatabaseMetrics, UserMetrics, SubscriptionMetrics, APIMetrics,
     AdminUserResponse
 )
-from ..services.admin_metrics import admin_metrics_service
+from services.admin_metrics import admin_metrics_service
 router = APIRouter(
     prefix="/admin",
     tags=["admin"],
