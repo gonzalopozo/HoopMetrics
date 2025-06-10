@@ -1,7 +1,7 @@
 from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from .models import User, UserRole
-from .security import hash_password, verify_password
+from models import User, UserRole
+from security import hash_password, verify_password
 
 async def get_user_by_email(db: AsyncSession, email: str):
     result = await db.execute(select(User).where(User.email == email))

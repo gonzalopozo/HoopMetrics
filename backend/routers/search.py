@@ -3,8 +3,8 @@ from sqlmodel import select, func, or_
 from typing import List, Optional
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from ..deps import get_db
-from ..models import (
+from deps import get_db
+from models import (
     Team, Player, SearchTeamResult, SearchPlayerResult, 
     SearchSuggestions, SearchResults
 )

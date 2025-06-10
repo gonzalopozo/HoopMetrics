@@ -2,13 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import desc, func, select
 from typing import List
 from sqlmodel.ext.asyncio.session import AsyncSession
-from ..models import Match, PointsProgression, PointsTypeDistribution, PlayerBarChartData, PlayerBarChartData, MinutesProgression, ParticipationRate, PositionAverage, LebronImpactScore, PIPMImpact, RaptorWAR,  MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, PlayerSkillProfile, AdvancedImpactMatrix, PIPMPositionAverage, PaceImpactAnalysis, FatiguePerformanceCurve, User
+from models import Match, PointsProgression, PointsTypeDistribution, PlayerBarChartData, PlayerBarChartData, MinutesProgression, ParticipationRate, PositionAverage, LebronImpactScore, PIPMImpact, RaptorWAR,  MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, PlayerSkillProfile, AdvancedImpactMatrix, PIPMPositionAverage, PaceImpactAnalysis, FatiguePerformanceCurve, User
 from typing import List
 from sqlalchemy import func, cast, Integer, Float
 import statistics
 from collections import Counter
 
-from ..deps import get_current_user, get_db
+from deps import get_current_user, get_db
 
 router = APIRouter(
     prefix="/players",

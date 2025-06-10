@@ -33131,3 +33131,12 @@ birth_date
 2025-06-10 09:48:01,766 - backend.main - INFO - 📤 Response: 200 - 912.30ms - /search/results
 2025-06-10 09:48:02,131 - watchfiles.main - INFO - 1 change detected
 2025-06-10 09:48:02,532 - watchfiles.main - INFO - 1 change detected
+2025-06-10 10:11:05,393 - uvicorn.error - INFO - Started server process [81410]
+2025-06-10 10:11:05,394 - uvicorn.error - INFO - Waiting for application startup.
+2025-06-10 10:11:05,394 - backend.main - INFO - 🚀 HoopMetrics API starting up...
+2025-06-10 10:11:05,394 - uvicorn.error - INFO - Application startup complete.
+2025-06-10 10:11:30,161 - uvicorn.error - INFO - Shutting down
+2025-06-10 10:11:30,262 - uvicorn.error - INFO - Waiting for application shutdown.
+2025-06-10 10:11:30,263 - backend.main - INFO - 🛑 HoopMetrics API shutting down...
+2025-06-10 10:11:30,263 - uvicorn.error - INFO - Application shutdown complete.
+2025-06-10 10:11:30,263 - uvicorn.error - INFO - Finished server process [81410]

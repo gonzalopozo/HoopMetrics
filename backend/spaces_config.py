@@ -4,7 +4,7 @@ from typing import Optional
 import uuid
 from fastapi import UploadFile
 import logging
-from .config import get_settings
+from config import get_settings
 
 env = get_settings()
 

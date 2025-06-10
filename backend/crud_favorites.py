@@ -1,7 +1,7 @@
 from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Dict, Tuple
-from .models import (
+from models import (
     User, Player, Team, UserFavoritePlayer, UserFavoriteTeam, 
     UserRole, FavoritePlayerResponse, FavoriteTeamResponse,
     TeamRead, StatRead, MatchStatistic

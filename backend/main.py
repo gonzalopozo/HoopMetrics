@@ -19,11 +19,11 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-from .models import UserRole
-from .deps import get_db, require_role
-from .config import get_settings
-from .routers import home, debug, players, auth, teams, favorites, profile, admin, search
-from .services.admin_metrics import admin_metrics_service
+from models import UserRole
+from deps import get_db, require_role
+from config import get_settings
+from routers import home, debug, players, auth, teams, favorites, profile, admin, search
+from services.admin_metrics import admin_metrics_service
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 app = FastAPI(title="HoopMetrics API", version="1.0.0")
