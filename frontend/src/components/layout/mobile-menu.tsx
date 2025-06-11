@@ -14,7 +14,7 @@ interface MobileMenuProps {
 
 export function MobileMenu({ isLoading, isLoggedIn, user, onLogout }: MobileMenuProps) {
     return (
-        <div className="fixed inset-0 top-[57px] z-[9999] bg-background md:hidden">
+        <div className="fixed inset-0 top-[57px] z-[99999] bg-background md:hidden">
             <nav className="flex flex-col p-4">
                 {/* Mobile Search Bar - Wider */}
                 <div className="mb-4">

@@ -288,7 +288,7 @@ function PlayerMiniCard({ player, isFavorite, onToggleFavorite }: PlayerMiniCard
         <Link href={`/players/${player.id}`}>
             <div className="group relative overflow-hidden rounded border border-border bg-background p-3 transition-all duration-200 hover:border-primary/50 hover:shadow-sm">
                 {/* Favorite Star */}
-                <div className="absolute top-2 right-2 z-10">
+                <div className="absolute top-2 right-2 z-20">
                     <FavoriteStar
                         isFavorite={isFavorite}
                         onToggle={onToggleFavorite}
@@ -343,7 +343,7 @@ function TeamMiniCard({ team, isFavorite, onToggleFavorite }: TeamMiniCardProps)
         <Link href={`/teams/${team.id}`}>
             <div className="group relative overflow-hidden rounded border border-border bg-background p-3 transition-all duration-200 hover:border-primary/50 hover:shadow-sm">
                 {/* Favorite Star */}
-                <div className="absolute top-2 right-2 z-10">
+                <div className="absolute top-2 right-2 z-20">
                     <FavoriteStar
                         isFavorite={isFavorite}
                         onToggle={onToggleFavorite}

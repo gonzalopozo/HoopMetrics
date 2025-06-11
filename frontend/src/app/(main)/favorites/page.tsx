@@ -231,7 +231,7 @@ function PlayerFavoriteCard({ player, isFavorite, onToggleFavorite }: PlayerFavo
         <Link href={`/players/${player.id}`}>
             <div className="group relative overflow-hidden rounded-lg border border-border bg-card p-4 transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
                 {/* Favorite Star */}
-                <div className="absolute top-2 right-2 z-10">
+                <div className="absolute top-2 right-2 z-20">
                     <FavoriteStar
                         isFavorite={isFavorite}
                         onToggle={onToggleFavorite}
@@ -298,7 +298,7 @@ function TeamFavoriteCard({ team, isFavorite, onToggleFavorite }: TeamFavoriteCa
         <Link href={`/teams/${team.id}`}>
             <div className="group relative overflow-hidden rounded-lg border border-border bg-card p-4 transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10">
                 {/* Favorite Star */}
-                <div className="absolute top-2 right-2 z-10">
+                <div className="absolute top-2 right-2 z-20">
                     <FavoriteStar
                         isFavorite={isFavorite}
                         onToggle={onToggleFavorite}
