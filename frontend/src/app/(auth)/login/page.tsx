@@ -6,13 +6,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { BarChart2, Eye, EyeOff, Lock, Mail, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AuthContext } from "@/context/AuthContext";
+import { Logo } from "@/components/ui/logo";
 
 const schema = z.object({
     email: z.string().email({ message: "Please enter a valid email" }),
-    password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+    password: z.string()
+        .min(6, { message: "Password must be at least 6 characters" })
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, { 
+            message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one symbol" 
+        }),
 });
 
 type LoginForm = z.infer<typeof schema>;
@@ -55,8 +60,8 @@ export default function LoginPage() {
             <div className="w-full max-w-md">
                 {/* Logo and Header */}
                 <div className="mb-8 text-center">
-                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                        <BarChart2 className="h-8 w-8" />
+                    <div className="mx-auto mb-6 flex justify-center">
+                        <Logo />
                     </div>
                     <h1 className="text-3xl font-bold tracking-tight">Welcome to HoopMetrics</h1>
                     <p className="mt-2 text-muted-foreground">Sign in to access your dashboard</p>
@@ -145,9 +150,6 @@ export default function LoginPage() {
                                         Remember me
                                     </label>
                                 </div>
-                                <Link href="/forgot-password" className="text-sm font-medium text-primary hover:underline">
-                                    Forgot your password?
-                                </Link>
                             </div>
 
                             <button

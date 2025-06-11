@@ -6,14 +6,19 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { BarChart2, Eye, EyeOff, Lock, Mail, User, ArrowRight } from "lucide-react"
+import { Eye, EyeOff, Lock, Mail, User, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AuthContext } from "@/context/AuthContext"
+import { Logo } from "@/components/ui/logo"
 
 const schema = z.object({
     username: z.string().min(3, { message: "Username must be at least 3 characters" }),
     email: z.string().email({ message: "Please enter a valid email address" }),
-    password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+    password: z.string()
+        .min(6, { message: "Password must be at least 6 characters" })
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, { 
+            message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one symbol" 
+        }),
     role: z.enum(["free", "premium", "enterprise", "admin"], {
         message: "Please select a valid subscription plan",
     }),
@@ -25,6 +30,7 @@ export default function SignupPage() {
     const {
         register,
         handleSubmit,
+        watch,
         formState: { errors, isSubmitting },
     } = useForm<FormData>({
         resolver: zodResolver(schema),
@@ -35,20 +41,19 @@ export default function SignupPage() {
 
     const [showPassword, setShowPassword] = useState(false)
     const [authError, setAuthError] = useState<string | null>(null)
-
-    // In a real implementation, you would use your actual auth context
-    // For now, we'll mock it for the example
-    // const auth = {
-    //     signup: async (data: FormData) => {
-    //         // Simulate API call
-    //         await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    //         return true
-    //     },
-    // }
+    
+    // Watch password field to show real-time validation
+    const password = watch("password", "")
 
     const auth = useContext(AuthContext)!;
     const router = useRouter()
+
+    // Password validation helpers
+    const hasMinLength = password.length >= 6
+    const hasUppercase = /[A-Z]/.test(password)
+    const hasLowercase = /[a-z]/.test(password)
+    const hasNumber = /\d/.test(password)
+    const hasSymbol = /[@$!%*?&]/.test(password)
 
     const onSubmit = async (data: FormData) => {
         try {
@@ -73,8 +78,8 @@ export default function SignupPage() {
             <div className="w-full max-w-md">
                 {/* Logo and Header */}
                 <div className="mb-8 text-center">
-                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                        <BarChart2 className="h-8 w-8" />
+                    <div className="mx-auto mb-6 flex justify-center">
+                        <Logo />
                     </div>
                     <h1 className="text-3xl font-bold tracking-tight">Join HoopMetrics</h1>
                     <p className="mt-2 text-muted-foreground">Create your account to get started</p>
@@ -176,6 +181,33 @@ export default function SignupPage() {
                                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                     </button>
                                 </div>
+                                
+                                {/* Password Requirements */}
+                                {password && (
+                                    <div className="space-y-1 text-xs">
+                                        <div className={cn("flex items-center gap-1", hasMinLength ? "text-green-600" : "text-muted-foreground")}>
+                                            <div className={cn("h-1 w-1 rounded-full", hasMinLength ? "bg-green-600" : "bg-muted-foreground")} />
+                                            At least 6 characters
+                                        </div>
+                                        <div className={cn("flex items-center gap-1", hasUppercase ? "text-green-600" : "text-muted-foreground")}>
+                                            <div className={cn("h-1 w-1 rounded-full", hasUppercase ? "bg-green-600" : "bg-muted-foreground")} />
+                                            One uppercase letter
+                                        </div>
+                                        <div className={cn("flex items-center gap-1", hasLowercase ? "text-green-600" : "text-muted-foreground")}>
+                                            <div className={cn("h-1 w-1 rounded-full", hasLowercase ? "bg-green-600" : "bg-muted-foreground")} />
+                                            One lowercase letter
+                                        </div>
+                                        <div className={cn("flex items-center gap-1", hasNumber ? "text-green-600" : "text-muted-foreground")}>
+                                            <div className={cn("h-1 w-1 rounded-full", hasNumber ? "bg-green-600" : "bg-muted-foreground")} />
+                                            One number
+                                        </div>
+                                        <div className={cn("flex items-center gap-1", hasSymbol ? "text-green-600" : "text-muted-foreground")}>
+                                            <div className={cn("h-1 w-1 rounded-full", hasSymbol ? "bg-green-600" : "bg-muted-foreground")} />
+                                            One symbol (@$!%*?&)
+                                        </div>
+                                    </div>
+                                )}
+                                
                                 {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
                             </div>
 

@@ -14,7 +14,7 @@ interface MobileMenuProps {
 
 export function MobileMenu({ isLoading, isLoggedIn, user, onLogout }: MobileMenuProps) {
     return (
-        <div className="fixed inset-0 top-[57px] z-20 bg-background md:hidden">
+        <div className="fixed inset-0 top-[57px] z-[9999] bg-background md:hidden">
             <nav className="flex flex-col p-4">
                 {/* Mobile Search Bar - Wider */}
                 <div className="mb-4">
@@ -28,15 +28,15 @@ export function MobileMenu({ isLoading, isLoggedIn, user, onLogout }: MobileMenu
                     {/* Mobile Navigation Links */}
                     <div className="border-t border-border pt-4">
                         <nav className="space-y-2">
-                            <Link href="#" className="flex items-center gap-2 rounded-lg px-3 py-2 text-foreground hover:bg-accent">
+                            <Link href="/" className="flex items-center gap-2 rounded-lg px-3 py-2 text-foreground hover:bg-accent">
                                 <TrendingUp className="h-4 w-4" />
                                 <span>Dashboard</span>
                             </Link>
-                            <Link href="#" className="flex items-center gap-2 rounded-lg px-3 py-2 text-foreground hover:bg-accent">
+                            <Link href="/players" className="flex items-center gap-2 rounded-lg px-3 py-2 text-foreground hover:bg-accent">
                                 <Users className="h-4 w-4" />
                                 <span>Players</span>
                             </Link>
-                            <Link href="#" className="flex items-center gap-2 rounded-lg px-3 py-2 text-foreground hover:bg-accent">
+                            <Link href="/teams" className="flex items-center gap-2 rounded-lg px-3 py-2 text-foreground hover:bg-accent">
                                 <Table className="h-4 w-4" />
                                 <span>Teams</span>
                             </Link>
@@ -48,14 +48,18 @@ export function MobileMenu({ isLoading, isLoggedIn, user, onLogout }: MobileMenu
                                 <Award className="h-4 w-4" />
                                 <span>Stats Leaders</span>
                             </Link>
-                            <Link href="#" className="flex items-center gap-2 rounded-lg px-3 py-2 text-foreground hover:bg-accent">
-                                <Star className="h-4 w-4" />
-                                <span>Favorites</span>
-                            </Link>
-                            <Link href="#" className="flex items-center gap-2 rounded-lg px-3 py-2 text-foreground hover:bg-accent">
-                                <Bell className="h-4 w-4" />
-                                <span>Alerts</span>
-                            </Link>
+                            {isLoggedIn && (
+                                <>
+                                    <Link href="/favorites" className="flex items-center gap-2 rounded-lg px-3 py-2 text-foreground hover:bg-accent">
+                                        <Star className="h-4 w-4" />
+                                        <span>Favorites</span>
+                                    </Link>
+                                    <Link href="#" className="flex items-center gap-2 rounded-lg px-3 py-2 text-foreground hover:bg-accent">
+                                        <Bell className="h-4 w-4" />
+                                        <span>Alerts</span>
+                                    </Link>
+                                </>
+                            )}
                         </nav>
                     </div>
                 </div>
