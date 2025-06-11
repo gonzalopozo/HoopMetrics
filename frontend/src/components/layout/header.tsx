@@ -139,6 +139,12 @@ export function Header() {
     const handleLogout = () => {
         document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
         setIsLoggedIn(false)
+        
+        // ✅ Disparar evento de cambio de autenticación
+        if (typeof window !== "undefined") {
+            window.dispatchEvent(new CustomEvent('authStateChanged'));
+        }
+        
         router.push('/login')
     }
 

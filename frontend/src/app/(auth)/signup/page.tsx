@@ -54,7 +54,15 @@ export default function SignupPage() {
         try {
             setAuthError(null)
             await auth.signup(data)
-            router.push("/admin") // or '/'
+            
+            // ✅ Disparar evento después del signup exitoso
+            setTimeout(() => {
+                if (typeof window !== "undefined") {
+                    window.dispatchEvent(new CustomEvent('authStateChanged'));
+                }
+            }, 100);
+            
+            router.push("/") // Cambiar a "/" en lugar de "/admin"
         } catch (err: unknown) {
             setAuthError(err instanceof Error ? err.message : "Ocurrió un error desconocido");
         }

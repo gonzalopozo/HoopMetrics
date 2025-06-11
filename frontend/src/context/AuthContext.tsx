@@ -14,6 +14,13 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
+// Función para disparar evento de cambio de autenticación
+const dispatchAuthChange = () => {
+    if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent('authStateChanged'));
+    }
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
 
@@ -43,17 +50,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const res = await post<TokenResponse, { email: string; password: string }>("/auth/login", { email, password });
         saveToken(res.access_token);
         setToken(res.access_token);
+        
+        // ✅ Disparar evento de cambio de autenticación
+        dispatchAuthChange();
     }
 
     async function signup(data: { username: string; email: string; password: string; role: UserRole }) {
         const res = await post<TokenResponse, typeof data>("/auth/signup", data);
         saveToken(res.access_token);
         setToken(res.access_token);
+        
+        // ✅ Disparar evento de cambio de autenticación
+        dispatchAuthChange();
     }
 
     function logout() {
         removeToken();
         setToken(null);
+        
+        // ✅ Disparar evento de cambio de autenticación
+        dispatchAuthChange();
     }
 
     return (

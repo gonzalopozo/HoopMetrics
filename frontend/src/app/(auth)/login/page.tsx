@@ -36,7 +36,15 @@ export default function LoginPage() {
         try {
             setAuthError(null);
             await auth.login(data.email, data.password);
-            router.push("/admin"); // or '/'
+            
+            // ✅ Disparar evento después del login exitoso
+            setTimeout(() => {
+                if (typeof window !== "undefined") {
+                    window.dispatchEvent(new CustomEvent('authStateChanged'));
+                }
+            }, 100);
+            
+            router.push("/"); // Cambiar a "/" en lugar de "/admin"
         } catch (err: unknown) {
             setAuthError(err instanceof Error ? err.message : "An unknown error occurred");
         }

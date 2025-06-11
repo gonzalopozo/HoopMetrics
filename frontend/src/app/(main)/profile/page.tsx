@@ -296,12 +296,12 @@ export default function ProfilePage() {
                                 {getRoleDisplayName(profile.role)}
                             </span>
                         </div>
-                        <div className="flex items-center justify-between">
+                        {/* <div className="flex items-center justify-between">
                             <span className="text-sm font-medium">Member Since</span>
                             <span className="text-sm text-muted-foreground">
                                 {new Date(profile.registration_date).toLocaleDateString()}
                             </span>
-                        </div>
+                        </div> */}
                     </CardContent>
                 </Card>
             </div>
