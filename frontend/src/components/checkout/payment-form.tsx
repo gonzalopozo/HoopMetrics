@@ -28,6 +28,7 @@ export function PaymentForm({ amount, currency, planName, billing, plan, onSucce
     const { resolvedTheme } = useTheme() // ✅ Usar useTheme
     const [isLoading, setIsLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
+    console.log("PaymentForm rendered with:", { amount, currency, planName, billing, plan, email })
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault()
