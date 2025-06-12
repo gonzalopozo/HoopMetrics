@@ -70,12 +70,14 @@ export function FavoriteStar({
                     isToggling && "scale-95"
                 )}
                 stroke={
-                    forceLightBorder && resolvedTheme === "light"
-                        ? "black"
+                    forceLightBorder 
+                        ? resolvedTheme === "light" 
+                            ? "black" 
+                            : "white"
                         : undefined
                 }
                 strokeWidth={
-                    forceLightBorder && resolvedTheme === "light"
+                    forceLightBorder 
                         ? 1.5
                         : undefined
                 }

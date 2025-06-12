@@ -1,17 +1,15 @@
 "use client"
 
-import type React from "react"
-import axios from "axios"
-import Cookies from "js-cookie"
-
 import { useState } from "react"
 import { useStripe, useElements, PaymentElement, AddressElement } from "@stripe/react-stripe-js"
 import { motion } from "framer-motion"
-import { AlertTriangle, CreditCard, Lock, Shield } from "lucide-react"
+import { CreditCard, Lock, Shield, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { confirmSubscription } from "@/app/actions/stripe"
-// import { useRouter } from "next/navigation"
+import Cookies from "js-cookie"
+import axios from "axios"
+import { useTheme } from "next-themes" // ✅ Agregar import
 
 interface PaymentFormProps {
     amount: number
@@ -27,7 +25,7 @@ interface PaymentFormProps {
 export function PaymentForm({ amount, currency, planName, billing, plan, onSuccess, onError, email }: PaymentFormProps) {
     const stripe = useStripe()
     const elements = useElements()
-    // const router = useRouter()
+    const { resolvedTheme } = useTheme() // ✅ Usar useTheme
     const [isLoading, setIsLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
 
@@ -93,40 +91,58 @@ export function PaymentForm({ amount, currency, planName, billing, plan, onSucce
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    {/* Email bloqueado */}
+                    {/* Email bloqueado con mejor contraste */}
                     <div>
-                        <label className="block text-sm font-medium mb-1">Email</label>
+                        <label className="block text-sm font-medium mb-1 text-foreground">Email</label>
                         <input
                             type="email"
                             value={email}
                             disabled
-                            className="w-full rounded-md border px-3 py-2 bg-muted text-muted-foreground cursor-not-allowed"
+                            className={`w-full rounded-md border px-3 py-2 transition-colors ${
+                                resolvedTheme === "dark"
+                                    ? "bg-muted/50 text-muted-foreground border-border"
+                                    : "bg-muted text-muted-foreground border-border"
+                            } cursor-not-allowed`}
                         />
                     </div>
 
-                    {/* Order Summary */}
-                    <div className="bg-accent/50 rounded-lg p-4 space-y-2">
+                    {/* Order Summary mejorado */}
+                    <div
+                        className={`rounded-lg p-4 space-y-2 ${
+                            resolvedTheme === "dark"
+                                ? "bg-accent/30 border border-border/50"
+                                : "bg-accent/50 border border-border/30"
+                        }`}
+                    >
                         <div className="flex justify-between items-center">
-                            <span className="font-medium">{planName} Plan</span>
-                            <span className="font-bold">€{amount}</span>
+                            <span className="font-medium text-foreground">{planName} Plan</span>
+                            <span className="font-bold text-foreground">€{amount}</span>
                         </div>
                         <div className="flex justify-between items-center text-sm text-muted-foreground">
-                            <span>Billing: {billing}</span>
-                            <span>{currency.toUpperCase()}</span>
+                            <span>Billing: </span>
+                            <span className="capitalize">{billing}</span>
                         </div>
                         {billing === "annual" && (
-                            <div className="text-xs text-green-600 dark:text-green-400 font-medium">
+                            <div
+                                className={`text-xs font-medium ${
+                                    resolvedTheme === "dark" ? "text-green-400" : "text-green-600"
+                                }`}
+                            >
                                 🎉 Save 17% with annual billing!
                             </div>
                         )}
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Payment Element */}
+                        {/* Payment Element con mejores estilos */}
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Payment Method</label>
-                                <div className="border rounded-lg p-3">
+                                <label className="text-sm font-medium text-foreground">Payment Method</label>
+                                <div
+                                    className={`border rounded-lg p-3 transition-colors ${
+                                        resolvedTheme === "dark" ? "border-border bg-card/50" : "border-border bg-card"
+                                    }`}
+                                >
                                     <PaymentElement
                                         options={{
                                             layout: "tabs",
@@ -136,10 +152,14 @@ export function PaymentForm({ amount, currency, planName, billing, plan, onSucce
                                 </div>
                             </div>
 
-                            {/* Address Element */}
+                            {/* Address Element con mejores estilos */}
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Billing Address</label>
-                                <div className="border rounded-lg p-3">
+                                <label className="text-sm font-medium text-foreground">Billing Address</label>
+                                <div
+                                    className={`border rounded-lg p-3 transition-colors ${
+                                        resolvedTheme === "dark" ? "border-border bg-card/50" : "border-border bg-card"
+                                    }`}
+                                >
                                     <AddressElement
                                         options={{
                                             mode: "billing",
@@ -167,13 +187,27 @@ export function PaymentForm({ amount, currency, planName, billing, plan, onSucce
                             <span>Your payment information is encrypted and secure. Powered by Stripe.</span>
                         </div>
 
-                        <div className="flex flex-col gap-2 text-xs text-amber-800 bg-amber-100/80 rounded-lg p-3 border border-amber-200">
+                        {/* Test mode notice mejorado */}
+                        <div
+                            className={`flex flex-col gap-2 text-xs rounded-lg p-3 border ${
+                                resolvedTheme === "dark"
+                                    ? "text-amber-200 bg-amber-900/20 border-amber-600/30"
+                                    : "text-amber-800 bg-amber-100/80 border-amber-200"
+                            }`}
+                        >
                             <div className="flex items-center gap-2">
-                                <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" />
+                                <AlertTriangle
+                                    className={`h-4 w-4 shrink-0 ${
+                                        resolvedTheme === "dark" ? "text-amber-400" : "text-amber-500"
+                                    }`}
+                                />
                                 <span className="font-medium">This is a test payment gateway:</span>
                             </div>
                             <ul className="ml-6 space-y-1 list-disc">
-                                <li>Use the test card number: <span className="font-semibold">4242 4242 4242 4242</span></li>
+                                <li>
+                                    Use the test card number:{" "}
+                                    <span className="font-semibold">4242 4242 4242 4242</span>
+                                </li>
                                 <li>Use 3 digits for the CVC</li>
                                 <li>For American Express cards, use 4 digits for the CVC</li>
                                 <li>Use any valid future date for the expiration</li>

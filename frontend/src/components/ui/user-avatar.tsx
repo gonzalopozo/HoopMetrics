@@ -43,6 +43,9 @@ export function UserAvatar({
 
     const isDark = resolvedTheme === "dark"
     const borderColor = getRoleColor(role, isDark)
+    
+    // Determinar el color del texto según el modo
+    const textColor = isDark ? "text-white" : "text-black"
 
     // Use profile image URL if available, otherwise fallback to src
     const imageUrl = profileImageUrl || src
@@ -93,7 +96,7 @@ export function UserAvatar({
 
             {/* Role badge */}
             <div
-                className={`absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 ${badgeSizeClasses[size]} py-0 rounded font-bold text-white uppercase leading-tight`}
+                className={`absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 ${badgeSizeClasses[size]} ${textColor} py-0 rounded font-bold uppercase leading-tight`}
                 style={{ backgroundColor: borderColor }}
             >
                 {role}

@@ -153,21 +153,7 @@ function SuccessContent() {
                                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </Link>
                             </Button>
-
-                            <Button variant="outline" size="lg" asChild>
-                                <Link href="/account/billing">
-                                    <Download className="mr-2 h-4 w-4" />
-                                    Download Invoice
-                                </Link>
-                            </Button>
                         </div>
-
-                        <p className="text-sm text-muted-foreground">
-                            Need help? Contact our{" "}
-                            <Link href="/support" className="text-primary hover:underline">
-                                support team
-                            </Link>
-                        </p>
                     </motion.div>
                 </motion.div>
             </div>

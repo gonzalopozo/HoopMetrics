@@ -149,7 +149,7 @@ export function Header() {
     }
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-10 border-b bg-card px-4 py-3 shadow-sm">
+        <header className="fixed top-0 left-0 right-0 border-b bg-card px-4 py-3 shadow-sm z-[9999]">
             <div className="mx-auto flex max-w-8xl items-center justify-between">
                 {/* Logo moved to the far left, positioned above sidebar */}
                 <div className="flex items-center justify-center w-12 md:w-64 md:justify-start">

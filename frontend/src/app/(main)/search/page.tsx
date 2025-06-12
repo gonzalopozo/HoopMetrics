@@ -251,6 +251,9 @@ function PlayerResultCard({ player }: { player: SearchPlayerResult }) {
                                 width={48}
                                 height={48}
                                 className="h-full w-full object-cover"
+                                quality={95} // ✅ Aumentar calidad
+                                sizes="96px" // ✅ Doble del tamaño para pantallas de alta densidad
+                                priority={false} // ✅ No es crítico para el primer renderizado
                             />
                         ) : (
                             <div className="h-full w-full flex items-center justify-center">

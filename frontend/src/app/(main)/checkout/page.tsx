@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { Elements } from "@stripe/react-stripe-js"
 import { motion, AnimatePresence } from "framer-motion"
 import { CheckCircle, ArrowLeft, Loader2 } from "lucide-react"
+import { useTheme } from "next-themes" // ✅ Agregar import
 import { stripePromise, SUBSCRIPTION_PLANS, type PlanType, type BillingCycle } from "@/lib/stripe"
 import { createPaymentIntent } from "@/app/actions/stripe"
 import { PaymentForm } from "@/components/checkout/payment-form"
@@ -16,6 +17,7 @@ type CheckoutStep = "loading" | "payment" | "success" | "error"
 
 function CheckoutContent() {
     const searchParams = useSearchParams()
+    const { resolvedTheme } = useTheme() // ✅ Usar useTheme
     const [step, setStep] = useState<CheckoutStep>("loading")
     const [clientSecret, setClientSecret] = useState<string>("")
     const [subscriptionDetails, setSubscriptionDetails] = useState<{
@@ -107,15 +109,22 @@ function CheckoutContent() {
         setStep("error")
     }
 
+    // ✅ Mejorar la configuración de Stripe con más variables
     const stripeOptions = {
         clientSecret,
         appearance: {
-            theme: "stripe" as const,
+            theme: resolvedTheme === "dark" ? "night" as const : "stripe" as const,
             variables: {
                 colorPrimary: "hsl(var(--primary))",
                 colorBackground: "hsl(var(--background))",
                 colorText: "hsl(var(--foreground))",
                 colorDanger: "hsl(var(--destructive))",
+                colorTextPlaceholder: "hsl(var(--muted-foreground))",
+                colorInputBackground: "hsl(var(--input))",
+                colorInputBorder: "hsl(var(--border))",
+                colorInputText: "hsl(var(--foreground))",
+                colorTextSecondary: "hsl(var(--muted-foreground))",
+                colorSuccess: "hsl(120, 70%, 50%)",
                 fontFamily: "system-ui, sans-serif",
                 spacingUnit: "4px",
                 borderRadius: "8px",
@@ -169,18 +178,14 @@ function CheckoutContent() {
                                                 {subscriptionDetails.plan === "premium" ? (
                                                     <>
                                                         <li>• All Free features</li>
-                                                        <li>• Advanced search filters</li>
                                                         <li>• Derived statistics</li>
                                                         <li>• Up to 3 favorite players & teams</li>
-                                                        <li>• Notifications for all favorites</li>
                                                     </>
                                                 ) : (
                                                     <>
                                                         <li>• All Premium features</li>
-                                                        <li>• Head-to-head comparisons</li>
-                                                        <li>• Exportable PDF reports</li>
+                                                        <li>• Advanced statistics</li>
                                                         <li>• Unlimited favorites</li>
-                                                        <li>• Priority support</li>
                                                         <li>• Early access to new features</li>
                                                     </>
                                                 )}
