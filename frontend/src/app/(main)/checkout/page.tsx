@@ -119,12 +119,21 @@ function CheckoutContent() {
                 colorBackground: "hsl(var(--background))",
                 colorText: "hsl(var(--foreground))",
                 colorDanger: "hsl(var(--destructive))",
-                colorTextPlaceholder: "hsl(var(--muted-foreground))",
+                // ✅ Hacer los placeholders más claros en modo dark
+                colorTextPlaceholder: resolvedTheme === "dark" 
+                    ? "hsl(0, 0%, 50%)"  // Gris más claro en dark mode
+                    : "hsl(var(--muted-foreground))", // Color normal en light mode
                 colorInputBackground: "hsl(var(--input))",
                 colorInputBorder: "hsl(var(--border))",
                 colorInputText: "hsl(var(--foreground))",
-                colorTextSecondary: "hsl(var(--muted-foreground))",
+                colorTextSecondary: resolvedTheme === "dark"
+                    ? "hsl(0, 0%, 60%)"  // También más claro para texto secundario
+                    : "hsl(var(--muted-foreground))",
                 colorSuccess: "hsl(120, 70%, 50%)",
+                // ✅ Agregar más variables para mejor control
+                colorTextPlaceholderSecondary: resolvedTheme === "dark"
+                    ? "hsl(0, 0%, 45%)"  // Placeholder secundario aún más claro
+                    : "hsl(214, 30%, 60%)",
                 fontFamily: "system-ui, sans-serif",
                 spacingUnit: "4px",
                 borderRadius: "8px",

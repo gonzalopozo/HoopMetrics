@@ -2,20 +2,20 @@ export type UserRole = "free" | "premium" | "ultimate" | "admin"
 
 export const roleColors = {
     free: {
-        light: "#22c55e",    // Verde más oscuro para mejor contraste con texto negro
-        dark: "#4ade80",     // Verde más claro para mejor contraste con texto blanco
+        light: "#16a34a",    // Verde más oscuro para contraste con texto blanco
+        dark: "#86efac",     // Verde más claro para contraste con texto negro
     },
     premium: {
-        light: "#3b82f6",    // Azul más oscuro para mejor contraste con texto negro
-        dark: "#60a5fa",     // Azul más claro para mejor contraste con texto blanco
+        light: "#2563eb",    // Azul más oscuro para contraste con texto blanco
+        dark: "#93c5fd",     // Azul más claro para contraste con texto negro
     },
     ultimate: {
-        light: "#7c3aed",    // Púrpura más oscuro para mejor contraste con texto negro
-        dark: "#a78bfa",     // Púrpura más claro para mejor contraste con texto blanco
+        light: "#7c3aed",    // Púrpura más oscuro para contraste con texto blanco
+        dark: "#c4b5fd",     // Púrpura más claro para contraste con texto negro
     },
     admin: {
-        light: "#dc2626",    // Rojo más oscuro para mejor contraste con texto negro
-        dark: "#f87171",     // Rojo más claro para mejor contraste con texto blanco
+        light: "#dc2626",    // Rojo más oscuro para contraste con texto blanco
+        dark: "#fca5a5",     // Rojo más claro para contraste con texto negro
     },
 };
 

@@ -44,8 +44,8 @@ export function UserAvatar({
     const isDark = resolvedTheme === "dark"
     const borderColor = getRoleColor(role, isDark)
     
-    // Determinar el color del texto según el modo
-    const textColor = isDark ? "text-white" : "text-black"
+    // Determinar el color del texto según el modo (invertido)
+    const textColor = isDark ? "text-black" : "text-white"
 
     // Use profile image URL if available, otherwise fallback to src
     const imageUrl = profileImageUrl || src
