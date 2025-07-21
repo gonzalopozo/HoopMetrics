@@ -10,26 +10,26 @@ env = get_settings()
 
 logger = logging.getLogger(__name__)
 
-# Configuración de Digital Ocean Spaces
-SPACES_REGION = env.SPACES_REGION
+# Configuración de Cloudflare R2
 SPACES_BUCKET = env.SPACES_BUCKET
-SPACES_ENDPOINT = f"https://{SPACES_REGION}.digitaloceanspaces.com"
-CDN_ENDPOINT = f"https://{SPACES_BUCKET}.{SPACES_REGION}.cdn.digitaloceanspaces.com"
+# R2 endpoint construction
+R2_ENDPOINT = f"https://{env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+# Public URL for accessing files
+PUBLIC_URL = env.R2_PUBLIC_URL
 
-# Cliente de S3 compatible con Digital Ocean Spaces
+# Cliente de S3 compatible con Cloudflare R2
 def get_spaces_client():
     return boto3.client(
         's3',
-        region_name=SPACES_REGION,
-        endpoint_url=SPACES_ENDPOINT,
+        endpoint_url=R2_ENDPOINT,
         aws_access_key_id=env.SPACES_ACCESS_KEY,
         aws_secret_access_key=env.SPACES_SECRET_KEY
     )
 
 async def upload_profile_image(user_id: int, file: UploadFile) -> Optional[str]:
     """
-    Sube una imagen de perfil a Digital Ocean Spaces
-    Retorna la URL de CDN de la imagen subida
+    Sube una imagen de perfil a Cloudflare R2
+    Retorna la URL pública de la imagen subida
     """
     try:
         # Validar tipo de archivo
@@ -46,7 +46,7 @@ async def upload_profile_image(user_id: int, file: UploadFile) -> Optional[str]:
         file_extension = file.filename.split('.')[-1] if file.filename else 'jpg'
         unique_filename = f"profile-images/{user_id}/{uuid.uuid4()}.{file_extension}"
         
-        # Configurar cliente de Spaces
+        # Configurar cliente de R2
         spaces_client = get_spaces_client()
         
         # Subir archivo
@@ -54,19 +54,18 @@ async def upload_profile_image(user_id: int, file: UploadFile) -> Optional[str]:
             Bucket=SPACES_BUCKET,
             Key=unique_filename,
             Body=file_content,
-            ACL='public-read',  # Hacer la imagen pública
             ContentType=file.content_type,
             CacheControl='max-age=31536000'  # Cache por 1 año
         )
         
-        # Retornar URL del CDN
-        cdn_url = f"{CDN_ENDPOINT}/{unique_filename}"
-        logger.info(f"Imagen subida exitosamente: {cdn_url}")
+        # Retornar URL pública
+        public_url = f"{PUBLIC_URL}/{unique_filename}"
+        logger.info(f"Imagen subida exitosamente: {public_url}")
         
-        return cdn_url
+        return public_url
         
     except ClientError as e:
-        logger.error(f"Error subiendo imagen a Spaces: {e}")
+        logger.error(f"Error subiendo imagen a R2: {e}")
         raise Exception("Error subiendo imagen")
     except Exception as e:
         logger.error(f"Error inesperado: {e}")
@@ -74,12 +73,12 @@ async def upload_profile_image(user_id: int, file: UploadFile) -> Optional[str]:
 
 async def delete_profile_image(image_url: str) -> bool:
     """
-    Elimina una imagen de perfil de Digital Ocean Spaces
+    Elimina una imagen de perfil de Cloudflare R2
     """
     try:
         # Extraer el key de la URL
-        if CDN_ENDPOINT in image_url:
-            key = image_url.replace(f"{CDN_ENDPOINT}/", "")
+        if PUBLIC_URL in image_url:
+            key = image_url.replace(f"{PUBLIC_URL}/", "")
         else:
             return False
         
