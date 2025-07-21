@@ -11,11 +11,7 @@ engine = create_async_engine(
     settings.DATABASE_URL,
     echo=False,
     future=True,
-    pool_pre_ping=True,
-    pool_size=1,           # For Neon/serverless: pool_size=1
-    max_overflow=0,        # No overflow
-    pool_recycle=1800,     # Optional: recycle every 30min
-    pool_timeout=10,       # Optional: 10s timeout
+    poolclass=None,  # disables pooling
     connect_args={"timeout": 10.0}
 )
 
