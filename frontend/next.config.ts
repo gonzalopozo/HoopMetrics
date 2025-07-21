@@ -11,13 +11,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'hoopmetrics-image-hosting.lon1.cdn.digitaloceanspaces.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'hoopmetrics-image-hosting.lon1.digitaloceanspaces.com',
+        hostname: 'pub-5bcfef793ecc4aa296c284bdeb909ad9.r2.dev',
         port: '',
         pathname: '/**',
       },
