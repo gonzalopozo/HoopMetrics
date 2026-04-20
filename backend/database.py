@@ -1,15 +1,24 @@
 import logging
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.engine import make_url
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool  # <-- Import NullPool
-from config import get_settings
+from .config import get_settings
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
+
+def _async_database_url(database_url: str) -> str:
+    url = make_url(database_url)
+    if url.drivername in {"postgres", "postgresql", "postgresql+psycopg2"}:
+        return url.set(drivername="postgresql+asyncpg").render_as_string(hide_password=False)
+    return database_url
+
+
 # Create the engine ONCE at import time, but with NullPool for serverless/short-lived connections
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    _async_database_url(settings.DATABASE_URL),
     echo=False,
     future=True,
     poolclass=NullPool,  # <-- Use NullPool to ensure a new connection per session

@@ -6,8 +6,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy import literal, case
 from datetime import datetime, date
 
-from deps import get_current_user, get_db
-from models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats, TeamPointsProgression, TeamPointsVsOpponent, TeamPointsTypeDistribution, TeamRadarProfile, TeamShootingVolume, PlayerContribution, TeamAdvancedEfficiency, TeamLineupImpactMatrix, TeamMomentumResilience, TeamTacticalAdaptability, TeamClutchDNAProfile, TeamPredictivePerformance, User
+from ..deps import get_current_user, get_db
+from ..models import TeamInfo, Team, Match, MatchStatistic, Player, TeamRecord, TeamStats, TeamPointsProgression, TeamPointsVsOpponent, TeamPointsTypeDistribution, TeamRadarProfile, TeamShootingVolume, PlayerContribution, TeamAdvancedEfficiency, TeamLineupImpactMatrix, TeamMomentumResilience, TeamTacticalAdaptability, TeamClutchDNAProfile, TeamPredictivePerformance, User
 
 router = APIRouter(
     prefix="/teams",
@@ -458,7 +458,7 @@ async def get_team_favorite_status(
 ):
     """Obtiene el estado de favorito de un equipo para el usuario actual"""
     try:
-        from crud_favorites import is_team_favorite
+        from ..crud_favorites import is_team_favorite
         is_favorite = await is_team_favorite(db, current_user.id, id)
         return {"is_favorite": is_favorite}
     except Exception as e:

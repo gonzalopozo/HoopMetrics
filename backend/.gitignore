@@ -5,3 +5,5 @@ fill_db/.env
 .env
 __pycache__
 .vercel
+
+.codex

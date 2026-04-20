@@ -5,13 +5,13 @@ from typing import List, Dict, Any
 from datetime import datetime, timedelta
 import logging
 
-from deps import get_db, require_role
-from models import (
+from ..deps import get_db, require_role
+from ..models import (
     User, UserRole, AdminDashboardData, SystemHealthMetrics,
     DatabaseMetrics, UserMetrics, SubscriptionMetrics, APIMetrics,
     AdminUserResponse
 )
-from services.admin_metrics import admin_metrics_service
+from ..services.admin_metrics import admin_metrics_service
 router = APIRouter(
     prefix="/admin",
     tags=["admin"],
