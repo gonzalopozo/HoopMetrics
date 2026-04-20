@@ -9,20 +9,31 @@ logger = logging.getLogger(__name__)
 settings = get_settings()
 
 
-def _async_database_url(database_url: str) -> str:
+def _database_connection_config(database_url: str) -> tuple[str, dict]:
     url = make_url(database_url)
+    connect_args = {"timeout": 10.0}
+
     if url.drivername in {"postgres", "postgresql", "postgresql+psycopg2"}:
-        return url.set(drivername="postgresql+asyncpg").render_as_string(hide_password=False)
-    return database_url
+        url = url.set(drivername="postgresql+asyncpg")
+
+    sslmode = url.query.get("sslmode")
+    if sslmode is not None:
+        connect_args["ssl"] = sslmode
+        url = url.difference_update_query(["sslmode"])
+
+    return url.render_as_string(hide_password=False), connect_args
+
+
+database_url, connect_args = _database_connection_config(settings.DATABASE_URL)
 
 
 # Create the engine ONCE at import time, but with NullPool for serverless/short-lived connections
 engine = create_async_engine(
-    _async_database_url(settings.DATABASE_URL),
+    database_url,
     echo=False,
     future=True,
     poolclass=NullPool,  # <-- Use NullPool to ensure a new connection per session
-    connect_args={"timeout": 10.0}
+    connect_args=connect_args
 )
 
 SessionLocal = sessionmaker(
