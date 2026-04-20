@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool  # <-- Import NullPool
-from .config import get_settings
+from config import get_settings
 
 logger = logging.getLogger(__name__)
 settings = get_settings()

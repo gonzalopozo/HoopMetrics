@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 
-from ..deps import get_db, get_current_user
-from ..models import User, UserProfileUpdate, UserProfileResponse
-from ..crud import update_user_profile, get_user_profile
-from ..spaces_config import upload_profile_image, delete_profile_image
+from deps import get_db, get_current_user
+from models import User, UserProfileUpdate, UserProfileResponse
+from crud import update_user_profile, get_user_profile
+from spaces_config import upload_profile_image, delete_profile_image
 
 router = APIRouter(
     prefix="/profile",

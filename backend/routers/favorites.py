@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Dict
 
-from ..deps import get_db, get_current_user
-from ..models import User, AddFavoriteRequest, FavoriteStatusResponse, UserFavoritesResponse
-from ..crud_favorites import (
+from deps import get_db, get_current_user
+from models import User, AddFavoriteRequest, FavoriteStatusResponse, UserFavoritesResponse
+from crud_favorites import (
     add_favorite_player, remove_favorite_player,
     add_favorite_team, remove_favorite_team,
     get_user_favorites, is_player_favorite, is_team_favorite

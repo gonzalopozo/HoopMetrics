@@ -1,10 +1,10 @@
 # app/deps.py
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from .database import get_db  # Change from get_session to get_db
-from .security import decode_access_token
-from .models import User, UserRole
-from .crud import get_user_by_email
+from database import get_db  # Change from get_session to get_db
+from security import decode_access_token
+from models import User, UserRole
+from crud import get_user_by_email
 import logging
 
 logger = logging.getLogger(__name__)

@@ -4,8 +4,8 @@ from sqlmodel import case, desc, func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 
-from ..models import Match, MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, TopPerformer
-from ..deps import get_db
+from models import Match, MatchStatistic, Player, PlayerRead, StatRead, Team, TeamRead, TopPerformer
+from deps import get_db
 
 router = APIRouter(
     prefix="/home",
